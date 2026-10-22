@@ -1,18 +1,55 @@
-# gm-elastoplastic-nucleation
+<h1 align="center">gm-elastoplastic-nucleation</h1>
 
-Elasto-plastic extension of the Gurtin–Murdoch (GM) surface stress in the thermal-field-tensor
-nucleation model of Ferreira (Physica B 695, 416494, 2024), applied to the FCC_A1 phase of the
-Al-3Cu-5Nb-0.1Fe alloy and propagated to the secondary dendrite arm spacing (SDAS) through the
-modified Rappaz–Boettinger (MRB) model. A small CPU molecular-dynamics (MD) study of the
-solid–liquid interface stress of Al is included as a check of the surface parameters.
+<p align="center">
+  <b>Elasto-plastic Gurtin–Murdoch surface in the thermal-field-tensor nucleation model</b><br>
+  surface tension, surface energy and Gibbs–Thomson tensors of 1st and 2nd order against the thermal gradient
+</p>
+
+<p align="center">
+  <img alt="Python" src="docs/badges/python.svg">
+  <img alt="LAMMPS" src="docs/badges/lammps.svg">
+  <img alt="Surface model" src="docs/badges/model.svg">
+  <img alt="Alloy" src="docs/badges/alloy.svg">
+</p>
+
+<p align="center"><b>English</b> · <a href="README.pt-BR.md">Português</a></p>
+
+<p align="center">
+  <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Homogeneous surface tension, homogeneous surface energy and Gibbs-Thomson tensors of 1st and 2nd order against the thermal gradient for the elastic and elasto-plastic Gurtin-Murdoch surfaces">
+</p>
+
+**Below yield the elasto-plastic surface is the Gurtin–Murdoch surface itself.** Above it, the excess
+surface stress is bounded and, with the plastic area updating the equilibrium reference, the surface
+energy and the 2nd-order tensor become independent of the thermal gradient. Al-3Cu-5Nb-0.1Fe (FCC_A1),
+mean gradient 3294 K/m:
+
+| Surface | τ [N/m] | γ_SL [J/m²] | Γ¹ˢᵗ [m K] | Γ²ⁿᵈ [m K] |
+|---|---:|---:|---:|---:|
+| Elastic GM | −1.968 | 1.047 | 3.887e-7 | 1.0685e-6 |
+| Elasto-plastic, fixed reference (σ_y = 0.5 N/m, H = 0.1σ₀) | −1.891 | 0.994 | 6.310e-7 | 1.0146e-6 |
+| Elasto-plastic, updated reference (σ_y = 0.0695 N/m, H = 0) | −1.446 | 0.381 | not defined after yield | 3.887e-7 |
+
+Extension of the nucleation model of Ferreira (Physica B 695, 416494, 2024), applied to the FCC_A1 phase
+of the Al-3Cu-5Nb-0.1Fe alloy and propagated to the secondary dendrite arm spacing (SDAS) through the
+modified Rappaz–Boettinger (MRB) model. A small CPU molecular-dynamics (MD) study of the solid–liquid
+interface stress of Al is included as a check of the surface parameters.
 
 Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of Pará (UFPA), Brazil.
 
 ## Contents
 
+- [Repository layout](#repository-layout)
+- [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal)
+- [Main results](#main-results-al-3cu-5nb-01fe-mean-gradient-3294-km)
+- [Running](#running) · [Data sources](#data-sources) · [Status](#status)
+- [Acknowledgements](#acknowledgements)
+
+## Repository layout
+
 | Folder | What it holds |
 |---|---|
-| `model/` | Nucleation model with the elasto-plastic GM surface (`..._ElastoPlastic_GM.py`) and the two SDAS scripts (`..._GT_point_to_point.py`, `..._SDAS_vs_GL.py`); helpers `derivative_shim.py`, `midpoint.py` |
+| `model/` | Nucleation model with the elasto-plastic GM surface (`..._ElastoPlastic_GM.py`), the curve-by-curve comparison (`compare_GM_elastic_elastoplastic_B_MRS_2026.py`) and the two SDAS scripts (`..._GT_point_to_point.py`, `..._SDAS_vs_GL.py`); helpers `derivative_shim.py`, `midpoint.py` |
+| `docs/` | Figure of the comparison, badges and logos |
 | `md_cpu/` | LAMMPS inputs and analysis for the planar interface stress and the Laplace pressure of a critical seed (`E5_results.md`) |
 | `results/` | CSV tables and figures produced by the scripts and the MD runs |
 
@@ -134,6 +171,8 @@ GM_SURFACE_MODEL=elastic python Nucleation_model_..._ElastoPlastic_GM.py
 python Nucleation_model_..._ElastoPlastic_GM.py
 # elasto-plastic with the plastic area updating the reference
 GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.0695 GM_H_A=0 python Nucleation_model_..._ElastoPlastic_GM.py
+# curve-by-curve comparison (reads the three tablefull_*.csv files written above)
+python compare_GM_elastic_elastoplastic_B_MRS_2026.py
 # SDAS (reads the GT_point_to_point_*.csv files written above)
 python scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_GT_point_to_point.py
 python scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_SDAS_vs_GL.py
@@ -154,3 +193,17 @@ scripts of the author.
 
 Research code under development. The yield stress of the interface still needs an independent value
 (the series of seeds of 1.5–3.0 nm in `md_cpu/` would give the radius dependence of the interface stress).
+
+## Acknowledgements
+
+This work was supported by the Brazilian National Council for Scientific and Technological
+Development (**CNPq**), the Coordination for the Improvement of Higher Education Personnel
+(**CAPES**) and the Federal University of Pará (**UFPA**).
+
+<p align="center">
+  <a href="https://www.gov.br/cnpq"><img src="docs/logos/cnpq.png" height="44" alt="CNPq"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.gov.br/capes"><img src="docs/logos/capes.png" height="64" alt="CAPES"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://ufpa.br"><img src="docs/logos/ufpa.png" height="72" alt="UFPA"></a>
+</p>
