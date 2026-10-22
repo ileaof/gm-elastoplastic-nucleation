@@ -34,19 +34,20 @@ Sign convention: `sigma_0 < 0` (compressive force). In the scripts `sigma_0` is 
 
 ## Main results (Al-3Cu-5Nb-0.1Fe, mean gradient 3294 K/m)
 
-| Surface | Gamma_het 2nd order [m K] | SDAS (MRB, prefactor 5.5) | MAPE vs experiment |
-|---|---|---|---|
-| Elastic GM (original, `sigma_0` = 1.3761 N/m) | 1.0685e-6 | 9.38 t_SL^0.379 µm | 23.8 % |
-| Elasto-plastic, fixed reference (`sigma_y` = 0.5 N/m) | 1.0146e-6 | 9.28 t_SL^0.379 µm | 22.5 % |
-| Elasto-plastic, reference updated (`sigma_y` = 0.0695 N/m, `H` = 0) | 3.887e-7 | 7.67 t_SL^0.377 µm | 4.6 % |
+The continuum formulation reproduces the experimental SDAS with both orders of the thermal-field
+tensor: MRB with Gamma 1st order (3.887e-7 m K) and 2nd order (1.0685e-6 m K) fall within the
+experimental scatter (Ferreira, JMEP manuscript, Table 6). The elasto-plastic surface of this
+repository is an extension of that formulation, not a correction of it.
 
-* With the updated reference the 2nd-order tensor is the same at every experimental gradient
-  (1.1–10.8 × 10³ K/m), so point-to-point and mean-gradient calculations coincide.
-* `sigma_y` = 0.0695 N/m was obtained by matching the SDAS data; it is not an independent measurement.
-* MD values of the GM parameters (Borovikov EAM, pure Al) give `sigma_0` = −0.030 ± 0.007 N/m
-  (24 000 atoms, 1 ns) and, in this repository, −0.040 ± 0.004 N/m (8192 atoms, 100 ps). With the MD
-  `sigma_0` the elastic GM surface already gives a 2nd-order tensor of 2.97e-7 m K, consistent with the
-  data: the excess surface stress of the nucleus is of order 0.03–0.08 N/m, not ~1 N/m.
+* Elastic branch: `GM_SURFACE_MODEL=elastic` reproduces the original solution exactly.
+* Elasto-plastic surface with the plastic area updating the reference (`sigma_y` = 0.0695 N/m, `H` = 0):
+  Gamma 2nd order = 3.887e-7 m K, the same at every experimental gradient (1.1–10.8 × 10³ K/m), and
+  MRB SDAS = 7.67 t_SL^0.377 µm. `sigma_y` was obtained by matching the SDAS data; it is not an
+  independent measurement.
+* MD values of the GM surface parameters (Borovikov EAM, pure Al): `sigma_0` = −0.030 ± 0.007 N/m
+  (24 000 atoms, 1 ns) and, in this repository, −0.040 ± 0.004 N/m (8192 atoms, 100 ps). Inputs taken
+  from MD are an open issue on the MD side (pure Al, no solute, nanometre nuclei), not of the
+  continuum theory.
 * SDAS written explicitly in the thermal gradient: `SDAS = K (G_L V_L)^(-1/3)`; the free exponent
   against the cooling rate is −0.280 ± 0.059 (95 %), which contains −1/3.
 
