@@ -62,7 +62,7 @@ $\mathbf{P} = \mathbf{I} - \mathbf{n}\otimes\mathbf{n}$:
 
 $$\nabla_S \cdot \boldsymbol{\Sigma} = \boldsymbol{\Theta}\,\mathbf{n} + \rho_0\,\ddot{\mathbf{u}}$$
 
-$$\boldsymbol{\Sigma} = \sigma\,\mathbf{I} + 2\,(\mu_0 - \sigma)\,\mathbf{E} + (\lambda_0 - \sigma)\,(\operatorname{tr}\mathbf{E})\,\mathbf{I} + \sigma\,\nabla_S\mathbf{u} \qquad \text{on } \mathcal{S}$$
+$$\boldsymbol{\Sigma} = \sigma\,\mathbf{I} + 2\,(\mu_0 - \sigma)\,\mathbf{E} + (\lambda_0 - \sigma)\,(\mathrm{tr}\mathbf{E})\,\mathbf{I} + \sigma\,\nabla_S\mathbf{u} \qquad \text{on } \mathcal{S}$$
 
 $$\mathbf{E} = \tfrac{1}{2}\left(D\mathbf{u} + D\mathbf{u}^{T}\right)$$
 
@@ -100,32 +100,32 @@ $$\mathbf{E} = \mathbf{E}^{e} + \mathbf{E}^{p}, \qquad \mathbf{E}^{p} = \mathbf{
 
 and the Gurtin–Murdoch law is evaluated with the elastic part:
 
-$$\boldsymbol{\Sigma} = \sigma\,\mathbf{I} + 2\,(\mu_0 - \sigma)\,\mathbf{E}^{e} + (\lambda_0 - \sigma)\,(\operatorname{tr}\mathbf{E}^{e})\,\mathbf{I} + \sigma\,\nabla_S\mathbf{u}.$$
+$$\boldsymbol{\Sigma} = \sigma\,\mathbf{I} + 2\,(\mu_0 - \sigma)\,\mathbf{E}^{e} + (\lambda_0 - \sigma)\,(\mathrm{tr}\mathbf{E}^{e})\,\mathbf{I} + \sigma\,\nabla_S\mathbf{u}.$$
 
 **Yield on the excess stress.** With $\tilde{\boldsymbol{\Sigma}} = \boldsymbol{\Sigma} - \sigma\,\mathbf{P}$, so that the
 residual tension alone never yields, two decoupled mechanisms:
 
-$$f_A = \left|\operatorname{tr}\tilde{\boldsymbol{\Sigma}}\right| - 2\,\sigma_y^{s}(\alpha_A) \le 0, \qquad \sigma_y^{s} = \sigma_{y0}^{s} + H_A\,\alpha_A \quad \text{(areal: coherent} \rightarrow \text{semicoherent interface)}$$
+$$f_A = \left|\mathrm{tr}\tilde{\boldsymbol{\Sigma}}\right| - 2\,\sigma_y^{s}(\alpha_A) \le 0, \qquad \sigma_y^{s} = \sigma_{y0}^{s} + H_A\,\alpha_A \quad \text{(areal: coherent} \rightarrow \text{semicoherent interface)}$$
 
-$$f_D = \left\lVert \operatorname{dev}_S \tilde{\boldsymbol{\Sigma}} \right\rVert - \sigma_{yD}(\alpha_D) \le 0, \qquad \sigma_{yD} = \sigma_{yD0} + H_D\,\alpha_D \quad \text{(J}_2\text{ in the tangent plane)}$$
+$$f_D = \left\lVert \mathrm{dev}_S \tilde{\boldsymbol{\Sigma}} \right\rVert - \sigma_{yD}(\alpha_D) \le 0, \qquad \sigma_{yD} = \sigma_{yD0} + H_D\,\alpha_D \quad \text{(J}_2\text{ in the tangent plane)}$$
 
 **Flow rule and hardening (associative), with Kuhn–Tucker conditions:**
 
-$$\dot{\mathbf{E}}^{p} = \dot{\lambda}_A\,\operatorname{sign}\!\left(\operatorname{tr}\tilde{\boldsymbol{\Sigma}}\right)\tfrac{1}{2}\mathbf{P} + \dot{\lambda}_D\,\frac{\operatorname{dev}_S\tilde{\boldsymbol{\Sigma}}}{\lVert \operatorname{dev}_S\tilde{\boldsymbol{\Sigma}} \rVert}, \qquad \dot{\alpha}_k = \dot{\lambda}_k, \qquad \dot{\lambda}_k \ge 0,\; f_k \le 0,\; \dot{\lambda}_k f_k = 0 .$$
+$$\dot{\mathbf{E}}^{p} = \dot{\lambda}_A\,\mathrm{sign}\!\left(\mathrm{tr}\tilde{\boldsymbol{\Sigma}}\right)\tfrac{1}{2}\mathbf{P} + \dot{\lambda}_D\,\frac{\mathrm{dev}_S\tilde{\boldsymbol{\Sigma}}}{\lVert \mathrm{dev}_S\tilde{\boldsymbol{\Sigma}} \rVert}, \qquad \dot{\alpha}_k = \dot{\lambda}_k, \qquad \dot{\lambda}_k \ge 0,\; f_k \le 0,\; \dot{\lambda}_k f_k = 0 .$$
 
 For a spherical nucleus the surface strain is equibiaxial, $\mathbf{E} = \varepsilon\,\mathbf{P}$, so
-$\operatorname{dev}_S\mathbf{E} = \mathbf{0}$ and the J$_2$ mechanism never activates (checked at run time);
+$\mathrm{dev}_S\mathbf{E} = \mathbf{0}$ and the J$_2$ mechanism never activates (checked at run time);
 only the areal mechanism changes the result.
 
 **Return mapping (sphere, step $n \rightarrow n+1$, $r$ decreasing from $r_{eq}$):**
 
 $$s^{tr} = C_A\left(E_A - E_{A,n}^{p}\right), \qquad f^{tr} = |s^{tr}| - \left(\sigma_{y0}^{s} + H_A\,\alpha_{A,n}\right)$$
 
-$$\text{if } f^{tr} > 0:\quad \Delta\lambda = \frac{f^{tr}}{C_A + H_A},\quad s = s^{tr} - C_A\,\Delta\lambda\,\operatorname{sign}(s^{tr}),\quad E_A^{p} \mathrel{+}= \Delta\lambda\,\operatorname{sign}(s^{tr}),\quad \alpha_A \mathrel{+}= \Delta\lambda$$
+$$\text{if } f^{tr} > 0:\quad \Delta\lambda = \frac{f^{tr}}{C_A + H_A},\quad s = s^{tr} - C_A\,\Delta\lambda\,\mathrm{sign}(s^{tr}),\quad E_{A,n+1}^{p} = E_{A,n}^{p} + \Delta\lambda\,\mathrm{sign}(s^{tr}),\quad \alpha_{A,n+1} = \alpha_{A,n} + \Delta\lambda$$
 
 with consistent tangent $\partial s/\partial E_A = C_A H_A/(C_A + H_A)$ and the closed form, used as a check,
 
-$$s = \operatorname{sign}(E_A)\left[\sigma_{y0}^{s} + \frac{H_A\,C_A}{C_A + H_A}\left(|E_A| - \frac{\sigma_{y0}^{s}}{C_A}\right)\right] \quad \text{for } |E_A| > \sigma_{y0}^{s}/C_A .$$
+$$s = \mathrm{sign}(E_A)\left[\sigma_{y0}^{s} + \frac{H_A\,C_A}{C_A + H_A}\left(|E_A| - \frac{\sigma_{y0}^{s}}{C_A}\right)\right] \quad \text{for } |E_A| > \sigma_{y0}^{s}/C_A .$$
 
 **Plastic area and the equilibrium reference.** The plastic area does not compress the surface energy; it
 moves the reference at which $\gamma_0$, $\sigma_0$ and $r_{eq}$ were defined:
