@@ -1,0 +1,28 @@
+# E5 - planar solid-liquid interface stress at coexistence (reference tau0 of the MD scale).
+# Starts from the E2 coexistence slab (Borovikov EAM, (001) interfaces normal to z, x-y at the
+# solid lattice); NPH along z so that T relaxes to T_m. Two interfaces in the periodic box:
+#   f = (1/2) * integral over z of [P_zz - (P_xx+P_yy)/2]   (excess over the bulk phases)
+# Windows (OpenMP):  lmp -sf omp -pk omp 4 -in in.planar_stress
+variable nprod index 50000          # 100 ps
+variable bin   index 1.0            # z-bin width [A]
+
+units        metal
+atom_style   atomic
+boundary     p p p
+variable     coexist index coexist_npt_borovikov_930.data   # E2 coexistence slab (Nucleation_MD/md/e2_melting/in.coexist)
+read_data    ${coexist}
+include      pot_borovikov.lmp
+timestep     0.002
+
+compute      sa all stress/atom NULL
+compute      ch all chunk/atom bin/1d z lower ${bin} units box
+fix          prof all ave/chunk 50 200 10000 ch density/number c_sa[1] c_sa[2] c_sa[3] &
+             file planar_profile.dat
+fix          prod all nph z 0.0 0.0 2.0
+variable     vlz equal lz
+variable     fglob equal 0.5*lz*(pzz-0.5*(pxx+pyy))*1.0e-5     # bar*A -> N/m: 1e5 Pa * 1e-10 m
+fix          tsg all ave/time 50 200 10000 c_thermo_temp v_fglob c_thermo_press v_vlz &
+             file planar_global.dat title2 "# step T[K] f_global[N/m] P[bar] Lz[A]"
+thermo_style custom step temp press pxx pyy pzz lz v_fglob
+thermo       1000
+run          ${nprod}

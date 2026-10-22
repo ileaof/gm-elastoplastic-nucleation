@@ -1,0 +1,394 @@
+LAMMPS (10 Sep 2025)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from <LAMMPS install>/plugins
+package omp 8
+set 8 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+# E5 - Laplace pressure of a critical seed: interface stress f = dP*r/2 (Shuttleworth test of
+# the Gurtin-Murdoch excess surface stress, s = f - tau0) for the elasto-plastic GM model.
+# Seeding protocol of the JMEP manuscript, Sec. 3.4 (Borovikov EAM, pure Al):
+#   spherical FCC seed at the box centre, surroundings melted at 1500 K and quenched to T*
+#   with the seed frozen (thermostat/barostat on the liquid only), then NPT release at T*.
+# Windows (OpenMP):  lmp -sf omp -pk omp 8 -in in.seed_laplace -var r0 20 -var Tstar 809.3 -var ncell 24
+# Lengths A, time ps, pressure bar, energy eV.
+variable r0     index 20.0      # seed radius [A]
+variable Tstar  index 809.3     # seeding temperature T* [K] (JMEP Table 4)
+variable ncell  index 24        # FCC cells per box edge (JMEP: 32)
+variable seed   index 4928459
+variable Tmelt  index 1500
+variable nlat   index 5000      # crystal NPT at T* for a(T*)        (10 ps)
+variable nmelt  index 10000     # melt surroundings at Tmelt          (20 ps)
+variable nquench index 10000    # quench surroundings to T*           (20 ps)
+variable nprod  index 30000     # NPT release at T*                   (60 ps, JMEP)
+variable dRin   index 6.0       # core sphere for P_solid:  r < r0 - dRin   [A]
+variable dRout  index 10.0      # liquid region for P_liq:  r > r0 + dRout  [A]
+variable tag    string r${r0}_T${Tstar}_n${ncell}
+variable tag    string r20.0_T${Tstar}_n${ncell}
+variable tag    string r20.0_T809.3_n${ncell}
+variable tag    string r20.0_T809.3_n24
+
+units        metal
+atom_style   atomic
+boundary     p p p
+
+# 1) lattice parameter of the crystal at T*, zero pressure
+lattice      fcc 4.05
+Lattice spacing in x,y,z = 4.05 4.05 4.05
+region       small block 0 8 0 8 0 8
+create_box   1 small
+Created orthogonal box = (0 0 0) to (32.4 32.4 32.4)
+  1 by 1 by 1 MPI processor grid
+create_atoms 1 box
+Created 2048 atoms
+  using lattice units in orthogonal box = (0 0 0) to (32.4 32.4 32.4)
+  create_atoms CPU = 0.001 seconds
+mass         1 26.982
+include      ../e2_melting/pot_borovikov.lmp
+# Borovikov, Mendelev, Zarkevich, Smith, Lawson, Int. J. Plast. 178 (2024) 104004 — EAM/FS Ni-Al-Nb (NIST IPR)
+pair_style eam/fs
+pair_coeff * * ../../potentials/NiAlNb_Borovikov2024/Ni-Al-Nb.eam.fs Al
+timestep     0.002
+velocity     all create ${Tstar} ${seed} mom yes rot yes dist gaussian
+velocity     all create 809.3 ${seed} mom yes rot yes dist gaussian
+velocity     all create 809.3 4928459 mom yes rot yes dist gaussian
+fix          lat all npt temp ${Tstar} ${Tstar} 0.2 iso 0.0 0.0 2.0
+fix          lat all npt temp 809.3 ${Tstar} 0.2 iso 0.0 0.0 2.0
+fix          lat all npt temp 809.3 809.3 0.2 iso 0.0 0.0 2.0
+variable     alat equal lx/8
+fix          aavg all ave/time 10 $(v_nlat/20) ${nlat} v_alat
+fix          aavg all ave/time 10 250 ${nlat} v_alat
+fix          aavg all ave/time 10 250 5000 v_alat
+thermo       1000
+run          ${nlat}
+run          5000
+Last active /omp style is pair_style eam/fs/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.9
+  ghost atom cutoff = 8.9
+  binsize = 4.45, bins = 8 8 8
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/fs/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/atomonly/newton/omp
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.758 | 9.758 | 9.758 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press          Volume    
+         0   809.3         -7294.3413      0             -7080.2041     -12924.121      34012.224    
+      1000   825.64523     -7070.8083      0             -6852.3462     -196.86316      35536.726    
+      2000   801.54752     -7081.4883      0             -6869.4024      419.91083      35432.8      
+      3000   814.57269     -7071.8195      0             -6856.2872     -1245.9859      35588.493    
+      4000   793.01193     -7081.2058      0             -6871.3784     -2280.4988      35533.871    
+      5000   818.78838     -7068.2519      0             -6851.6042      1322.0082      35534.537    
+Loop time of 18.7374 on 8 procs for 5000 steps with 2048 atoms
+
+Performance: 46.111 ns/day, 0.520 hours/ns, 266.846 timesteps/s, 546.501 katom-step/s
+37.4% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 11.472     | 11.472     | 11.472     |   0.0 | 61.22
+Neigh   | 0.21495    | 0.21495    | 0.21495    |   0.0 |  1.15
+Comm    | 0.19026    | 0.19026    | 0.19026    |   0.0 |  1.02
+Output  | 0.000408   | 0.000408   | 0.000408   |   0.0 |  0.00
+Modify  | 6.7776     | 6.7776     | 6.7776     |   0.0 | 36.17
+Other   |            | 0.08223    |            |       |  0.44
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           5761 ave        5761 max        5761 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         173752 ave      173752 max      173752 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 173752
+Ave neighs/atom = 84.839844
+Neighbor list builds = 165
+Dangerous builds = 0
+variable     aT equal $(f_aavg)
+variable     aT equal 4.1078532146963855354
+print        "a(T*) = ${aT} A"
+a(T*) = 4.10785321469639 A
+clear
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+Restoring plugin: Hello world command v1.1 by Axel Kohlmeyer (akohlmey@gmail.com)
+WARNING: Overriding built-in command style hello from plugin (src/PLUGIN/plugin.cpp:556)
+Loaded 1 plugins from <LAMMPS install>/plugins
+package omp 8
+set 8 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+
+# 2) build the box and carve the seed
+units        metal
+atom_style   atomic
+boundary     p p p
+lattice      fcc ${aT}
+lattice      fcc 4.10785321469639
+Lattice spacing in x,y,z = 4.1078532 4.1078532 4.1078532
+region       box block 0 ${ncell} 0 ${ncell} 0 ${ncell}
+region       box block 0 24 0 ${ncell} 0 ${ncell}
+region       box block 0 24 0 24 0 ${ncell}
+region       box block 0 24 0 24 0 24
+create_box   1 box
+Created orthogonal box = (0 0 0) to (98.588477 98.588477 98.588477)
+  1 by 1 by 1 MPI processor grid
+create_atoms 1 box
+Created 55296 atoms
+  using lattice units in orthogonal box = (0 0 0) to (98.588477 98.588477 98.588477)
+  create_atoms CPU = 0.004 seconds
+mass         1 26.982
+include      ../e2_melting/pot_borovikov.lmp
+# Borovikov, Mendelev, Zarkevich, Smith, Lawson, Int. J. Plast. 178 (2024) 104004 — EAM/FS Ni-Al-Nb (NIST IPR)
+pair_style eam/fs
+pair_coeff * * ../../potentials/NiAlNb_Borovikov2024/Ni-Al-Nb.eam.fs Al
+timestep     0.002
+variable     cx equal (xlo+xhi)/2
+variable     cy equal (ylo+yhi)/2
+variable     cz equal (zlo+zhi)/2
+region       rseed sphere $(v_cx) $(v_cy) $(v_cz) ${r0} units box
+region       rseed sphere 49.294238576356697479 $(v_cy) $(v_cz) ${r0} units box
+region       rseed sphere 49.294238576356697479 49.294238576356697479 $(v_cz) ${r0} units box
+region       rseed sphere 49.294238576356697479 49.294238576356697479 49.294238576356697479 ${r0} units box
+region       rseed sphere 49.294238576356697479 49.294238576356697479 49.294238576356697479 20.0 units box
+group        sol region rseed
+1961 atoms in group sol
+group        liq subtract all sol
+53335 atoms in group liq
+variable     nseed0 equal count(sol)
+print        "seed atoms N0 = $(v_nseed0)"
+seed atoms N0 = 1961
+
+# 3) melt and quench the surroundings with the seed frozen (zero pressure, liquid-only barostat)
+velocity     sol set 0 0 0
+fix          freeze sol setforce 0 0 0
+velocity     liq create ${Tmelt} ${seed} mom yes rot yes dist gaussian
+velocity     liq create 1500 ${seed} mom yes rot yes dist gaussian
+velocity     liq create 1500 4928459 mom yes rot yes dist gaussian
+fix          melt liq npt temp ${Tmelt} ${Tmelt} 0.2 iso 0.0 0.0 2.0 dilate liq
+fix          melt liq npt temp 1500 ${Tmelt} 0.2 iso 0.0 0.0 2.0 dilate liq
+fix          melt liq npt temp 1500 1500 0.2 iso 0.0 0.0 2.0 dilate liq
+thermo_style custom step temp press vol pe
+run          ${nmelt}
+run          10000
+Last active /omp style is pair_style eam/fs/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.9
+  ghost atom cutoff = 8.9
+  binsize = 4.45, bins = 23 23 23
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/fs/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/atomonly/newton/omp
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 60.81 | 60.81 | 60.81 Mbytes
+   Step          Temp          Press          Volume         PotEng    
+         0   1446.8035     -33644.14       958249.22     -196124.66    
+     10000   1499.0959      230.14197      1111425.6     -178254.62    
+Loop time of 403.572 on 8 procs for 10000 steps with 55296 atoms
+
+Performance: 4.282 ns/day, 5.605 hours/ns, 24.779 timesteps/s, 1.370 Matom-step/s
+68.4% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 338.72     | 338.72     | 338.72     |   0.0 | 83.93
+Neigh   | 20.932     | 20.932     | 20.932     |   0.0 |  5.19
+Comm    | 5.0528     | 5.0528     | 5.0528     |   0.0 |  1.25
+Output  | 0.000259   | 0.000259   | 0.000259   |   0.0 |  0.00
+Modify  | 36.301     | 36.301     | 36.301     |   0.0 |  8.99
+Other   |            | 2.561      |            |       |  0.63
+
+Nlocal:          55296 ave       55296 max       55296 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          33491 ave       33491 max       33491 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    4.03834e+06 ave 4.03834e+06 max 4.03834e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 4038340
+Ave neighs/atom = 73.031322
+Neighbor list builds = 638
+Dangerous builds = 0
+unfix        melt
+fix          quench liq npt temp ${Tmelt} ${Tstar} 0.2 iso 0.0 0.0 2.0 dilate liq
+fix          quench liq npt temp 1500 ${Tstar} 0.2 iso 0.0 0.0 2.0 dilate liq
+fix          quench liq npt temp 1500 809.3 0.2 iso 0.0 0.0 2.0 dilate liq
+run          ${nquench}
+run          10000
+Last active /omp style is pair_style eam/fs/omp
+Per MPI rank memory allocation (min/avg/max) = 60.83 | 60.83 | 60.83 Mbytes
+   Step          Temp          Press          Volume         PotEng    
+     10000   1499.0959      230.14197      1111425.6     -178254.62    
+     20000   818.79612     -8.7768239      1016819.7     -186311.03    
+Loop time of 379.482 on 8 procs for 10000 steps with 55296 atoms
+
+Performance: 4.554 ns/day, 5.271 hours/ns, 26.352 timesteps/s, 1.457 Matom-step/s
+56.1% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 320.41     | 320.41     | 320.41     |   0.0 | 84.43
+Neigh   | 17.776     | 17.776     | 17.776     |   0.0 |  4.68
+Comm    | 4.5146     | 4.5146     | 4.5146     |   0.0 |  1.19
+Output  | 0.000309   | 0.000309   | 0.000309   |   0.0 |  0.00
+Modify  | 34.402     | 34.402     | 34.402     |   0.0 |  9.07
+Other   |            | 2.377      |            |       |  0.63
+
+Nlocal:          55296 ave       55296 max       55296 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          34788 ave       34788 max       34788 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    4.39104e+06 ave 4.39104e+06 max 4.39104e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 4391038
+Ave neighs/atom = 79.409686
+Neighbor list builds = 565
+Dangerous builds = 0
+unfix        quench
+unfix        freeze
+velocity     sol create ${Tstar} $(v_seed+1) mom yes rot yes dist gaussian
+velocity     sol create 809.3 $(v_seed+1) mom yes rot yes dist gaussian
+velocity     sol create 809.3 4928460 mom yes rot yes dist gaussian
+
+# 4) solid-like atoms: ten Wolde criterion (q6.q6 > 0.5 for at least 7 of 12 neighbours)
+compute      q6 all orientorder/atom degrees 1 6 components 6 nnn 12 cutoff 3.6
+compute      cn6 all coord/atom orientorder q6 0.5
+variable     issol atom c_cn6>=7
+compute      nsol all reduce sum v_issol
+
+# 5) Laplace pressure: per-atom virial in a core sphere and in the far liquid
+compute      sa all stress/atom NULL
+variable     Rin  equal ${r0}-${dRin}
+variable     Rin  equal 20.0-${dRin}
+variable     Rin  equal 20.0-6.0
+variable     Rout equal ${r0}+${dRout}
+variable     Rout equal 20.0+${dRout}
+variable     Rout equal 20.0+10.0
+region       rin  sphere v_cx v_cy v_cz ${Rin}  units box side in
+region       rin  sphere v_cx v_cy v_cz 14  units box side in
+region       rout sphere v_cx v_cy v_cz ${Rout} units box side out
+region       rout sphere v_cx v_cy v_cz 30 units box side out
+group        gin  dynamic all region rin  every 50
+dynamic group gin defined
+group        gout dynamic all region rout every 50
+dynamic group gout defined
+compute      sin  gin  reduce sum c_sa[1] c_sa[2] c_sa[3]
+compute      sout gout reduce sum c_sa[1] c_sa[2] c_sa[3]
+variable     Vin  equal 4.0/3.0*PI*v_Rin^3
+variable     Vout equal vol-4.0/3.0*PI*v_Rout^3
+variable     Pin  equal -(c_sin[1]+c_sin[2]+c_sin[3])/(3.0*v_Vin)
+variable     Pout equal -(c_sout[1]+c_sout[2]+c_sout[3])/(3.0*v_Vout)
+variable     dP   equal v_Pin-v_Pout
+
+# 6) NPT release at T* (JMEP: 60 ps); time series every 0.5 ps
+fix          prod all npt temp ${Tstar} ${Tstar} 0.2 iso 0.0 0.0 2.0
+fix          prod all npt temp 809.3 ${Tstar} 0.2 iso 0.0 0.0 2.0
+fix          prod all npt temp 809.3 809.3 0.2 iso 0.0 0.0 2.0
+fix          ts all ave/time 25 10 250 c_nsol v_Pin v_Pout v_dP c_thermo_temp c_thermo_press v_Rin v_Rout              file laplace_${tag}.dat title2 "# time-step N_solid P_in[bar] P_out[bar] dP[bar] T[K] P[bar] Rin[A] Rout[A]"
+fix          ts all ave/time 25 10 250 c_nsol v_Pin v_Pout v_dP c_thermo_temp c_thermo_press v_Rin v_Rout              file laplace_r20.0_T809.3_n24.dat title2 "# time-step N_solid P_in[bar] P_out[bar] dP[bar] T[K] P[bar] Rin[A] Rout[A]"
+thermo_style custom step temp press vol c_nsol v_Pin v_Pout v_dP
+thermo       1000
+dump         d1 all custom 5000 seed_${tag}.dump id x y z v_issol
+dump         d1 all custom 5000 seed_r20.0_T809.3_n24.dump id x y z v_issol
+run          ${nprod}
+run          30000
+Last active /omp style is pair_style eam/fs/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.9
+  ghost atom cutoff = 8.9
+  binsize = 4.45, bins = 23 23 23
+  3 neighbor lists, perpetual/occasional/extra = 1 2 0
+  (1) pair eam/fs/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/atomonly/newton/omp
+      stencil: half/bin/3d
+      bin: standard
+  (2) compute orientorder/atom, occasional
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+  (3) compute coord/atom, occasional
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 74.93 | 74.93 | 74.93 Mbytes
+   Step          Temp          Press          Volume         c_nsol         v_Pin          v_Pout          v_dP     
+     20000   847.48277      206.60318      1016819.7      2523          -39700.469      1304.4288     -41004.898    
+     21000   809.90368      203.41154      1013559.9      2537          -5473.9458      179.46009     -5653.4058    
+     22000   806.99795      13.067444      1013546.8      2639          -2047.1012      42.082465     -2089.1836    
+     23000   809.48782      525.30706      1012273.7      2764           489.88991      380.91845      108.97146    
+     24000   814.20497      48.155167      1012565.8      2643           6403.6689     -246.36106      6650.03      
+     25000   809.08117     -67.836578      1012182.2      2706           1626.0965     -8.72346        1634.82      
+     26000   810.84693     -223.31087      1012768.1      2732           587.29846     -168.54033      755.83879    
+     27000   813.85526      50.956202      1012865.8      2615           2331.9244      8.7797674      2323.1447    
+     28000   810.4547       427.39927      1011880.7      2794          -871.03179      488.47957     -1359.5114    
+     29000   809.24621      709.58628      1011881.6      2758           429.29157      565.14511     -135.85354    
+     30000   810.3279       213.05959      1012783.2      2943           2177.7095      293.35745      1884.352     
+     31000   813.27729      154.40031      1012639.4      2798           2039.6026      175.37488      1864.2277    
+     32000   809.72799      574.08371      1011557        2936           983.48929      564.03232      419.45697    
+     33000   811.01729      282.1993       1011976.1      3023          -1598.2231      310.63744     -1908.8605    
+     34000   807.19343      147.29926      1011991        3011           8364.2866      106.54347      8257.7432    
+     35000   810.29078     -481.87653      1012995.3      2965           3480.7989     -455.29209      3936.091     
+     36000   806.87031     -287.50328      1013134.5      2884           2723.9022     -385.20234      3109.1046    
+     37000   806.43491     -114.49951      1012786.1      2849           1595.5917     -54.168718      1649.7604    
+     38000   810.46553      178.924        1012611.6      2911          -1345.8693      241.71683     -1587.5861    
+     39000   810.54018      261.80068      1012773.2      2940           4374.9863      218.57492      4156.4113    
+     40000   809.41949      263.35654      1011831.2      3062           1131.8666      227.81647      904.05011    
+     41000   808.60716     -11.594117      1012205.8      3121           3198.7676     -220.3146       3419.0822    
+     42000   813.39404      117.35377      1012048.1      3178           930.24106      283.51898      646.72208    
+     43000   807.76976      28.840026      1012450        3362          -862.69715     -15.847664     -846.84949    
+     44000   805.62234     -712.46616      1013086        3270           1007.0291     -724.31497      1731.3441    
+     45000   810.37544     -66.437815      1012496.6      3239          -32.885268     -113.65084      80.765577    
+     46000   812.52882     -282.04313      1011993.8      3398          -4157.369      -166.75386     -3990.6151    
+     47000   809.44852     -87.439919      1012616.2      3413           3638.0573     -236.64993      3874.7072    
+     48000   806.52375     -275.12981      1012678.4      3382           3078.3178     -415.92164      3494.2395    
+     49000   807.47945     -818.16347      1013063.1      3435          -4016.2139     -834.47544     -3181.7385    
+     50000   811.49311     -139.22964      1012445.5      3414           2680.1417     -196.94297      2877.0847    
+Loop time of 1327.24 on 8 procs for 30000 steps with 55296 atoms
+
+Performance: 3.906 ns/day, 6.145 hours/ns, 22.603 timesteps/s, 1.250 Matom-step/s
+70.5% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 890.62     | 890.62     | 890.62     |   0.0 | 67.10
+Neigh   | 37.379     | 37.379     | 37.379     |   0.0 |  2.82
+Comm    | 10.479     | 10.479     | 10.479     |   0.0 |  0.79
+Output  | 4.8289     | 4.8289     | 4.8289     |   0.0 |  0.36
+Modify  | 378.22     | 378.22     | 378.22     |   0.0 | 28.50
+Other   |            | 5.71       |            |       |  0.43
+
+Nlocal:          55296 ave       55296 max       55296 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          34894 ave       34894 max       34894 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    4.40316e+06 ave 4.40316e+06 max 4.40316e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  8.80632e+06 ave 8.80632e+06 max 8.80632e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 8806322
+Ave neighs/atom = 159.25785
+Neighbor list builds = 1350
+Dangerous builds = 0
+write_data   seed_${tag}_final.data
+write_data   seed_r20.0_T809.3_n24_final.data
+System init for write_data ...
+Last active /omp style is pair_style eam/fs/omp
+Total wall time: 0:35:30

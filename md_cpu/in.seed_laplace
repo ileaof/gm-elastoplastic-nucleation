@@ -1,0 +1,107 @@
+# E5 - Laplace pressure of a critical seed: interface stress f = dP*r/2 (Shuttleworth test of
+# the Gurtin-Murdoch excess surface stress, s = f - tau0) for the elasto-plastic GM model.
+# Seeding protocol of the JMEP manuscript, Sec. 3.4 (Borovikov EAM, pure Al):
+#   spherical FCC seed at the box centre, surroundings melted at 1500 K and quenched to T*
+#   with the seed frozen (thermostat/barostat on the liquid only), then NPT release at T*.
+# Windows (OpenMP):  lmp -sf omp -pk omp 8 -in in.seed_laplace -var r0 20 -var Tstar 809.3 -var ncell 24
+# Lengths A, time ps, pressure bar, energy eV.
+variable r0     index 20.0      # seed radius [A]
+variable Tstar  index 809.3     # seeding temperature T* [K] (JMEP Table 4)
+variable ncell  index 24        # FCC cells per box edge (JMEP: 32)
+variable seed   index 4928459
+variable Tmelt  index 1500
+variable nlat   index 5000      # crystal NPT at T* for a(T*)        (10 ps)
+variable nmelt  index 10000     # melt surroundings at Tmelt          (20 ps)
+variable nquench index 10000    # quench surroundings to T*           (20 ps)
+variable nprod  index 30000     # NPT release at T*                   (60 ps, JMEP)
+variable dRin   index 6.0       # core sphere for P_solid:  r < r0 - dRin   [A]
+variable dRout  index 10.0      # liquid region for P_liq:  r > r0 + dRout  [A]
+variable tag    string r${r0}_T${Tstar}_n${ncell}
+
+units        metal
+atom_style   atomic
+boundary     p p p
+
+# 1) lattice parameter of the crystal at T*, zero pressure
+lattice      fcc 4.05
+region       small block 0 8 0 8 0 8
+create_box   1 small
+create_atoms 1 box
+mass         1 26.982
+include      pot_borovikov.lmp
+timestep     0.002
+velocity     all create ${Tstar} ${seed} mom yes rot yes dist gaussian
+fix          lat all npt temp ${Tstar} ${Tstar} 0.2 iso 0.0 0.0 2.0
+variable     alat equal lx/8
+fix          aavg all ave/time 10 $(v_nlat/20) ${nlat} v_alat
+thermo       1000
+run          ${nlat}
+variable     aT equal $(f_aavg)
+print        "a(T*) = ${aT} A"
+clear
+
+# 2) build the box and carve the seed
+units        metal
+atom_style   atomic
+boundary     p p p
+lattice      fcc ${aT}
+region       box block 0 ${ncell} 0 ${ncell} 0 ${ncell}
+create_box   1 box
+create_atoms 1 box
+mass         1 26.982
+include      pot_borovikov.lmp
+timestep     0.002
+variable     cx equal (xlo+xhi)/2
+variable     cy equal (ylo+yhi)/2
+variable     cz equal (zlo+zhi)/2
+region       rseed sphere $(v_cx) $(v_cy) $(v_cz) ${r0} units box
+group        sol region rseed
+group        liq subtract all sol
+variable     nseed0 equal count(sol)
+print        "seed atoms N0 = $(v_nseed0)"
+
+# 3) melt and quench the surroundings with the seed frozen (zero pressure, liquid-only barostat)
+velocity     sol set 0 0 0
+fix          freeze sol setforce 0 0 0
+velocity     liq create ${Tmelt} ${seed} mom yes rot yes dist gaussian
+fix          melt liq npt temp ${Tmelt} ${Tmelt} 0.2 iso 0.0 0.0 2.0 dilate liq
+thermo_style custom step temp press vol pe
+run          ${nmelt}
+unfix        melt
+fix          quench liq npt temp ${Tmelt} ${Tstar} 0.2 iso 0.0 0.0 2.0 dilate liq
+run          ${nquench}
+unfix        quench
+unfix        freeze
+velocity     sol create ${Tstar} $(v_seed+1) mom yes rot yes dist gaussian
+
+# 4) solid-like atoms: ten Wolde criterion (q6.q6 > 0.5 for at least 7 of 12 neighbours)
+compute      q6 all orientorder/atom degrees 1 6 components 6 nnn 12 cutoff 3.6
+compute      cn6 all coord/atom orientorder q6 0.5
+variable     issol atom c_cn6>=7
+compute      nsol all reduce sum v_issol
+
+# 5) Laplace pressure: per-atom virial in a core sphere and in the far liquid
+compute      sa all stress/atom NULL
+variable     Rin  equal ${r0}-${dRin}
+variable     Rout equal ${r0}+${dRout}
+region       rin  sphere v_cx v_cy v_cz ${Rin}  units box side in
+region       rout sphere v_cx v_cy v_cz ${Rout} units box side out
+group        gin  dynamic all region rin  every 50
+group        gout dynamic all region rout every 50
+compute      sin  gin  reduce sum c_sa[1] c_sa[2] c_sa[3]
+compute      sout gout reduce sum c_sa[1] c_sa[2] c_sa[3]
+variable     Vin  equal 4.0/3.0*PI*v_Rin^3
+variable     Vout equal vol-4.0/3.0*PI*v_Rout^3
+variable     Pin  equal -(c_sin[1]+c_sin[2]+c_sin[3])/(3.0*v_Vin)
+variable     Pout equal -(c_sout[1]+c_sout[2]+c_sout[3])/(3.0*v_Vout)
+variable     dP   equal v_Pin-v_Pout
+
+# 6) NPT release at T* (JMEP: 60 ps); time series every 0.5 ps
+fix          prod all npt temp ${Tstar} ${Tstar} 0.2 iso 0.0 0.0 2.0
+fix          ts all ave/time 25 10 250 c_nsol v_Pin v_Pout v_dP c_thermo_temp c_thermo_press v_Rin v_Rout &
+             file laplace_${tag}.dat title2 "# time-step N_solid P_in[bar] P_out[bar] dP[bar] T[K] P[bar] Rin[A] Rout[A]"
+thermo_style custom step temp press vol c_nsol v_Pin v_Pout v_dP
+thermo       1000
+dump         d1 all custom 5000 seed_${tag}.dump id x y z v_issol
+run          ${nprod}
+write_data   seed_${tag}_final.data

@@ -1,0 +1,4 @@
+# Borovikov, Mendelev, Zarkevich, Smith, Lawson, Int. J. Plast. 178 (2024) 104004 - EAM/FS Ni-Al-Nb.
+# Download Ni-Al-Nb.eam.fs from the NIST Interatomic Potentials Repository into ../potentials/
+pair_style eam/fs
+pair_coeff * * ../potentials/Ni-Al-Nb.eam.fs Al
