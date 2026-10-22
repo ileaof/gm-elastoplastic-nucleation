@@ -12,7 +12,7 @@
   <img alt="Liga" src="docs/badges/liga.svg">
 </p>
 
-<p align="center"><a href="README.md">English</a> · <b>Português</b></p>
+<p align="center"><a href="README.md">English</a> · <b>Português</b> · <a href="docs/FORMULACAO.pt-BR.md"><b>Formulação completa</b></a></p>
 
 <p align="center">
   <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Tensão de superfície homogênea, energia de superfície homogênea e tensor de Gibbs-Thomson de 2ª ordem em função do gradiente térmico para as superfícies de Gurtin-Murdoch elástica e elasto-plástica">
@@ -38,6 +38,7 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 
 ## Sumário
 
+- [**Formulação completa**](docs/FORMULACAO.pt-BR.md): campo térmico pela 1ª lei, tensor de campo térmico, nucleação (raios críticos e tensores de 1ª e 2ª ordem), taxa de nucleação, superfície de Gurtin–Murdoch, superfície elasto-plástica e sua energia, solução numérica em função do gradiente térmico, modelo MRB do SDAS
 - [Organização do repositório](#organização-do-repositório)
 - [Teoria](#teoria): [superfície de Gurtin–Murdoch](#1-superfície-de-gurtinmurdoch-gurtin-e-murdoch-1978-ferreira-2022-2024) · [proposta elasto-plástica](#2-proposta-elasto-plástica) · [energia da superfície plástica](#3-energia-da-superfície-elasto-plástica)
 - [Verificação: analítico x numérico](#verificação-analítico-x-numérico)

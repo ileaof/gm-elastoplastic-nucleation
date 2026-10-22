@@ -12,7 +12,7 @@
   <img alt="Alloy" src="docs/badges/alloy.svg">
 </p>
 
-<p align="center"><b>English</b> · <a href="README.pt-BR.md">Português</a></p>
+<p align="center"><b>English</b> · <a href="README.pt-BR.md">Português</a> · <a href="docs/FORMULATION.md"><b>Full formulation</b></a></p>
 
 <p align="center">
   <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Homogeneous surface tension, homogeneous surface energy and 2nd-order Gibbs-Thomson tensor against the thermal gradient for the elastic and elasto-plastic Gurtin-Murdoch surfaces">
@@ -38,6 +38,7 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 
 ## Contents
 
+- [**Full formulation**](docs/FORMULATION.md): thermal field from the first law, thermal-field tensor, nucleation (critical radii and tensors of 1st and 2nd order), nucleation rate, Gurtin–Murdoch surface, elasto-plastic surface and its energy, numerical solution against the thermal gradient, MRB model of the SDAS
 - [Repository layout](#repository-layout)
 - [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal) · [energy of the plastic surface](#3-energy-of-the-elasto-plastic-surface)
 - [Verification: analytical x numerical](#verification-analytical-x-numerical)
