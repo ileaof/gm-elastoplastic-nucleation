@@ -2,7 +2,7 @@
 
 <p align="center">
   <b>Elasto-plastic Gurtin–Murdoch surface in the thermal-field-tensor nucleation model</b><br>
-  surface tension, surface energy and Gibbs–Thomson tensors of 1st and 2nd order against the thermal gradient
+  surface tension, surface energy and the 2nd-order Gibbs–Thomson tensor against the thermal gradient
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 <p align="center"><b>English</b> · <a href="README.pt-BR.md">Português</a></p>
 
 <p align="center">
-  <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Homogeneous surface tension, homogeneous surface energy and Gibbs-Thomson tensors of 1st and 2nd order against the thermal gradient for the elastic and elasto-plastic Gurtin-Murdoch surfaces">
+  <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Homogeneous surface tension, homogeneous surface energy and 2nd-order Gibbs-Thomson tensor against the thermal gradient for the elastic and elasto-plastic Gurtin-Murdoch surfaces">
 </p>
 
 **Below yield the elasto-plastic surface is the Gurtin–Murdoch surface itself.** Above it, the excess
@@ -23,11 +23,11 @@ surface stress is bounded and, with the plastic area updating the equilibrium re
 energy and the 2nd-order tensor become independent of the thermal gradient. Al-3Cu-5Nb-0.1Fe (FCC_A1),
 mean gradient 3294 K/m:
 
-| Surface | τ [N/m] | γ_SL [J/m²] | Γ¹ˢᵗ [m K] | Γ²ⁿᵈ [m K] |
-|---|---:|---:|---:|---:|
-| Elastic GM | −1.968 | 1.047 | 3.887e-7 | 1.0685e-6 |
-| Elasto-plastic, fixed reference (σ_y = 0.5 N/m, H = 0.1σ₀) | −1.891 | 0.994 | 6.310e-7 | 1.0146e-6 |
-| Elasto-plastic, updated reference (σ_y = 0.0695 N/m, H = 0) | −1.446 | 0.381 | not defined after yield | 3.887e-7 |
+| Surface | τ [N/m] | γ_SL [J/m²] | Γ²ⁿᵈ [m K] |
+|---|---:|---:|---:|
+| Elastic GM | −1.968 | 1.047 | 1.0685e-6 |
+| Elasto-plastic, fixed reference (σ_y = 0.5 N/m, H = 0.1σ₀) | −1.891 | 0.994 | 1.0146e-6 |
+| Elasto-plastic, updated reference (σ_y = 0.0695 N/m, H = 0) | −1.446 | 0.381 | 3.887e-7 |
 
 Extension of the nucleation model of Ferreira (Physica B 695, 416494, 2024), applied to the FCC_A1 phase
 of the Al-3Cu-5Nb-0.1Fe alloy and propagated to the secondary dendrite arm spacing (SDAS) through the
@@ -39,8 +39,9 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 ## Contents
 
 - [Repository layout](#repository-layout)
-- [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal)
-- [Main results](#main-results-al-3cu-5nb-01fe-mean-gradient-3294-km)
+- [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal) · [energy of the plastic surface](#3-energy-of-the-elasto-plastic-surface)
+- [Verification: analytical x numerical](#verification-analytical-x-numerical)
+- [Main results](#main-results-al-3cu-5nb-01fe-mean-gradient-3294-km) · [SDAS with the local 2nd-order tensor](#sdas-with-the-local-2nd-order-tensor)
 - [Running](#running) · [Data sources](#data-sources) · [Status](#status)
 - [Acknowledgements](#acknowledgements)
 
@@ -48,8 +49,8 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 
 | Folder | What it holds |
 |---|---|
-| `model/` | Nucleation model with the elasto-plastic GM surface (`..._ElastoPlastic_GM.py`), the curve-by-curve comparison (`compare_GM_elastic_elastoplastic_B_MRS_2026.py`) and the two SDAS scripts (`..._GT_point_to_point.py`, `..._SDAS_vs_GL.py`); helpers `derivative_shim.py`, `midpoint.py` |
-| `docs/` | Figure of the comparison, badges and logos |
+| `model/` | Nucleation model with the elasto-plastic GM surface (`..._ElastoPlastic_GM.py`), the curve-by-curve comparison (`compare_GM_elastic_elastoplastic_B_MRS_2026.py`), the analytical x numerical verification (`verify_gm_elastoplastic_tensor.py`) and the two SDAS scripts (`..._GT_point_to_point.py`, `..._SDAS_vs_GL.py`); helpers `derivative_shim.py`, `midpoint.py` |
+| `docs/` | Figures (comparison of the surfaces, verification, SDAS), badges and logos |
 | `md_cpu/` | LAMMPS inputs and analysis for the planar interface stress and the Laplace pressure of a critical seed (`E5_results.md`) |
 | `results/` | CSV tables and figures produced by the scripts and the MD runs |
 
@@ -138,9 +139,59 @@ gradient:
 
 $$\gamma_{SL} = \gamma_0\,e^{\sigma_y^{s}/C_A} + \sigma_y^{s}, \qquad \Gamma^{2nd} = \frac{\gamma_{SL}}{|\Delta S_V|} .$$
 
-**Dissipated work.** $w_p = \int \sigma_y^{s}\,d\alpha_A$ [J m⁻²] is either kept out of the barrier and
-reported as $\Delta G_{diss} = 4\pi r^2 w_p$ (`stored`, default) or added to $\gamma_{SL}$ (`barrier`, upper bound).
 The matrix is a liquid (no shear), so plasticity is restricted to the surface.
+
+### 3. Energy of the elasto-plastic surface
+
+**Plastic work, stored energy and dissipation.** The surface free energy is
+$\psi = \psi^{e}(\mathbf{E}^{e}) + \psi^{p}(\alpha_A)$ with $\psi^{p} = \tfrac{1}{2}H_A\alpha_A^2$, the energy stored by
+hardening, whose thermodynamic force is $K = \partial\psi^{p}/\partial\alpha_A = H_A\alpha_A$. The Clausius–Duhem
+inequality gives the dissipation $D = s\,\dot{E}_A^{p} - K\dot{\alpha}_A = \sigma_{y0}^{s}\,\dot{\alpha}_A \ge 0$, so the
+plastic work splits into stored energy and heat:
+
+$$w_p = \int \left(\sigma_{y0}^{s} + H_A\,\alpha_A\right) d\alpha_A = \psi^{p} + q_{diss}, \qquad \psi^{p} = \tfrac{1}{2}H_A\alpha_A^2, \qquad q_{diss} = \sigma_{y0}^{s}\,\alpha_A .$$
+
+A hardened surface carries a larger elastic stress, $|s| = \sigma_{y0}^{s} + H_A\alpha_A$, which enters
+$\gamma_{SL}$ through $-s$; the energy stored to sustain it is $\psi^{p}$.
+
+**Loaded surface and elastic restoration.** As in a mechanical test (loading: elastic and plastic strain;
+unloading: elastic restoration), the surface energy can be taken in the loaded state, under the Laplace
+load at the critical radius, or after the elastic restoration ($s \rightarrow 0$, $\mathbf{E}^{e} \rightarrow 0$, the
+reference following the plastic area):
+
+| Option `GM_DISSIPATION_MODE` | $\gamma_{SL}$ |
+|---|---|
+| `stored` (default) | $\gamma_0\,(r_{eq,p}/r)^2 - s$ (loaded, elastic part) |
+| `thermo` | $\gamma_0\,(r_{eq,p}/r)^2 - s + \psi^{p}$ |
+| `barrier` | $\gamma_0\,(r_{eq,p}/r)^2 - s + w_p$ (loaded, total: elastic + plastic) |
+| `restored` | $\gamma_0$ (after the elastic restoration) |
+| `restored_barrier` | $\gamma_0 + w_p$ |
+
+$\Delta G_{diss} = 4\pi r^2 q_{diss}$ is reported in every mode. With perfect plasticity ($H_A = 0$) $\psi^{p} = 0$
+and the recoverable elastic energy $s^2/(2C_A) = \sigma_y^2/(2C_A)$ is below 1 % of $w_p$.
+
+## Verification: analytical x numerical
+
+`model/verify_gm_elastoplastic_tensor.py` tests the functions of the model file itself (extracted from
+it, without running the script body).
+
+<p align="center">
+  <img src="docs/Figure_GM_EP_tensor_analytical_vs_numerical.png" width="100%" alt="Excess surface stress from closed-form solutions, return mapping and RK45 for uniaxial and cyclic equibiaxial paths, and surface stress of the radial boundary-value problem from the analytical solution and finite volumes">
+</p>
+
+| Test | Numerical method | Max. difference to the analytical solution |
+|---|---|---|
+| Tangent-plane tensor: equibiaxial (sphere), pure shear (J₂), uniaxial (areal + J₂) | return mapping, 10–1000 steps | 1.1e-16 N/m |
+| Cyclic equibiaxial, unloading and reverse yield | return mapping, 30–3000 steps per branch | 2.1e-13 N/m |
+| Cyclic equibiaxial | RK45 of the rate form | 9.9e-8 N/m |
+| Radial BVP: elastic core + EP surface + Young–Laplace | finite volumes (8–64 cells), Newton | 3e-16 (relative, u(R)/R) |
+| ∂γ/∂r used by the tensor, all energy modes | central differences of γ(r) | ~3e-6 (relative) |
+| Energy balance $w_p = \psi^p + q_{diss}$ | — | ~1e-15 (relative) |
+
+With linear hardening and radial paths the return mapping is exact for any step size. The radial BVP has
+a homogeneous linear-elastic core, so $u = A\rho$ exactly and the test checks the core–surface coupling,
+not mesh convergence. The ~3e-6 floor in ∂γ/∂r comes from the tangent of the original script,
+$\alpha = 2(\sigma + 2(\lambda_0+\mu_0))/[r(3\lambda+2\mu)]$, kept to reproduce the original solution exactly.
 
 ## Main results (Al-3Cu-5Nb-0.1Fe, mean gradient 3294 K/m)
 
@@ -161,6 +212,32 @@ repository is an extension of that formulation, not a correction of it.
 * SDAS written explicitly in the thermal gradient: `SDAS = K (G_L V_L)^(-1/3)`; the free exponent
   against the cooling rate is −0.280 ± 0.059 (95 %), which contains −1/3.
 
+### SDAS with the local 2nd-order tensor
+
+At each position the 2nd-order tensor is computed at the measured thermal gradient
+$\nabla T_L = T_R/V_L$ and passed to the MRB model (updated reference, $H_A = 0$).
+
+<p align="center">
+  <img src="docs/Figure_SDAS_GT_point_to_point_B_MRS_2026_restoration.png" width="49%" alt="SDAS against local solidification time for the loaded and elastically restored surface, with and without the plastic work, and the experimental data">
+  <img src="docs/Figure_SDAS_GT_point_to_point_B_MRS_2026_total_energy.png" width="49%" alt="SDAS against local solidification time with the elastic part only and with the total energy of the elasto-plastic surface, and the experimental data">
+  <br>
+  <sub>Left: loaded surface and surface after the elastic restoration, with and without the plastic work. Right: elastic part only and total energy (elastic + plastic). Experiments: Mendes et al. (2023).</sub>
+</p>
+
+| Surface state (updated reference, H = 0) | σ_y [N/m] | Γ²ⁿᵈ at 1119 → 3294 → 10772 K/m [m K] | MAPE | Exponent in t_SL |
+|---|---:|---|---:|---:|
+| Loaded, elastic part (`stored`) | 0.0695 | 3.89e-7 → 3.89e-7 → 3.89e-7 | 4.5 % | 0.379 |
+| Loaded, total (`barrier`) | 0.0695 | 4.07e-7 → 4.73e-7 → 5.47e-7 | 6.2 % | 0.350 |
+| Loaded, total (`barrier`) | 0.03 | 3.53e-7 → 3.83e-7 → 4.17e-7 | 5.6 % | 0.362 |
+| After elastic restoration (`restored`) | any | 3.02e-7 (constant) | 7.2 % | 0.378 |
+| After restoration + plastic work (`restored_barrier`) | 0.03 | 3.19e-7 → 3.49e-7 → 3.82e-7 | 6.2 % | 0.360 |
+
+All curves fall within the experimental scatter (experimental exponent 0.443). The plastic work depends
+on the path (it grows with the plastic area, larger near the chill), so it brings back a mild dependence
+of Γ²ⁿᵈ on the gradient; the remaining gap in the exponent comes from the solidification kinetics
+(t_SL, β of the MRB model), not from the surface energy. With hardening ($H_A > 0$) the stored energy
+$\psi^{p}$ makes Γ²ⁿᵈ grow with the gradient and moves the SDAS away from the data.
+
 ## Running
 
 Python 3.11 with NumPy, SciPy and Matplotlib. From `model/`:
@@ -171,12 +248,23 @@ GM_SURFACE_MODEL=elastic python Nucleation_model_..._ElastoPlastic_GM.py
 python Nucleation_model_..._ElastoPlastic_GM.py
 # elasto-plastic with the plastic area updating the reference
 GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.0695 GM_H_A=0 python Nucleation_model_..._ElastoPlastic_GM.py
+# energy of the surface: GM_DISSIPATION_MODE = stored | thermo | barrier | restored | restored_barrier
+GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.03 GM_H_A=0 GM_DISSIPATION_MODE=barrier python Nucleation_model_..._ElastoPlastic_GM.py
+GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.0695 GM_H_A=0 GM_DISSIPATION_MODE=restored python Nucleation_model_..._ElastoPlastic_GM.py
+GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.03 GM_H_A=0 GM_DISSIPATION_MODE=restored_barrier python Nucleation_model_..._ElastoPlastic_GM.py
 # curve-by-curve comparison (reads the three tablefull_*.csv files written above)
 python compare_GM_elastic_elastoplastic_B_MRS_2026.py
-# SDAS (reads the GT_point_to_point_*.csv files written above)
-python scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_GT_point_to_point.py
+# analytical x numerical verification of the surface stress tensor
+python verify_gm_elastoplastic_tensor.py
+# SDAS with the local 2nd-order tensor (reads the GT_point_to_point_*.csv files written above)
+GM_SDAS_CASES=restoration  python scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_GT_point_to_point.py
+GM_SDAS_CASES=total_energy python scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_GT_point_to_point.py
 python scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_SDAS_vs_GL.py
 ```
+
+The model writes its CSV files in the working directory; the ones used for the figures are also in
+`results/continuum/` and `results/sdas/`. When several cases run in parallel in the same folder, the
+files of the comparison section at the end of the model script are overwritten by the last run.
 
 MD (LAMMPS 10Sep2025; on Windows the OpenMP build: `lmp -sf omp -pk omp 8 -in ...`). Download
 `Ni-Al-Nb.eam.fs` (Borovikov et al., Int. J. Plast. 178, 104004, 2024) from the NIST Interatomic
@@ -193,6 +281,10 @@ scripts of the author.
 
 Research code under development. The yield stress of the interface still needs an independent value
 (the series of seeds of 1.5–3.0 nm in `md_cpu/` would give the radius dependence of the interface stress).
+
+Correction (October 2026): the derivative of the plastic work used in ∂γ/∂r in the `barrier` mode had
+the wrong sign; it affected only the 1st-order quantities in that mode. γ, ΔT, ∇T and Γ²ⁿᵈ do not
+depend on it.
 
 ## Acknowledgements
 

@@ -263,17 +263,23 @@ E_A = 2 ln(y/y0), y = (3 lambda + 2 mu) r + 2 (lambda0 + mu0), i.e. an areal
 modulus C_A = sigma_0 acting on the bulk/surface-partitioned areal strain E_A.
 SURFACE_MODEL = 'elastic' reproduces the original model exactly.
 
-Thermodynamics of the dissipated work w_p = int sigma_yA d alpha_A  [J/m^2]:
-  'stored'  : barrier uses only the recoverable (stored) surface energy; w_p is
-              reported separately as Delta G_diss = 4 pi r^2 w_p (default);
-  'barrier' : w_p is added to gamma_SL (upper bound, path-dependent barrier).
+Thermodynamics of the plastic work w_p = int (sigma_yA0 + H_A alpha_A) d alpha_A  [J/m^2].
+Surface free energy psi = psi^e(E^e) + psi^p(alpha), psi^p = H_A alpha^2 / 2 (energy stored by
+hardening; hardening force K = d psi^p / d alpha = H_A alpha). Clausius-Duhem:
+D = s dE^p - K d alpha = sigma_yA0 d alpha >= 0, so  w_p = psi^p (stored) + q_diss (heat).
+  'stored'  : neither part enters gamma_SL (hardening raises the yield stress without its
+              stored energy; kept for comparison with the previous runs);
+  'thermo'  : psi^p enters gamma_SL, the dissipated heat q_diss = sigma_yA0 alpha does not
+              (thermodynamically consistent);
+  'barrier' : the whole w_p enters gamma_SL (upper bound, counts the heat as surface energy).
+Delta G_diss = 4 pi r^2 q_diss is reported in all modes.
 Matrix: solid nucleating in the melt -> the liquid carries no shear, so
 plasticity is restricted to the surface (no Hill expanding-cavity zone).
 """
 import os
 # may be overridden from the shell: GM_SURFACE_MODEL=elastic python <this file>
 SURFACE_MODEL    = os.environ.get('GM_SURFACE_MODEL', 'elastoplastic')   # 'elastic' | 'elastoplastic'
-DISSIPATION_MODE = os.environ.get('GM_DISSIPATION_MODE', 'stored')       # 'stored'  | 'barrier'
+DISSIPATION_MODE = os.environ.get('GM_DISSIPATION_MODE', 'stored')       # 'stored' | 'thermo' | 'barrier'
 sigma_yA0 = float(os.environ.get('GM_SIGMA_YA0', 0.50))           # initial areal (dilatational) surface yield stress [N/m]
 H_A       = float(os.environ.get('GM_H_A', 0.10 * sigma_0))       # linear isotropic hardening, areal mechanism [N/m]
 # gamma_0, sigma_0 and req are equilibrium values (no deformation of the created area).
@@ -304,7 +310,9 @@ def dEA_dr_GM(r, lambda_, mu, sigma, lambda0, mu0):
 
 
 def new_surface_state():
-    return {'EAp': 0.0, 'alphaA': 0.0, 'edp': 0.0, 'alphaD': 0.0, 'wp': 0.0}
+    # wp: plastic work; psi_p: energy stored by hardening; q_diss: dissipated heat (wp = psi_p + q_diss)
+    return {'EAp': 0.0, 'alphaA': 0.0, 'edp': 0.0, 'alphaD': 0.0, 'wp': 0.0,
+            'psi_p': 0.0, 'q_diss': 0.0, 'dpsi_dEA': 0.0}
 
 
 def gm_surface_return_map(E_A, e_dev, state, C_A, C_D, sy_A0, H_A, sy_D0, H_D, plastic=True):
@@ -320,6 +328,7 @@ def gm_surface_return_map(E_A, e_dev, state, C_A, C_D, sy_A0, H_A, sy_D0, H_D, p
     s_tr = C_A * (E_A - state['EAp'])
     k_A  = C_A
     dwp_dEA = 0.0
+    state['dpsi_dEA'] = 0.0
     yield_A = False
     if plastic:
         sy_n = sy_A0 + H_A * state['alphaA']
@@ -331,8 +340,13 @@ def gm_surface_return_map(E_A, e_dev, state, C_A, C_D, sy_A0, H_A, sy_D0, H_D, p
             state['EAp']    += dgam * sgn
             state['alphaA'] += dgam
             state['wp']     += (sy_n + 0.5 * H_A * dgam) * dgam
+            state['q_diss'] += sy_A0 * dgam
+            state['psi_p']   = 0.5 * H_A * state['alphaA'] ** 2 + 0.5 * H_D * state['alphaD'] ** 2
             k_A     = C_A * H_A / (C_A + H_A)
-            dwp_dEA = -(sy_A0 + H_A * state['alphaA']) * C_A / (C_A + H_A) * sgn
+            # d alpha / dE_A = sgn C_A/(C_A + H_A) on plastic loading (alpha grows as |E_A| grows)
+            dalpha_dEA = sgn * C_A / (C_A + H_A)
+            dwp_dEA = (sy_A0 + H_A * state['alphaA']) * dalpha_dEA
+            state['dpsi_dEA'] = H_A * state['alphaA'] * dalpha_dEA
             yield_A = True
         else:
             s = s_tr
@@ -352,6 +366,8 @@ def gm_surface_return_map(E_A, e_dev, state, C_A, C_D, sy_A0, H_A, sy_D0, H_D, p
             state['edp']    += dgam * sgn
             state['alphaD'] += dgam
             state['wp']     += (sy_n + 0.5 * H_D * dgam) * dgam
+            state['q_diss'] += sy_D0 * dgam
+            state['psi_p']   = 0.5 * H_A * state['alphaA'] ** 2 + 0.5 * H_D * state['alphaD'] ** 2
             k_D     = C_D * H_D / (C_D + H_D)
             yield_D = True
         else:
@@ -397,6 +413,16 @@ def gm_ep_surface(req, r, state, theta=None, model=None, mode=None, plastic_para
     if model == 'elastoplastic' and mode == 'barrier':
         gam    += state['wp']
         dgamdr += dwp_dEA * dEA
+    elif model == 'elastoplastic' and mode == 'thermo':
+        gam    += state['psi_p']
+        dgamdr += state['dpsi_dEA'] * dEA
+    elif model == 'elastoplastic' and mode in ('restored', 'restored_barrier'):
+        # after elastic restoration (unloading, as in a mechanical test): s -> 0, E^e -> 0, the
+        # reference follows the plastic area, so gamma returns to gamma_0; the plastic work may stay
+        gam, dgamdr = gamma_0, 0.0
+        if mode == 'restored_barrier':
+            gam    += state['wp']
+            dgamdr += dwp_dEA * dEA
     return tau, s, gam, dgamdr, yA, yD
 
 
@@ -1071,7 +1097,7 @@ for i in range(0,n_max_sweep):
     EAp_v[i]     = surf_state_hom['EAp']
     alphaA_v[i]  = surf_state_hom['alphaA']
     wp_v[i]      = surf_state_hom['wp']
-    DG_diss_v[i] = 4 * pi * r ** 2 * surf_state_hom['wp']
+    DG_diss_v[i] = 4 * pi * r ** 2 * surf_state_hom['q_diss']
     yieldA_v[i]  = 1.0 if yA else 0.0
     s_closed_v[i] = s_closed_form_sphere(EA_v[i], C_A, sigma_yA0, H_A) if SURFACE_MODEL == 'elastoplastic' else C_A * EA_v[i]
     sigma_v[i] = sigm
@@ -2307,7 +2333,7 @@ def sweep_GM(model, mode='stored', plastic_params=None, DT_max=DT_MAX_SWEEP):
         if DT_ > DT_max:
            break
         rows.append((r_, s_, g_, dg_, DT_, DT_ / (8*pi*r_), DGc_2nd(r_, Delta_Sv_hom, DT_, g_, pi),
-                     state['alphaA'], state['wp'], 4*pi*r_**2*state['wp'], 1.0 if yA_ else 0.0))
+                     state['alphaA'], state['wp'], 4*pi*r_**2*state['q_diss'], 1.0 if yA_ else 0.0))
     return np.array(rows)
 
 cases_GM = [

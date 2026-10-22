@@ -579,15 +579,77 @@ def read_GT_p2p(fname, column='GT_het_2nd'):
 def P_from_tSL(t):
     return (t / 4.93116) ** (1 / 0.87606)
 
-cases_p2p = [
-    (r'Constant $\Gamma ^{2nd-Order} _{Het}$ = %.3e m.K at $\overline{\nabla T}$ = %g K/m' % (Gibbs_Thomson_het, dTdr), None,                                                      '#2a78d6', '-'),
-    (r'Point-to-point $\Gamma ^{2nd-Order} _{Het}(\nabla T_{L})$, elastic GM',        'GT_point_to_point_B_MRS_2026_GM_elastic.csv',                     '#eb6834', '--'),
-    (r'Point-to-point $\Gamma ^{2nd-Order} _{Het}(\nabla T_{L})$, elasto-plastic GM', 'GT_point_to_point_B_MRS_2026_GM_elastoplastic_stored.csv',      '#1baf7a', '-.'),
-]
+def short_name(fname):
+    name = 'local GT 2nd, '
+    if 'elastoplastic' not in fname:
+        return name + 'elastic'
+    name += 'EP updated ref' if 'refupd' in fname else 'EP fixed ref'
+    params = fname[:-len('.csv')].split('_')
+    for p in params:
+        if p.startswith('sy') and p[2:3].isdigit():
+            name += ', sy=' + p[2:]
+        elif p.startswith('H') and p[1:2].isdigit():
+            name += ', H=' + p[1:]
+    if '_restored' in fname:
+        name += ', restored (gamma0' + (' + w_p)' if '_restored_barrier' in fname else ')')
+        return name
+    for mode in ('thermo', 'barrier'):
+        if f'_{mode}' in fname:
+            name += ', ' + {'thermo': 'psi_p in gamma', 'barrier': 'w_p in gamma'}[mode]
+    return name
+
+import os
+SDAS_CASES = os.environ.get('GM_SDAS_CASES', 'variants')      # 'variants' | 'plastic_energy'
+out_tag = '' if SDAS_CASES == 'variants' else '_' + SDAS_CASES
+if SDAS_CASES == 'plastic_energy':
+    # plastic part of the energy in gamma_SL: psi_p = H alpha^2/2 (thermo) or the whole w_p (barrier)
+    cases_p2p = [
+        (r'Updated reference, $H$ = 0: $\psi^p$ = 0 ($\sigma_y^s$ = 0.0695 N/m)',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_stored_refupd_sy0.0695_H0.csv', '#2a78d6', '-'),
+        (r'Updated reference, $H$ = 0.03$\sigma_0$, stored energy $\psi^p = H\alpha^2/2$ in $\gamma_{SL}$',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_thermo_refupd_sy0.0695_H0.041283.csv', '#eb6834', '--'),
+        (r'Updated reference, $H$ = 0.03$\sigma_0$, whole plastic work $w_p$ in $\gamma_{SL}$',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_barrier_refupd_sy0.0695_H0.041283.csv', '#1baf7a', '-.'),
+        (r'Fixed reference, $H$ = 0.1$\sigma_0$, stored energy $\psi^p$ in $\gamma_{SL}$ ($\sigma_y^s$ = 0.5 N/m)',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_thermo.csv', '#eda100', ':'),
+        (r'Fixed reference, $H$ = 0.1$\sigma_0$, whole plastic work $w_p$ in $\gamma_{SL}$',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_barrier.csv', '#e87ba4', (0, (5, 1, 1, 1, 1, 1))),
+    ]
+elif SDAS_CASES == 'restoration':
+    # loaded surface (under the Laplace load) x after elastic restoration (unloaded), updated reference, H = 0
+    cases_p2p = [
+        (r'Loaded, elastic part: $\gamma_0 (r_{eq,p}/r)^2 - s$  ($\sigma_y^s$ = 0.0695 N/m)',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_stored_refupd_sy0.0695_H0.csv', '#2a78d6', '-'),
+        (r'Loaded + plastic work: $\gamma_0 (r_{eq,p}/r)^2 - s + w_p$  ($\sigma_y^s$ = 0.03 N/m)',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_barrier_refupd_sy0.03_H0.csv', '#eb6834', '--'),
+        (r'After elastic restoration: $\gamma_0$',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_restored_refupd_sy0.0695_H0.csv', '#1baf7a', '-.'),
+        (r'After elastic restoration + plastic work: $\gamma_0 + w_p$  ($\sigma_y^s$ = 0.03 N/m)',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_restored_barrier_refupd_sy0.03_H0.csv', '#eda100', ':'),
+    ]
+elif SDAS_CASES == 'total_energy':
+    # total surface energy from the elasto-plastic surface stress: gamma = gamma0 (req_p/r)^2 - s + w_p
+    cases_p2p = [
+        (r'Updated reference, $H$ = 0, $\sigma_y^s$ = 0.0695 N/m: elastic part only ($-s$)',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_stored_refupd_sy0.0695_H0.csv', '#2a78d6', '-'),
+        (r'Updated reference, $H$ = 0, $\sigma_y^s$ = 0.0695 N/m: total, $-s + w_p$',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_barrier_refupd_sy0.0695_H0.csv', '#eb6834', '--'),
+        (r'Updated reference, $H$ = 0, $\sigma_y^s$ = 0.03 N/m: total, $-s + w_p$',
+         'GT_point_to_point_B_MRS_2026_GM_elastoplastic_barrier_refupd_sy0.03_H0.csv', '#1baf7a', '-.'),
+    ]
+else:
+  cases_p2p = [
+    (r'Local $\Gamma ^{2nd-Order} _{Het}(\nabla T_{L})$, elastic GM',
+     'GT_point_to_point_B_MRS_2026_GM_elastic.csv', '#2a78d6', '-'),
+    (r'Local $\Gamma ^{2nd-Order} _{Het}(\nabla T_{L})$, elasto-plastic GM, fixed reference ($\sigma_y^s$ = 0.5 N/m, $H$ = 0.1$\sigma_0$)',
+     'GT_point_to_point_B_MRS_2026_GM_elastoplastic_stored.csv', '#eb6834', '--'),
+    (r'Local $\Gamma ^{2nd-Order} _{Het}(\nabla T_{L})$, elasto-plastic GM, updated reference ($\sigma_y^s$ = 0.0695 N/m, $H$ = 0)',
+     'GT_point_to_point_B_MRS_2026_GM_elastoplastic_stored_refupd_sy0.0695_H0.csv', '#1baf7a', '-.'),
+  ]
 
 n_exp = 16
 P_exp_SDAS = P_from_tSL(xsc[0:n_exp])
-fsd = open('SDAS_GT_point_to_point_B_MRS_2026.csv', 'w')
+fsd = open(f'SDAS_GT_point_to_point_B_MRS_2026{out_tag}.csv', 'w')
 fsd.write('case;tSL_exp;P_mm;GT;SDAS_model_um;SDAS_exp_um;rel_error\n')
 SDAS_p2p_curves = []
 GT_p2p_curves = []
@@ -609,7 +671,7 @@ for lab, fname, col, ls in cases_p2p:
     rmse = np.sqrt(np.mean((SDAS_at_exp - ysc[0:n_exp]) ** 2))
     mape = 100 * np.mean(np.abs(rel))
     expo = np.polyfit(np.log(xsc[0:n_exp]), np.log(SDAS_at_exp), 1)[0]
-    lab_txt = 'constant GT' if fname is None else fname.replace('GT_point_to_point_B_MRS_2026_GM_', 'p2p ').replace('.csv', '')
+    lab_txt = 'constant GT' if fname is None else short_name(fname)
     print(f'{lab_txt:<34}{rmse:>11.2f}{mape:>10.1f}{expo:>10.3f}')
     for k in range(n_exp):
         fsd.write(f'{lab_txt};{xsc[k]:g};{P_exp_SDAS[k]:.3f};{GT_at_exp[k]:.5e};{SDAS_at_exp[k]:.4f};{ysc[k]:g};{rel[k]:.4f}\n')
@@ -620,7 +682,7 @@ fsd.close()
 fig3,ax3 = plt.subplots(1)
 ax3.set_yscale('log')
 ax3.set_xscale('log')
-ax3.set_title(r'MRB SDAS with point-to-point Gibbs-Thomson, $\Gamma(\nabla T_{L})$',{'color': 'black', 'fontsize': 14})
+ax3.set_title(r'MRB SDAS with the local 2nd-order Gibbs-Thomson, $\Gamma^{2nd}(\nabla T_{L})$',{'color': 'black', 'fontsize': 14})
 for (lab, _, col, ls), SDAS_P in zip(cases_p2p, SDAS_p2p_curves):
     ax3.plot(tSL, SDAS_P, color=col, linestyle=ls, linewidth=2.0, label=lab)
 ax3.errorbar(xsc[0:n_exp], ysc[0:n_exp], yerr=[yscm[0:n_exp], yscp[0:n_exp]], fmt='sk', markersize=6, capsize=3, linewidth=1.0, label=r'Experimental (Mendes et al, 2023)')
@@ -630,19 +692,19 @@ ax3.set_xlabel(r'Local solidification time, $\mathrm{t_{SL}}$ [s]', {'color': 'b
 plt.setp(ax3.get_xticklabels(), fontsize=16, fontweight="normal")
 plt.setp(ax3.get_yticklabels(), fontsize=16, fontweight="normal")
 ax3.grid(True, which='both', linestyle='--', color='darkgray', linewidth=0.5)
-ax3.legend(frameon=True, edgecolor='k', fontsize=10, shadow=True, loc='lower right')
-plt.axis([1e1,1e3,1e0,1e3])
-fig3.savefig('Figure_SDAS_GT_point_to_point_B_MRS_2026.png', dpi=200, bbox_inches='tight')
+ax3.legend(frameon=True, edgecolor='k', fontsize=9, shadow=True, loc='upper center', bbox_to_anchor=(0.5, -0.18))
+plt.axis([1e1,1e3,1e0,1e3] if not out_tag else [1e1,1e3,1.5e1,1.2e2])
+fig3.savefig(f'Figure_SDAS_GT_point_to_point_B_MRS_2026{out_tag}.png', dpi=200, bbox_inches='tight')
 
 fig4,ax4 = plt.subplots(1)
 ax4.set_title(r'Heterogeneous 2nd-Order Gibbs-Thomson along the casting',{'color': 'black', 'fontsize': 14})
 for (lab, _, col, ls), GT_P in zip(cases_p2p, GT_p2p_curves):
     ax4.plot(P, GT_P, color=col, linestyle=ls, linewidth=2.0, label=lab)
-for (lab, fname, col, ls) in cases_p2p[1:]:
+for (lab, fname, col, ls) in cases_p2p:
     with open(fname) as fh:
         pts = [(float(r_['P_mm']), float(r_['GT_het_2nd'])) for r_ in csvlib.DictReader(fh, delimiter=';') if r_['source'] == 'experimental']
     ax4.plot([p_ for p_, _ in pts], [g_ for _, g_ in pts], 'o', color=col, markersize=8, markeredgecolor='white', markeredgewidth=1.5,
-             label=r'at measured $\nabla T_{L} = T_{R}/V_{L}$' + (' (elastic)' if 'elastic.csv' in fname else ' (elasto-plastic)'))
+             label=r'at measured $\nabla T_{L} = T_{R}/V_{L}$, ' + short_name(fname).replace('local GT 2nd, ', ''))
 ax4.set_xlabel(r'Position from the chill, P [mm]', {'color': 'black','fontweight':'normal', 'fontsize': 17})
 ax4.set_ylabel(r'Gibbs-Thomson, $\Gamma$ [m.K]', {'color': 'black','fontweight':'normal', 'fontsize': 17})
 plt.setp(ax4.get_xticklabels(), fontsize=16, fontweight="normal")
@@ -650,7 +712,7 @@ plt.setp(ax4.get_yticklabels(), fontsize=16, fontweight="normal")
 ax4.grid(True, linestyle='--', color='darkgray', linewidth=0.5)
 ax4.legend(frameon=True, edgecolor='k', fontsize=10, shadow=True, loc='upper center', bbox_to_anchor=(0.5, -0.2))
 ax4.set_xlim(0, 120)
-fig4.savefig('Figure_GT_point_to_point_vs_position_B_MRS_2026.png', dpi=200, bbox_inches='tight')
+fig4.savefig(f'Figure_GT_point_to_point_vs_position_B_MRS_2026{out_tag}.png', dpi=200, bbox_inches='tight')
 
 
 plt.show()

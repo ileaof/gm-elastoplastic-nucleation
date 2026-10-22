@@ -5,7 +5,6 @@ Nucleation_model_..._ElastoPlastic_GM.py:
 
     homogeneous surface tension   tau = -sigma_0 + s      (column 'sigma')
     homogeneous surface energy    gamma_SL                (column 'gam_hom')
-    Gibbs-Thomson 1st order       Gamma^1st               (column 'GT_het')
     Gibbs-Thomson 2nd order       Gamma^2nd               (column 'GT_het_2nd')
 
 Run the nucleation model first for each case:
@@ -27,7 +26,6 @@ cases = [
 quantities = [
     ('sigma',      r'Surface tension, $\tau = -\sigma_0 + s$ [N m$^{-1}$]', 'linear'),
     ('gam_hom',    r'Surface energy, $\gamma_{SL}$ [J m$^{-2}$]',            'log'),
-    ('GT_het',     r'Gibbs-Thomson 1st order, $\Gamma^{1st}$ [m K]',         'log'),
     ('GT_het_2nd', r'Gibbs-Thomson 2nd order, $\Gamma^{2nd}$ [m K]',         'log'),
 ]
 
@@ -76,7 +74,7 @@ for q, lab, _ in quantities:
         name = f'G={G_:.0f}' if P_ is not None else f'mean {G_:.0f}'
         print(f'{name:>10}' + ''.join(f'{x:>16.5g}' for x in v) + f'{v[1]/v[0]:>11.3f}{v[2]/v[0]:>11.3f}')
 
-fig, axs = plt.subplots(2, 2, figsize=(12.5, 9.0), sharex=True)
+fig, axs = plt.subplots(1, 3, figsize=(17.0, 5.2), sharex=True)
 for ax, (q, lab, yscale) in zip(axs.flat, quantities):
     for (clab, _, col, ls), d in zip(cases, data):
         m = np.isfinite(d[q]) & (d['G'] <= G_MAX_PLOT)
@@ -88,14 +86,13 @@ for ax, (q, lab, yscale) in zip(axs.flat, quantities):
     ax.set_yscale(yscale)
     ax.set_ylabel(lab, fontsize=12)
     ax.grid(True, which='both', linestyle='--', color='darkgray', linewidth=0.5)
-for ax in axs[1]:
+for ax in axs:
     ax.set_xlabel(r'Thermal gradient, $\nabla T$ [K m$^{-1}$]', fontsize=12)
-axs[0, 0].set_title('(a) homogeneous surface tension', fontsize=12, loc='left')
-axs[0, 1].set_title('(b) homogeneous surface energy', fontsize=12, loc='left')
-axs[1, 0].set_title('(c) Gibbs-Thomson, 1st order', fontsize=12, loc='left')
-axs[1, 1].set_title('(d) Gibbs-Thomson, 2nd order', fontsize=12, loc='left')
-handles, labels = axs[0, 0].get_legend_handles_labels()
-fig.legend(handles, labels, loc='lower center', ncol=2, frameon=True, edgecolor='k', fontsize=10, bbox_to_anchor=(0.5, -0.12))
+axs[0].set_title('(a) homogeneous surface tension', fontsize=12, loc='left')
+axs[1].set_title('(b) homogeneous surface energy', fontsize=12, loc='left')
+axs[2].set_title('(c) Gibbs-Thomson, 2nd order', fontsize=12, loc='left')
+handles, labels = axs[0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='lower center', ncol=2, frameon=True, edgecolor='k', fontsize=10, bbox_to_anchor=(0.5, -0.22))
 fig.suptitle('Elastic x elasto-plastic Gurtin-Murdoch surface, Al-3Cu-5Nb-0.1Fe (FCC_A1)', fontsize=14)
 fig.tight_layout()
 fig.savefig('Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png', dpi=200, bbox_inches='tight')
