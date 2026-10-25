@@ -13,7 +13,7 @@ variable     datafile index data_jelinek_0.14.data
 variable     T        index 800
 variable     nrampe   index 10000
 variable     nprod    index 50000
-variable     tag      index 
+variable     tag      index _s0
 variable     dumpfreq index 2000
 variable     seed     index 4928459
 variable     a0       equal 4.05
