@@ -815,19 +815,23 @@ def g3_events():
         i = int(np.argmax(dpe))
         raw = open(log, encoding='utf-8', errors='replace').read()
         lost = re.search(r'Lost atoms: original (\d+) current (\d+)', raw)
-        out.append([f'{T:g}', str(S), f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}',
-                    f'{temp.max():.0f}', f'{int(lost.group(1)) - int(lost.group(2)) if lost else 0}'])
+        n_lost = int(lost.group(1)) - int(lost.group(2)) if lost else 0
+        if n_lost:
+            out.append([f'{T:g}', str(S), f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}',
+                        f'{temp.max():.0f}', str(n_lost)])
+        else:
+            out.append([f'{T:g}', str(S), 'limpo (100 ps)', '—', '—', '0'])
     return out
 
 
 H2('5.8. The stochastic onset: the fine frontier with thermal seeds')
-P('The threshold of Figure 8 lives between 700 and 800 K and its crossing is an event, not a state: '
-  'the deformed cell decays catastrophically (a jump of the potential energy, a violent thermal spike '
-  'and the loss of atoms in the small periodic cell). The onset time depends on the thermal history, '
-  'which makes it a measurable onset rate: Table 9 gives the first seeds of the fine frontier. The '
-  '750 K cell survived 41 ps before the decay and the 775 K cell only 19 ps: the onset time halves '
-  'within 25 K, the signature of activated decay. The three seeds of each temperature and the 1 ns '
-  'long step at 750 K are being computed to give the distribution.')
+P('The threshold of Figure 8 is not a state but a rate: at the plate of 750-800 K the deformed cell of the alloy '
+  'decays catastrophically with a jump of the potential energy, a violent thermal spike and lost atoms, and the '
+  'onset depends on the thermal history of the anneal. Table 9 gives the statistics of the fine frontier: 6 of the '
+  '9 anneals decayed inside the 100 ps window, with onset times from 17 to 66 ps and no simple temperature trend '
+  'at this 25 K spacing - the decay is probabilistic in the small cell, not a sharp threshold; the same '
+  'temperature produced both clean and decayed cells among the seeds. The 1 ns long step at 750 K and the big '
+  'cell of the deformation run refine this statistics to the paper version.')
 g3e = g3_events()
 if g3e:
     TABLE('Table 9. The fine frontier of the decay of the deformed Al‑0.8Si‑0.6Mg‑0.2Fe cell '
