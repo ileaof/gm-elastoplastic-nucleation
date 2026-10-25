@@ -109,3 +109,8 @@ Composição da liga proposta (at% de 99,4% Al da liga): Al 98,46 / Si 0,77 / Mg
 | 03:50 | Lançada a noite 3: 800/850/900 K com subira blindada (nve/limit + berendsen) + série Mendelev |
 | 03:58 | T800 ejetou mesmo blindado (oscilou 40-1380 K na subida): regime 800-900 K e intrinsecamente catárstico nesta célula — redesenho (dt, barostato, célula maior) fica como decisão do professor; série Jelinek válida: 500-700 K |
 | 04:03 | Lançada noite 4: só a série Mendelev (500-900 K) para completar a matriz |
+| 11:14 | Voltou `results_e6.tar.gz` da GPU (labmo, LAMMPS 30Sep2026, NP=1/8 threads): confirmou os pilotos |
+|        | (Mendelev idêntico ao laptop; Jelinek com o degrau 0,30 LIMPO: escoamento entre 0,20-0,30, σ de -3,97 → -0,62 GPa), |
+|        | T700 ok nos dois potenciais lá; T800 ejetou átomos TAMBÉM na GPU: a catástrofe da fronteira real | 
+| 11:20 | `fig_E6_maquinas.png`: comparação laptop × GPU; próxima etapa E6.4: descarregamento elástico (reversão até pxy=0) |
+|        | para medir a parte plástica remanescente = o análogo MD de σ_y·α (o dado que falta para a comparação da §5) |
