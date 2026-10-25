@@ -1,6 +1,7 @@
 """Builds the elasto-plastic surface paper (Word, native equations)."""
 import os
 import re
+import copy
 import latex2mathml.converter as l2m
 from lxml import etree
 from docx import Document
@@ -741,5 +742,81 @@ for i, rf in enumerate(refs, 1):
     r = par.add_run(f'[{i}] {rf}')
     r.font.size = Pt(11)
 
+_SUP_MAP = {'⁰': '0', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7',
+            '⁹': '9', '⁻': '-'}
+_NB_HYPHEN = '‑'          # non-breaking hyphen: absent from every journal XML entity set
+_SUP_CHARS = ''.join(_SUP_MAP)  # ¹ ² ³ (Latin-1, entity-backed) are left as they are
+
+
+def _sup_segments(text):
+    """Split text into (is_superscript, characters) segments: the Unicode superscript
+    digits/minus become the ASCII character; everything else is a normal segment."""
+    segs, kind, buf = [], None, ''
+    for ch in text:
+        if ch in _SUP_MAP:
+            k, c = True, _SUP_MAP[ch]
+        else:
+            k, c = False, ('-' if ch == _NB_HYPHEN else ch)
+        if kind is None or k != kind:
+            if buf:
+                segs.append((kind, buf))
+            kind, buf = k, c
+        else:
+            buf += c
+    if buf:
+        segs.append((kind, buf))
+    return segs
+
+
+def sanitize_text(doc):
+    """ScholarOne rejects plain text carrying characters without a classic XML entity: the
+    non-breaking hyphen U+2011 (it fills the alloy designations) and the Unicode superscript
+    digits/minus (the 10^-6 K/m of the text and captions). This pass rewrites every plain-text
+    run of the body (tables included): U+2011 -> '-', Unicode superscripts -> ASCII inside a
+    real superscript run (w:vertAlign). Runs that mix tabs or breaks with text are left as they
+    are (the builder never puts these characters there). Called once, right before the save."""
+    from docx.text.run import Run
+    space = '{http://www.w3.org/XML/1998/namespace}space'
+    keep = {qn('w:lastRenderedPageBreak')}
+    fixed = 0
+    for t_el in list(doc.element.body.iter(qn('w:t'))):
+        text = t_el.text or ''
+        if _NB_HYPHEN not in text and not any(c in _SUP_CHARS for c in text):
+            continue
+        r_el = t_el.getparent()
+        content = [c for c in r_el if c.tag != qn('w:rPr')]
+        if r_el is None or r_el.tag != qn('w:r') or \
+                any(c.tag not in keep | {qn('w:t')} for c in content):
+            print('sanitize_text: skipped a run:', repr(text[:60]))
+            continue
+        segs = _sup_segments(text)
+        if len(segs) == 1 and segs[0][0] is False:
+            t_el.text, t_el.attrib[space] = segs[0][1], 'preserve'
+            fixed += 1
+            continue
+        for j, (is_sup, seg) in enumerate(segs):
+            nr = copy.deepcopy(r_el)
+            if j > 0:                       # page-break markers stay in the first split run
+                for marker in list(nr):
+                    if marker.tag in keep:
+                        nr.remove(marker)
+            for other in nr.findall(qn('w:t'))[1:]:
+                nr.remove(other)
+            tt = nr.find(qn('w:t'))
+            tt.text, tt.attrib[space] = seg, 'preserve'
+            if is_sup:
+                Run(nr, None).font.superscript = True
+            else:
+                rpr = nr.find(qn('w:rPr'))
+                if rpr is not None:
+                    for va in rpr.findall(qn('w:vertAlign')):
+                        rpr.remove(va)
+            r_el.addprevious(nr)
+        r_el.getparent().remove(r_el)
+        fixed += 1
+    return fixed
+
+
+n_sanitize = sanitize_text(doc)
 doc.save(OUT)
-print('saved', OUT, 'equations', eq_no[0])
+print('saved', OUT, 'equations', eq_no[0], ', sanitized runs', n_sanitize)
