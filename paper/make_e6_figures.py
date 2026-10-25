@@ -111,10 +111,9 @@ fig.tight_layout()
 fig.savefig(os.path.join(OUT, 'Fig8_E6_anneal.png'), dpi=300)
 plt.close(fig)
 
-# Fig9 — the stored-deformation field: atom maps (energy per atom), deformed x annealed.
-# The deformed state is the FIRST frame of the anneal dumps (the anneal restarts from the
-# sheared configuration); the annealed state is its last frame.
-fig, axs = plt.subplots(1, 4, figsize=(13.5, 3.6))
+# Fig9 — the stored-deformation field: atom maps (energy per atom), deformed x annealed
+fig = plt.figure(figsize=(13.5, 5.0))
+axs = [fig.add_axes([0.03 + 0.245 * k, 0.22, 0.225, 0.52]) for k in range(4)]
 panels = [
     ('recozido_mendelev_T500.dump', 'first', 'Mendelev, deformed ($\\varepsilon$ = 0.14)'),
     ('recozido_mendelev_T500.dump', 'last', 'Mendelev, annealed 500 K (still stored)'),
@@ -157,11 +156,12 @@ for ax, (fn, which, title) in zip(axs, panels):
     imgs.append(im)
     ax.set_title(title, fontsize=10)
     ax.set_xticks([]), ax.set_yticks([])
-cb = fig.colorbar(imgs[0], ax=axs, fraction=0.03, pad=0.02)
-cb.set_label(r'Energy per atom [eV]: bright = stored in the defect network')
-fig.suptitle('The stored plastic deformation as an energy field of the deformed solid, and its release by annealing',
-             fontsize=11)
-fig.tight_layout(rect=(0, 0, 1, 0.93))
+cb = fig.colorbar(imgs[0], cax=fig.add_axes([0.32, 0.085, 0.36, 0.030]), orientation='horizontal')
+cb.set_label(r'Energy per atom [eV]  —  bright = stored in the defect network', fontsize=10)
+cb.ax.hlines(0.5, -3.42, -3.20, color='none')
+cb.ax.tick_params(labelsize=9)
+fig.text(0.5, 0.955, 'The stored plastic deformation as an energy field of the deformed solid, and its release by annealing',
+         ha='center', fontsize=11)
 fig.savefig(os.path.join(OUT, 'Fig9_E6_field.png'), dpi=300)
 plt.close(fig)
 print('Figs 7-9 ok')
