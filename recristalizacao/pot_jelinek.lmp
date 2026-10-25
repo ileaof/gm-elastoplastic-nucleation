@@ -1,0 +1,4 @@
+# Jelinek et al., Phys. Rev. B 85 (2012) 245102 — MEAM Al-Si-Mg-Cu-Fe (distribuição do LAMMPS)
+# ntypes = 1: Al puro na família Jelinek; ntypes = 4: liga Al-Si-Mg-Fe (ordem dos tipos: Al, Si, Mg, Fe)
+if "${ntypes} == 1" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS"
+if "${ntypes} == 4" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS"

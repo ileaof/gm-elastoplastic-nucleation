@@ -1,0 +1,51 @@
+# E6.2 — recozimento: um patamar de temperatura por chamada; a difusão ativa, a recristalização inicia
+# Uso:  lmp -sf omp -pk omp 16 -in in.recozer.lmp -var pot jelinek -var alloy 1 -var datafile data_jelinek_0.14.data -var T 800
+#   T: temperatura do patamar (abaixo de T_m = 936 ± 3 K do Jelinek);  série sugerida: 500 600 700 800 850 900
+#   nrampe = passos da subida 300 K -> T (padrão 10000 = 20 ps);  nprod = passos no patamar (padrão 50000 = 100 ps)
+# O termômetro da recristalização: queda de pe (além da recuperação) + fração CNA; dumps para o OVITO.
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot      index jelinek
+variable     alloy    index 1
+variable     datafile index data_jelinek_0.14.data
+variable     T        index 800
+variable     nrampe   index 10000
+variable     nprod    index 50000
+variable     tag      index 
+variable     dumpfreq index 2000
+variable     seed     index 4928459
+variable     a0       equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable     rc       equal 0.854*${a0}
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+
+read_data    ${datafile}
+include      pot_${pot}.lmp
+
+# protecao contra 'lost atoms': minimiza as sobreposicoes residuais da configuracao
+# deformada e acompanha os vizinhos passo a passo (o evento de 700 K vem daqui)
+min_style    cg
+minimize     1.0e-10 1.0e-10 5000 200000
+neigh_modify every 1 delay 0 check yes
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       500
+
+# subida 300 K -> T (20 ps por padrão), depois patamar em T (100 ps por padrão)
+velocity     all create 300.0 ${seed} mom yes rot no dist gaussian
+fix          ramp all nvt temp 300.0 ${T} 0.1
+run          ${nrampe}
+unfix        ramp
+fix          hold all nvt temp ${T} ${T} 0.1
+dump         d1 all custom ${dumpfreq} recozido_${pot}_T${T}${tag}.dump id type x y z c_esp c_cnatmp
+run          ${nprod}
+print        "ANNEAL T=${T}${tag} e_at final $(pe/atoms)"
+print        "E6.2 concluída para T = ${T}: recozido_${pot}_T${T}.dump + termo no log"

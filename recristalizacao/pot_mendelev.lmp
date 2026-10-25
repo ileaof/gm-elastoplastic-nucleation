@@ -1,0 +1,4 @@
+# Mendelev, Kramer, Becker, Asta, Philos. Mag. 88 (2008) 1723 — EAM/FS Al puro (distribuição do LAMMPS)
+# T_m = 932,3 K no e2 (coexistência). Só Al (ntypes = 1).
+pair_style eam/fs
+pair_coeff * * ./potencias/Al_Mendelev2008/Al_mm.eam.fs Al

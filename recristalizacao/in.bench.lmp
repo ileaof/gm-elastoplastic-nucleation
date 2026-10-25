@@ -1,0 +1,27 @@
+# Benchmark de cronometragem do E6 (não é produção): 1000 passos NVT a 300 K
+# Uso:  lmp -sf omp -pk omp <nt> -in in.bench.lmp -var pot jelinek -var alloy 1 -var nx 8
+units metal
+atom_style atomic
+boundary p p p
+variable pot index jelinek
+variable alloy index 1
+variable nx index 8
+variable nsteps index 1000
+variable a0 equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+lattice fcc ${a0}
+region box block 0 ${nx} 0 ${nx} 0 ${nx}
+create_box ${ntypes} box
+create_atoms 1 box
+if "${pot} == jelinek" then "mass 1 26.982"
+if "${pot} == jelinek && ${alloy} == 1" then "mass 2 28.086" "mass 3 24.305" "mass 4 55.845"
+if "${pot} == jelinek && ${alloy} == 1" then "set type 1 type/fraction 2 0.0077 4928459" "set type 1 type/fraction 3 0.00675 8294273" "set type 1 type/fraction 4 0.000974 1307723"
+include pot_${pot}.lmp
+velocity all create 300.0 4928459 mom yes rot no dist gaussian
+timestep 0.002
+thermo 500
+thermo_style custom step temp pe
+fix 1 all nvt temp 300.0 300.0 0.1
+run ${nsteps}

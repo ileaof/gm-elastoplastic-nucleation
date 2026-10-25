@@ -1,0 +1,53 @@
+# E6.2c — recozimento de patamares quentes com subida blindada (a fronteira 700-800 K e violenta)
+# Uso:  lmp -sf omp -pk omp 8 -in in.recozer_cap.lmp -var pot jelinek -var alloy 1 \
+#           -var datafile data_jelinek_0.14.data -var T 800
+#   Fase 1: minimiza + subida 300->T com nve/limit (velocidade limitada) + temp/berendsen:
+#           nenhum par ejeta, cedo ou tarde;
+#   Fase 2: velocidade re escalada para T e patamar NVT normal (producao, dumps + CNA).
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot      index jelinek
+variable     alloy    index 1
+variable     datafile index data_jelinek_0.14.data
+variable     T        index 800
+variable     nrampe   index 5000
+variable     nprod    index 50000
+variable     seed     index 4928459
+variable     a0       equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable     rc       equal 0.854*${a0}
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+
+read_data    ${datafile}
+include      pot_${pot}.lmp
+
+min_style    cg
+minimize     1.0e-10 1.0e-10 5000 200000
+neigh_modify every 1 delay 0 check yes
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       500
+
+# fase 1: subida blindada da temperatura (nenhum par ejeta)
+velocity     all create 300.0 ${seed} mom yes rot no dist gaussian
+fix          nvel all nve/limit 5.0
+fix          tRamp all temp/berendsen 300.0 ${T} 0.1
+run          ${nrampe}
+unfix        nvel
+unfix        tRamp
+velocity     all scale ${T}
+
+# fase 2: patamar NVT em T (producao)
+fix          hold all nvt temp ${T} ${T} 0.1
+dump         d1 all custom 2000 recozido_${pot}_T${T}.dump id type x y z c_esp c_cnatmp
+run          ${nprod}
+print        "ANNEAL T=${T} e_at final $(pe/atoms)"
+print        "E6.2c concluida para T = ${T}: recozido_${pot}_T${T}.dump + termo no log"

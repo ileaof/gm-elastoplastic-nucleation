@@ -1,0 +1,94 @@
+# E6.1 — deformar e medir: energia plástica armazenada do sólido ciselado (piloto)
+# Uso:  lmp -sf omp -pk omp 16 -in in.deformar.lmp -var pot jelinek -var alloy 1 -var nx 8
+#   pot = jelinek (MEAM Al-Si-Mg-Fe, Jelinek 2012; T_m = 936 ± 3 K no e2) | mendelev (EAM Al puro, 932,3 K)
+#   alloy = 1 (composição da liga) | 0 (Al puro);  nx = células (nx=8 → 2048 átomos)
+# Cisalhamento xy remap v a volume constante (NVT): 5 degraus de 10 ps com Δε = 0.05, +0.05, +0.04,
+# +0.06, +0.10 (acumulado 0.05, 0.10, 0.14 = E_A^p do escoamento do AlSiMgFe, 0.20, 0.30), relaxação
+# NVT de 20 ps após cada degrau. Saídas: stored.dat (ε, pe/átomo, temp, pxy, lx), stress no próprio
+# stored.dat (curva σ(ε) do cristal), data_<eps>.data para o E6.2 e perfil_Es_${pot}.dat (perfil de energia).
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot    index jelinek
+variable     alloy  index 1
+variable     nx     index 8
+variable     T0     equal 300.0
+variable     seed   index 4928459
+variable     a0     equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable     rc     equal 0.854*${a0}
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+
+lattice      fcc ${a0}
+region       box block 0 ${nx} 0 ${nx} 0 ${nx}
+create_box   ${ntypes} box
+change_box   all triclinic
+create_atoms 1 box
+if "${pot} == jelinek" then "mass 1 26.982"
+if "${pot} == jelinek && ${alloy} == 1" then "mass 2 28.086" "mass 3 24.305" "mass 4 55.845"
+if "${pot} == mendelev" then "mass 1 26.982"
+# composição em fração atômica (Al-0.8Si-0.6Mg-0.2Fe em peso → 98.46% Al, 0.77% Si, 0.67% Mg, 0.096% Fe)
+if "${pot} == jelinek && ${alloy} == 1" then &
+  "set type 1 type/fraction 2 0.0077 4928459" &
+  "set type 1 type/fraction 3 0.00675 8294273" &
+  "set type 1 type/fraction 4 0.000974 1307723"
+
+include      pot_${pot}.lmp
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+
+velocity     all create ${T0} ${seed} mom yes rot no dist gaussian
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       1000
+
+# equilíbrio a 300 K (20 ps) e referência de energia
+fix          nvt1 all nvt temp ${T0} ${T0} 0.1
+compute      zbin all chunk/atom bin/1d z lower 0.02 units reduced
+fix          prof all ave/chunk 50 100 10000 zbin c_esp ave one file perfil_Es_${pot}.dat
+run          10000
+print        "REF $(pe/atoms) $(temp)"
+print        "# eps e_at temp pxy lx" file stored_${pot}.dat
+
+# degrau 1: 0 -> 0.05
+fix          shear all deform 1 xy erate 0.005 remap v
+run          5000
+unfix        shear
+run          10000
+print        "STORED 0.05 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+write_data   data_${pot}_0.05.data
+# degrau 2: +0.05 -> 0.10
+fix          shear all deform 1 xy erate 0.005 remap v
+run          5000
+unfix        shear
+run          10000
+print        "STORED 0.10 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+write_data   data_${pot}_0.10.data
+# degrau 3: +0.04 -> 0.14 (a deformação do escoamento da Al-Si-Mg-Fe, E_A^p ≈ σ_y/|σ₀|)
+fix          shear all deform 1 xy erate 0.004 remap v
+run          5000
+unfix        shear
+run          10000
+print        "STORED 0.14 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+write_data   data_${pot}_0.14.data
+# degrau 4: +0.06 -> 0.20
+fix          shear all deform 1 xy erate 0.006 remap v
+run          5000
+unfix        shear
+run          10000
+print        "STORED 0.20 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+write_data   data_${pot}_0.20.data
+# degrau 5: +0.10 -> 0.30
+fix          shear all deform 1 xy erate 0.010 remap v
+run          5000
+unfix        shear
+run          10000
+print        "STORED 0.30 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+write_data   data_${pot}_0.30.data
+
+dump         d1 all custom 2000 deformed_${pot}.dump id type x y z c_esp c_cnatmp
+print        "E6.1 concluída: stored.dat, data_*.data, perfil_Es_${pot}.dat, deformed_${pot}.dump"
