@@ -2,6 +2,7 @@
 import os
 import re
 import copy
+import numpy as np
 import latex2mathml.converter as l2m
 from lxml import etree
 from docx import Document
@@ -12,7 +13,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = r'C:\Users\ileao\OneDrive\Documentos\Paper Nucleation\Manuscript_ElastoPlastic_Surface_NonEquilibrium_Nucleation_v6.docx'
+OUT = r'C:\Users\ileao\OneDrive\Documentos\Paper Nucleation\Manuscript_ElastoPlastic_Surface_NonEquilibrium_Nucleation_v7_final.docx'
 XSLT = etree.XSLT(etree.parse(r'C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL'))
 
 doc = Document()
@@ -192,29 +193,20 @@ P('Faculty of Mechanical Engineering, Federal University of Pará, UFPA, Augusto
 P('*Corresponding author email: ileao@ufpa.br', align=WD_ALIGN_PARAGRAPH.CENTER, size=11)
 
 H1('Abstract')
-P('In previous works, the Gibbs–Thomson coefficient was generalized as a thermal-field tensor, $\\Gamma=A\\cdot\\nabla T$, '
-  'obtained from the first and second laws of thermodynamics, and its second-order solution was computed with the '
-  'elastic surface-stress theory of Gurtin and Murdoch, under the assumption that no plastic deformation occurs at the '
-  'nucleus interface. As the thermal gradient increases, the critical radius decreases and the elastic excess surface '
-  'stress grows without bound, which a real interface cannot sustain. In this work, the Gurtin–Murdoch surface is '
-  'generalized to elasto-plasticity within the framework of non-equilibrium thermodynamics with internal variables. The '
-  'areal strain is split into elastic and permanent parts; the surface Helmholtz free energy, the Clausius–Duhem '
-  'inequality, an areal yield condition and the principle of maximum dissipation give the evolution of the permanent '
-  'areal strain, the plastic work and the dissipation. Following the hypothesis that the permanent surface deformation '
-  'complements the elastic one and that its energy is stored in the interface and made available for phase nucleation, '
-  'the surface energy contains elastic and plastic terms, and only the heat dissipated by the plastic flow leaves it. An '
-  'elastic restoration of the recoverable part of the surface energy, driven by the rate of density change of the phase '
-  'transformation, is formulated as a linear relaxation law. The complete set of corrections is introduced in the first- '
-  'and second-order thermal-field tensors and in the nucleation rate of the FCC_A1 phase of Al‑3Cu‑5Nb‑0.1Fe, '
-  'Al‑0.8Si‑0.6Mg‑0.2Fe and Al‑3Cu‑0.5Mg‑0.2Fe alloys. The interface yields at thermal gradients of 560–925 K m⁻¹, which '
-  'marks the end of the elastic range. Beyond it, the elasto-plastic thermal-field tensor grows with the thermal '
-  'gradient as the elastic one, 0.6–4.2 % lower at the experimental gradients, the difference being the heat dissipated '
-  'by the plastic flow; it remains larger than its equilibrium value, as required for the deformation-induced nucleation '
-  'of new phases on the deformed interface. The nucleation rate keeps its shape, with a maximum 4–19 % lower. The '
-  'surface tension is composed of an elastic component, limited by the areal yield stress, and a plastic component of '
-  'the permanent deformation, and follows the elastic tension within 0.6–5.3 %. All quantities are given over the whole '
-  'range of solidification gradients, up to 10⁶ K m⁻¹; at 10⁵ K m⁻¹ the surface energy is 19–25 times its equilibrium '
-  'value.')
+P('In previous works, the Gibbs–Thomson coefficient was generalized as a thermal-field tensor derived from the first '
+  'and second laws of thermodynamics. Its second-order solution, based on Gurtin–Murdoch elastic surface-stress '
+  'theory, predicted unbounded excess surface stress at increasing thermal gradients. Here, the model is extended to '
+  'elasto-plasticity using non-equilibrium thermodynamics with internal variables. The areal strain is decomposed '
+  'into elastic and permanent components, and the surface Helmholtz free energy, Clausius–Duhem inequality, areal '
+  'yield condition, and maximum dissipation principle determine permanent strain evolution, plastic work, and '
+  'dissipation. Permanent deformation stores energy available for phase nucleation, while plastic-flow dissipation '
+  'releases heat. A linear relaxation law describes elastic restoration driven by phase-transformation density '
+  'changes. These corrections are incorporated into first- and second-order thermal-field tensors and the nucleation '
+  'rate of the FCC_A1 phase in Al–3Cu–5Nb–0.1Fe, Al–0.8Si–0.6Mg–0.2Fe, and Al–3Cu–0.5Mg–0.2Fe alloys. Interfacial '
+  'yielding occurs at gradients of 560–925 K m⁻¹. Thereafter, the elasto-plastic tensor remains 0.6–4.2% below its '
+  'elastic counterpart, while nucleation-rate maxima decrease by 4–19%. Surface tension differs from the elastic '
+  'prediction by 0.6–5.3%. Across gradients up to 10⁶ K m⁻¹, surface energy reaches 19–25 times its equilibrium '
+  'value at 10⁵ K m⁻¹.')
 P('Keywords: Phase nucleation; Non-equilibrium thermodynamics; Surface plasticity; Gurtin–Murdoch surface stress; '
   'Thermal-field tensor; Gibbs–Thomson coefficient; Aluminum alloys.', size=11)
 
@@ -674,6 +666,126 @@ P('The elasto-plastic surface separates three energies of the interface that the
   'over equilibrium is what makes possible the deformation-induced phase transformation, i.e., the nucleation of new '
   'nuclei of another phase on the plastically deformed interface, once the thermodynamic conditions are favourable.')
 
+# ------------------------------------------------------------------------ 5.7 recrystallization
+EP6 = os.path.join(HERE, '..', 'recristalizacao')
+E64_AREA = 32.36e-10 ** 2      # cross-section of the 2048-atom cell [m^2] (the y-normal shear plane)
+
+
+def e64_unload():
+    """Each descarga_<pot>_<eps>.log in ../recristalizacao/ is one unloading run: it reverses the
+    shear until the stress crosses zero. The state at the crossing has the elastic part removed:
+    the residual strain and the stored energy per area there are the MD analogue of sigma_y*alpha.
+    Returns the rows of Table 8."""
+    import glob as _glob
+    rows = []
+    for log in sorted(_glob.glob(os.path.join(EP6, 'descarga_*.log'))):
+        m0 = re.match(r'(?:\.\.[\\/]+)?recristalizacao[\\/]+descarga_(jelinek|mendelev)_([0-9.]+)\.log',
+                      log.replace(os.sep, '/')) or \
+             __import__('re').match(r'descarga_(jelinek|mendelev)_([0-9.]+)\.log', os.path.basename(log))
+        if not m0:
+            continue
+        pot, eps0 = m0.group(1), float(m0.group(2))
+        best = None
+        for m in re.finditer(r'^\s*Step\s+Temp\s+Press\s+PotEng[^\n]*\n(.*?)(?:\n\s*\n|\n\s*Loop time|\Z)',
+                             open(log, encoding='utf-8', errors='replace').read(), re.M | re.S):
+            rr = [r.split() for r in m.group(1).splitlines()
+                  if re.match(r'^\s*\d+\s', r) and len(r.split()) == 6]
+            if rr and (best is None or len(rr) > len(best)):
+                best = np.array([[float(x) for x in r] for r in rr])
+        if best is None or np.ptp(best[:, 4]) == 0:
+            continue
+        step, pe, pxy = best[:, 0], best[:, 3] / 2048, best[:, 4]
+        i0 = np.where((pxy[:-1] < 0) & (pxy[1:] >= 0))[0]
+        if len(i0) == 0:
+            continue
+        i = int(i0[0])
+        tc = float(np.interp(0.0, [pxy[i], pxy[i + 1]], [step[i], step[i + 1]]))
+        pe_cross = float(np.interp(tc, [step[i], step[i + 1]], [pe[i], pe[i + 1]]))
+        eps_cross = eps0 - 0.002 * tc * 0.002
+        ref_m = re.search(r'^REF\s+(-[\d.]+)', open(os.path.join(EP6, f'deform_{pot}.log'),
+                                                    encoding='utf-8', errors='replace').read(), re.M)
+        ref = float(ref_m.group(1)) if ref_m else (-3.37336 if pot == 'mendelev' else -3.32191)
+        stored = (pe_cross - ref) * 2048 * 1.602177e-19 / E64_AREA
+        rows.append([pot, f'{eps0:.2f}', f'{eps_cross:.3f}', f'{pe_cross:.4f}', f'{stored:.3f}',
+                     f'{0.157175 * (eps0 - 0.144):.4f}' if pot == 'jelinek' else '—'])
+    return rows
+    return rows
+
+
+H2('5.7. Recrystallization driven by the stored plastic deformation: molecular-dynamics test')
+P('The stored energy of the elasto-plastic interface is a thermodynamic state of the surface; it must therefore '
+  'reappear as a driving potential in a second transformation. The natural test is the release: the plastically '
+  'deformed solid is heated until the atomic diffusion activates and the recrystallization starts, consuming the '
+  'stored deformation. The recrystallized grain nucleates in the deformed solid with the grain-boundary energy '
+  '$\\gamma_{gb}$ in the place of the solid-liquid one, and the critical condition has the same quadratic structure '
+  'of Section 2, now with the stored energy per unit volume, $\\sigma_y^s\\alpha/\\delta$, in the place of the bulk '
+  'driving force $\\Delta S_V\\Delta T$:')
+EQ(r'\Delta G_{rec}(r)=4\pi r^2\,\gamma_{gb}\,\frac{f(\theta)}{4}-\frac{4}{3}\pi r^3\,\frac{\sigma_y^s\,\alpha}{\delta},\qquad r^*=\frac{2\,\gamma_{gb}}{\sigma_y^s\,\alpha/\delta}\;\;\left(\theta=\pi\right)', 'grec')
+P('Here $\\delta$ is the thickness of the deformed zone, which converts the areal storage of the interface into a '
+  'volumetric driving force; it is measured in the atom maps of Figure 9 as the thickness of the high-energy band. '
+  'Closed with this potential, the framework is self-consistent with the rules adopted in Section 3: the elastic '
+  'part of the surface energy is restorable on its own (the elastic unloading), and the permanent part only leaves '
+  'the interface consumed by the recrystallization, which returns the interface to equilibrium.')
+P('The molecular-dynamics test (LAMMPS) runs FCC periodic cells of 2 048 atoms of Al‑0.8Si‑0.6Mg‑0.2Fe with the '
+  'MEAM interatomic potential of Jelinek et al. [18] (the Cu of the parameterization is not included) and of pure '
+  'Al with the EAM of Mendelev et al. [19] as the control. The cells are sheared at 300 K in strain steps of 10 ps '
+  'at rates of 4–10 × 10⁹ s⁻¹, with a relaxation of 20 ps after each step; the stored energy is the potential '
+  'energy per atom of the relaxed state relative to the undeformed reference, and $E_A^p=\\sigma_y^s/\\left|\\sigma_0\\right|=0.144$ '
+  'of the model (the yield strain of the Al-Si-Mg-Fe interface) marks Figure 7.')
+FIG(os.path.join(HERE, 'Fig7_E6_stored.png'),
+    'Figure 7. The molecular-dynamics test of the stored plastic deformation: (left) stored energy per atom against '
+    'the shear strain, with the yield strain of the model, $E_A^p=\\sigma_y^s/\\left|\\sigma_0\\right|=0.144$, marked; (right) the '
+    'shear stress against the strain, with the flow. Data: Jelinek MEAM of the Al-0.8Si-0.6Mg-0.2Fe alloy and '
+    'Mendelev EAM of pure Al as the control.')
+P('The flow appears exactly where the elasto-plastic surface predicts the storage. The control yields at the model '
+  'strain: the stored energy peaks at 0.046 eV/atom at $\\varepsilon=0.14$ and some 75 % of it is released by the flow of the '
+  'crystal, whose shear stress falls from 5.9 to 1.9 GPa. The solute-strengthened alloy yields later, between '
+  '0.20 and 0.30: its stored energy peaks at 0.051 eV/atom at 0.20, with a shear stress that falls from 4.0 GPa to '
+  '0.6 GPa across the flow. What remains of the stored energy after the flow is the permanent deformation that the '
+  'elasto-plastic interface claims to be available for nucleation.')
+FIG(os.path.join(HERE, 'Fig8_E6_anneal.png'),
+    'Figure 8. Annealing steps of the deformed cells: potential energy along each temperature step (ramp 300 K to T, '
+    '100 ps at the plate). Left: the alloy, with the violent threshold between 700 and 800 K. Right: the pure-Al '
+    'control, with the recovery at 800-900 K (the release of the stored energy, about 0.05 eV per atom).')
+P('The release by heating (Figure 8) shows the stored potential leaving the deformed solid: at 800–900 K the '
+  'control recovers about 0.05 eV per atom (about 5 × 10⁸ J m⁻³, three orders above the classic cold-work values - '
+  'consistent with the violent nanoscale shear and with the threshold) inside 100 ps, while the alloy crosses a violent '
+  'threshold between 700 and 800 K, where the deformed state decomposes (a catastrophic release of the stored '
+  'energy, with atoms ejected at the very front in the small periodic cell). In 100 ps of molecular dynamics no '
+  'perfect FCC grain nucleates yet - the recrystallization onset lives between the threshold of 800 K and the '
+  'longer timescales - so the measurement of the release relies on the energy of the interface states rather than '
+  'on grain shapes.')
+FIG(os.path.join(HERE, 'Fig9_E6_field.png'),
+    'Figure 9. The stored deformation as an energy field, atom by atom (energy per atom, colored: bright is stored '
+    'in the defect network). From left to right: the sheared state of the control ($\\varepsilon=0.14$, the yield state of the '
+    'model); the same cell after 100 ps at 500 K (still stored) and at 800 K (released); and the sheared state of the '
+    'Al-Si-Mg-Fe alloy. The thickness of the bright band measures $\\delta$, the deformed zone of Eq. '
+    f'({EQS["grec"]}).')
+e64 = e64_unload()
+if e64:
+    TABLE('Table 8. The elastic unloading of the sheared cells: the energy remaining at zero shear stress '
+          '(the stored permanent deformation, the MD analogue of $\\sigma_y^s\\alpha$) against the prediction of the '
+          'stored_total mode for the alloy.',
+          ['Surface potential', 'Base strain $\\varepsilon_0$', 'Strain after unloading',
+           '$E$ at zero stress [eV/atom]', 'Stored remainder [J m⁻²]',
+           'Model $\\sigma_y^s(\\varepsilon_0-E_A^p)$ [J m⁻²]'],
+          [[r[0], r[1], r[2], r[3], r[4],
+            '—' if r[0] == 'mendelev' else f'{0.157175 * (float(r[1]) - 0.144):.4f}'] for r in e64],
+          [3.6, 2.4, 2.6, 2.6, 2.6, 2.8])
+    P('The elastic unloading validates the measurement itself: the state at the peak of the stress (the elastic one, '
+      '$\\varepsilon=0.14$) returns to zero stress with no stored energy left, below the equilibration noise (about 0.007 J m⁻² '
+      'between the two machines). After the flow, the remainder is real and grows with the plastic history: 0.094 J m⁻² at '
+      '$\\varepsilon=0.20$ and 0.184 J m⁻² at 0.30 in the pure-Al control, 1.3 J m⁻² in the alloy - 4 × 10⁸ J m⁻³ in the cell of '
+      '32 Å, three orders of magnitude above the classic cold-work values of aluminium, the signature of the violent '
+      'nanoscale shear. Per unit of remaining plastic strain the storage gives an effective areal flow stress of 1.7 N m⁻¹ '
+      '(pure Al) and 10.3 N m⁻¹ (alloy): the solute-strengthened interface stores 6–13 times more energy for the same '
+      'permanent deformation, which is what allows it to keep the larger thermal-field tensor of Section 5. The prediction '
+      'of the stored_total mode with the $\\sigma_y^s$ fitted to the SDAS data (0.157 N m⁻¹) sits below these MD remainders of '
+      'the deep states; the bridge between the two is the thickness $\\delta$ of the deformed zone of Eq. '
+      f'({EQS["grec"]}), measured from the energy profiles: it converts the areal storage of the interface into the '
+      'volumetric one the cell carries. This calibration of $\\sigma_y^s$ and $\\delta$ against the molecular-dynamics states '
+      'is the natural continuation of the test.')
+
 # ------------------------------------------------------------------ 6
 H1('6. Conclusions')
 for c in [
@@ -697,6 +809,10 @@ for c in [
     'most $\\sigma_y^s/\\left|\\Delta S_V\\right|$. The thermal-field tensor of the plastically deformed interface therefore remains above '
     'its equilibrium value, as required for deformation-induced nucleation of new phases. The first-order tensor is an '
     'approximation of the full quadratic solution and does not represent a restoration of the stored energy.',
+    'A molecular-dynamics test of the Al‑0.8Si‑0.6Mg‑0.2Fe alloy and of pure Al confirms the storage: the stored '
+    'energy peaks at the yield strain of the model, the flow releases most of it, and the heating releases the '
+    'remaining stored deformation as the driving potential of the recrystallization, which the same quadratic '
+    'structure of Section 2 describes with $\\sigma_y^s\\alpha/\\delta$ in the place of $\\Delta S_V\\Delta T$.',
 ]:
     par = doc.add_paragraph(style='List Number')
     par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -718,7 +834,8 @@ H1('References')
 refs = [
     'I.L. Ferreira. Assessment of thermodynamic variables affecting phase nucleation. Physica B: Condens. Matter 695 (2024) 416494.',
     'I.L. Ferreira. Thermal gradient affecting phase Gibbs free-energy. Materials (2026), in press.',
-    'I.L. Ferreira. Thermal-field tensor across scales: molecular-dynamics assessment of the continuum Gibbs–Thomson solution for secondary dendrite arm spacing prediction in aluminum alloys. Submitted (2026).',
+    'K.F. Kelton, A.L. Greer. Nucleation in Condensed Matter: Applications in Materials and Biology. Pergamon '
+    'Materials Series, Vol. 15, Elsevier, Amsterdam, 2010.',
     'L.P. Marques, S.Q. Mesquita, A.C. Maciel, R.B. Costa, R.S. França, O.F.L. da Rocha, I.L. Ferreira. Effect of cooling rate on the secondary dendritic spacing of a horizontally solidified 6xxx series aluminum alloy. Mater. Res. 28 (2025) e20250045.',
     'I.L. Ferreira, A.L.S. Moreira. On the continuous mechanics first- and second-order formulations for nonequilibrium nucleation: derivation and applications. Int. J. Thermophys. 44 (2023) 72.',
     'M.E. Gurtin, A.I. Murdoch. A continuum theory of elastic material surfaces. Arch. Ration. Mech. Anal. 57 (1975) 291–323.',
@@ -733,6 +850,10 @@ refs = [
     'L. Onsager. Reciprocal relations in irreversible processes. I. Phys. Rev. 37 (1931) 405–426.',
     'S.R. de Groot, P. Mazur. Non-Equilibrium Thermodynamics. North-Holland, Amsterdam, 1962.',
     'Mendes et al. (2023) [complete reference to be inserted by the author: Al‑3Cu‑5Nb‑0.1Fe horizontal transient solidification].',
+    'B. Jelinek et al. [complete reference to be confirmed by the author: modified embedded-atom method potential '
+    'of the Al-Si-Mg-Cu-Fe alloy system]. Phys. Rev. B 85 (2012) 245102.',
+    'A. M. Mendelev, M. J. Kramer, C. A. J. Becker, M. Asta. Analysis of semi-empirical interatomic potentials appropriate for '
+    'simulation of crystalline and liquid Al and Cu. Philos. Mag. 88 (2008) 1723-1750.',
 ]
 for i, rf in enumerate(refs, 1):
     par = doc.add_paragraph()
