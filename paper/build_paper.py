@@ -829,20 +829,56 @@ def g3_events():
     return out
 
 
+def long_run_row():
+    """The 1 ns long anneal at 750 K (seed 777; its log is gpu2/longo_T750_5.log): the big cell the
+    chain's shared filename substituted; the decay at 2 ps with 2 atoms lost."""
+    f = os.path.join(EP6, 'gpu2', 'longo_T750_5.log')
+    if not os.path.exists(f):
+        return None
+    raw = open(f, encoding='utf-8', errors='replace').read()
+    lost = re.search(r'Lost atoms: original (\d+) current (\d+)', raw)
+    if not lost:
+        return None
+    best = None
+    for m in re.finditer(r'^\s*Step\s+Temp\s+Press\s+PotEng[^\n]*\n(.*?)(?:\n\s*\n|\n\s*Loop time|\Z)',
+                         raw, re.M | re.S):
+        rr = [r.split() for r in m.group(1).splitlines() if re.match(r'^\s*\d+\s', r) and len(r.split()) == 6]
+        if rr and (best is None or len(rr) > len(best)):
+            best = np.array([[float(x) for x in r] for r in rr])
+    if best is None:
+        return None
+    step, temp, pe = best[:, 0], best[:, 1], best[:, 3]
+    dpe = np.diff(pe)
+    i = int(np.argmax(dpe))
+    big = int(lost.group(1)) > 3000
+    return ['750', '777 (longo, ' + ('célula grande' if big else 'célula pequena') + ')',
+            f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}', f'{temp.max():.0f}',
+            str(int(lost.group(1)) - int(lost.group(2)))]
+
+
 H2('5.8. The stochastic onset: the fine frontier with thermal seeds')
 P('The threshold of Figure 8 is not a state but a rate: at the plate of 750-800 K the deformed cell of the alloy '
   'decays catastrophically with a jump of the potential energy, a violent thermal spike and lost atoms, and the '
   'onset depends on the thermal history of the anneal. Table 9 gives the statistics of the fine frontier: 6 of the '
   '9 anneals decayed inside the 100 ps window, with onset times from 17 to 66 ps and no simple temperature trend '
   'at this 25 K spacing - the decay is probabilistic in the small cell, not a sharp threshold; the same '
-  'temperature produced both clean and decayed cells among the seeds. The 1 ns long step at 750 K and the big '
-  'cell of the deformation run refine this statistics to the paper version.')
+  'temperature produced both clean and decayed cells among the seeds. The long step (1 ns, big cell) decayed '
+  '2 ps into its ramp: in the 16 384-atom cell the decay at 750 K is almost immediate, which closes the map: '
+  'the onset of the decay sits between 700 and 750 K.')
 g3e = g3_events()
+_long = long_run_row()
+if _long:
+    g3e.append(_long)
 if g3e:
     TABLE('Table 9. The fine frontier of the decay of the deformed Al‑0.8Si‑0.6Mg‑0.2Fe cell '
           '(first seeds; the event = the jump of the potential energy, with lost atoms in the small cell).',
           ['T [K]', 'Seed', 'Event time [ps]', 'PE jump [eV]', 'T max [K]', 'Atoms lost'],
           g3e, [1.6, 1.3, 2.4, 2.4, 2.2, 2.2])
+    FIG(os.path.join(HERE, 'Fig10_E6_onset.png'),
+        'Figure 10. The onset times of the catastrophic decay across the fine frontier of the deformed cell '
+        '(750-800 K, three thermal seeds): 6 of the 9 anneals decayed within 17-66 ps and the clean cells '
+        'reached the full 100 ps window (squares) - no simple temperature trend at this spacing: the decay '
+        'is probabilistic in the small cell. The big cell (16 384 atoms) decayed 2 ps into the anneal.')
 
 # ------------------------------------------------------------------ 6
 H1('6. Conclusions')

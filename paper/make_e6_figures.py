@@ -111,7 +111,36 @@ fig.tight_layout()
 fig.savefig(os.path.join(OUT, 'Fig8_E6_anneal.png'), dpi=300)
 plt.close(fig)
 
-# Fig9 — the stored-deformation field: atom maps (energy per atom), deformed x annealed
+# Fig10 — the onset times of the catastrophic decay across the fine frontier (the stochastic map)
+fig = plt.figure(figsize=(10.5, 4.4))
+ax = fig.add_axes([0.09, 0.16, 0.78, 0.72])
+EVENTS = [
+    (750, 11, 41), (750, 22, 64), (750, 33, 17),
+    (775, 11, 19), (775, 33, 66),
+    (800, 33, 56),
+]
+CLEAN = [(775, 22), (800, 11), (800, 22)]
+for T, S, t in EVENTS:
+    ax.scatter(T, t, c='#eb6834', s=52, zorder=5)
+    ax.annotate(f's{S}', (T, t), xytext=(4, -2), textcoords='offset points', fontsize=8, color='#eb6834')
+CL = {775: ['s22'], 800: ['s11', 's22']}
+for T, seeds in CL.items():
+    ax.scatter(T, 100, c='#2a78d6', s=52, marker='s', zorder=5)
+    ax.annotate(' e '.join(seeds) + ' limpo', (T, 100), xytext=(6, -11), textcoords='offset points',
+                fontsize=8, color='#2a78d6')
+ax.axhline(100, color='k', lw=1.2)
+ax.set_xlabel('temperatura do recozimento [K]')
+ax.set_ylabel('tempo do início do decaimento [ps]')
+ax.set_xticks([750, 775, 800])
+ax.grid(True, ls='--', color='0.85')
+fig.text(0.5, 0.945, 'The onset of the catastrophic decay at 750-800 K: 6 of 9 anneals decayed within 17-66 ps',
+         ha='center', fontsize=11)
+fig.savefig(os.path.join(OUT, 'Fig10_E6_onset.png'), dpi=300)
+print('Fig10 ok')
+
+# Fig9 — the stored-deformation field: atom maps (energy per atom), deformed x annealed.
+# The deformed state is the FIRST frame of the anneal dumps (the anneal restarts from the
+# sheared configuration); the annealed state is its last frame.
 fig = plt.figure(figsize=(13.5, 5.0))
 axs = [fig.add_axes([0.03 + 0.245 * k, 0.22, 0.225, 0.52]) for k in range(4)]
 panels = [
