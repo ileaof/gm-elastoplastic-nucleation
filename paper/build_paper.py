@@ -785,6 +785,10 @@ if e64:
       f'({EQS["grec"]}), measured from the energy profiles: it converts the areal storage of the interface into the '
       'volumetric one the cell carries. This calibration of $\\sigma_y^s$ and $\\delta$ against the molecular-dynamics states '
       'is the natural continuation of the test.')
+P('The size consistency of the measurement was tested against a 16 384-atom cell: the stored energy and the '
+  'flow of the big cell reproduce the 2 048-atom ones within 3-5 % (stored 0.027 and 0.049 eV/atom at 0.14 and '
+  '0.20, shear stresses 3.49/3.52 GPa and 4.10/3.97 GPa in the same strains), so the stored deformation of the '
+  'sheared state is not a size effect at the scales tested.')
 
 
 def g3_events():
