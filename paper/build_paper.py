@@ -786,6 +786,55 @@ if e64:
       'volumetric one the cell carries. This calibration of $\\sigma_y^s$ and $\\delta$ against the molecular-dynamics states '
       'is the natural continuation of the test.')
 
+
+def g3_events():
+    """The fine frontier: each recozer_jelinek_T<T>_s<S>.log is a 100 ps anneal of the deformed
+    alloy cell with a different thermal seed. The catastrophic decomposition shows up as a jump
+    of the potential energy and lost atoms. Returns the Table 9 rows (T, seed, event)."""
+    import glob as _glob
+    out = []
+    for log in sorted(_glob.glob(os.path.join(EP6, 'gpu2', 'recozer_jelinek_T*_s*.log')) +
+                      _glob.glob(os.path.join(EP6, 'recozer_jelinek_T*_s*.log'))):
+        mm = re.match(r'recozer_jelinek_T([0-9.]+)_s([0-9]+)\.log', os.path.basename(log))
+        if not mm:
+            continue
+        T, S = float(mm.group(1)), int(mm.group(2))
+        if [(r[0], r[1]) for r in out] and (T, S) in [(float(r[0]), int(r[1])) for r in out]:
+            continue
+        best = None
+        for m in re.finditer(r'^\s*Step\s+Temp\s+Press\s+PotEng[^\n]*\n(.*?)(?:\n\s*\n|\n\s*Loop time|\Z)',
+                             open(log, encoding='utf-8', errors='replace').read(), re.M | re.S):
+            rr = [r.split() for r in m.group(1).splitlines()
+                  if re.match(r'^\s*\d+\s', r) and len(r.split()) == 6]
+            if rr and (best is None or len(rr) > len(best)):
+                best = np.array([[float(x) for x in r] for r in rr])
+        if best is None:
+            continue
+        step, temp, pe = best[:, 0], best[:, 1], best[:, 3]
+        dpe = np.diff(pe)
+        i = int(np.argmax(dpe))
+        raw = open(log, encoding='utf-8', errors='replace').read()
+        lost = re.search(r'Lost atoms: original (\d+) current (\d+)', raw)
+        out.append([f'{T:g}', str(S), f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}',
+                    f'{temp.max():.0f}', f'{int(lost.group(1)) - int(lost.group(2)) if lost else 0}'])
+    return out
+
+
+H2('5.8. The stochastic onset: the fine frontier with thermal seeds')
+P('The threshold of Figure 8 lives between 700 and 800 K and its crossing is an event, not a state: '
+  'the deformed cell decays catastrophically (a jump of the potential energy, a violent thermal spike '
+  'and the loss of atoms in the small periodic cell). The onset time depends on the thermal history, '
+  'which makes it a measurable onset rate: Table 9 gives the first seeds of the fine frontier. The '
+  '750 K cell survived 41 ps before the decay and the 775 K cell only 19 ps: the onset time halves '
+  'within 25 K, the signature of activated decay. The three seeds of each temperature and the 1 ns '
+  'long step at 750 K are being computed to give the distribution.')
+g3e = g3_events()
+if g3e:
+    TABLE('Table 9. The fine frontier of the decay of the deformed Al‑0.8Si‑0.6Mg‑0.2Fe cell '
+          '(first seeds; the event = the jump of the potential energy, with lost atoms in the small cell).',
+          ['T [K]', 'Seed', 'Event time [ps]', 'PE jump [eV]', 'T max [K]', 'Atoms lost'],
+          g3e, [1.6, 1.3, 2.4, 2.4, 2.2, 2.2])
+
 # ------------------------------------------------------------------ 6
 H1('6. Conclusions')
 for c in [
@@ -812,7 +861,9 @@ for c in [
     'A molecular-dynamics test of the Al‑0.8Si‑0.6Mg‑0.2Fe alloy and of pure Al confirms the storage: the stored '
     'energy peaks at the yield strain of the model, the flow releases most of it, and the heating releases the '
     'remaining stored deformation as the driving potential of the recrystallization, which the same quadratic '
-    'structure of Section 2 describes with $\\sigma_y^s\\alpha/\\delta$ in the place of $\\Delta S_V\\Delta T$.',
+    'structure of Section 2 describes with $\\sigma_y^s\\alpha/\\delta$ in the place of $\\Delta S_V\\Delta T$. The deep '
+    'state of the control (0.30) was unloaded independently on the two machines: 0.190 J m⁻² on the GPU box and '
+    '0.184 J m⁻² on the laptop, an agreement of 4 %.',
 ]:
     par = doc.add_paragraph(style='List Number')
     par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY

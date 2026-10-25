@@ -1,0 +1,121 @@
+LAMMPS (10 Sep 2025)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Users\ileao\AppData\Local\LAMMPS 64-bit 10Sep2025\plugins
+package omp 16
+set 16 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+# Benchmark de cronometragem do E6 (não é produção): 1000 passos NVT a 300 K
+# Uso:  lmp -sf omp -pk omp <nt> -in in.bench.lmp -var pot jelinek -var alloy 1 -var nx 8
+units metal
+atom_style atomic
+boundary p p p
+variable pot index jelinek
+variable alloy index 1
+variable nx index 8
+variable nsteps index 1000
+variable a0 equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+variable ntypes equal 4
+lattice fcc ${a0}
+lattice fcc 4.05
+Lattice spacing in x,y,z = 4.05 4.05 4.05
+region box block 0 ${nx} 0 ${nx} 0 ${nx}
+region box block 0 8 0 ${nx} 0 ${nx}
+region box block 0 8 0 8 0 ${nx}
+region box block 0 8 0 8 0 8
+create_box ${ntypes} box
+create_box 4 box
+Created orthogonal box = (0 0 0) to (32.4 32.4 32.4)
+  1 by 1 by 1 MPI processor grid
+create_atoms 1 box
+Created 2048 atoms
+  using lattice units in orthogonal box = (0 0 0) to (32.4 32.4 32.4)
+  create_atoms CPU = 0.001 seconds
+if "${pot} == jelinek" then "mass 1 26.982"
+mass 1 26.982
+if "${pot} == jelinek && ${alloy} == 1" then "mass 2 28.086" "mass 3 24.305" "mass 4 55.845"
+mass 2 28.086
+mass 3 24.305
+mass 4 55.845
+if "${pot} == jelinek && ${alloy} == 1" then "set type 1 type/fraction 2 0.0077 4928459" "set type 1 type/fraction 3 0.00675 8294273" "set type 1 type/fraction 4 0.000974 1307723"
+set type 1 type/fraction 2 0.0077 4928459
+Setting atom values ...
+  15 settings made for type/fraction
+set type 1 type/fraction 3 0.00675 8294273
+Setting atom values ...
+  6 settings made for type/fraction
+set type 1 type/fraction 4 0.000974 1307723
+Setting atom values ...
+  4 settings made for type/fraction
+include pot_${pot}.lmp
+include pot_jelinek.lmp
+# Jelinek et al., Phys. Rev. B 85 (2012) 245102 — MEAM Al-Si-Mg-Cu-Fe (distribuição do LAMMPS)
+# ntypes = 1: Al puro na família Jelinek; ntypes = 4: liga Al-Si-Mg-Fe (ordem dos tipos: Al, Si, Mg, Fe)
+if "${ntypes} == 1" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS"
+if "${ntypes} == 4" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS"
+pair_style meam
+pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS
+Reading MEAM library file ./potencias/AlSiMgCuFe_Jelinek2012/library.meam with DATE: 2012-06-29
+Reading MEAM potential file ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam with DATE: 2012-06-29
+velocity all create 300.0 4928459 mom yes rot no dist gaussian
+timestep 0.002
+thermo 500
+thermo_style custom step temp pe
+fix 1 all nvt temp 300.0 300.0 0.1
+run ${nsteps}
+run 1000
+No /omp style for force computation currently active
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7
+  ghost atom cutoff = 7
+  binsize = 3.5, bins = 10 10 10
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair meam, perpetual
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on, omp
+      pair build: halffull/newton/omp
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 30.32 | 30.32 | 30.32 Mbytes
+   Step          Temp          PotEng    
+         0   300           -6867.9766    
+       500   294.96969     -6808.2795    
+      1000   307.44398     -6803.2398    
+Loop time of 45.2542 on 16 procs for 1000 steps with 2048 atoms
+
+Performance: 3.818 ns/day, 6.285 hours/ns, 22.097 timesteps/s, 45.255 katom-step/s
+16.6% CPU use with 1 MPI tasks x 16 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 43.228     | 43.228     | 43.228     |   0.0 | 95.52
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.036484   | 0.036484   | 0.036484   |   0.0 |  0.08
+Output  | 6.1e-05    | 6.1e-05    | 6.1e-05    |   0.0 |  0.00
+Modify  | 1.9762     | 1.9762     | 1.9762     |   0.0 |  4.37
+Other   |            | 0.01366    |            |       |  0.03
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           4035 ave        4035 max        4035 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          79872 ave       79872 max       79872 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       159744 ave      159744 max      159744 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 159744
+Ave neighs/atom = 78
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:45
