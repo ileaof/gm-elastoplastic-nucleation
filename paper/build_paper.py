@@ -830,7 +830,7 @@ def g3_events():
             out.append([f'{T:g}', str(S), f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}',
                         f'{temp.max():.0f}', str(n_lost)])
         else:
-            out.append([f'{T:g}', str(S), 'limpo (100 ps)', '—', '—', '0'])
+            out.append([f'{T:g}', str(S), 'clean (100 ps)', '—', '—', '0'])
     return out
 
 
@@ -856,7 +856,7 @@ def long_run_row():
     dpe = np.diff(pe)
     i = int(np.argmax(dpe))
     big = int(lost.group(1)) > 3000
-    return ['750', '777 (longo, ' + ('célula grande' if big else 'célula pequena') + ')',
+    return ['750', '777 (long run, ' + ('big cell' if big else 'small cell') + ')',
             f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}', f'{temp.max():.0f}',
             str(int(lost.group(1)) - int(lost.group(2)))]
 
