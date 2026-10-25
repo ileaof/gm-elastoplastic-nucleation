@@ -1,0 +1,11 @@
+Nucleation_model_FCC_A1_new_paper_2024_dev_full_GLH_AlSiMgFe_signal_beta_2nd_Sim exit orig 0 copy 0 | tabela: 77 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signa exit orig 0 copy 0 | tabela: 71 rows, max rel diff 0.00e+00 | tablefull: 72 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 70 rows, max rel diff 0.00e+00 | tablefull: 70 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00
+Nucleation_model_H2O_vapour_solid_Sim_2026_paper                                 exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 74 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00
+Nucleation_model_FCC_A1_new_paper_MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_ exit orig 0 copy 0 | tabela: 74 rows, max rel diff 0.00e+00 | tablefull: 75 rows, max rel diff 0.00e+00

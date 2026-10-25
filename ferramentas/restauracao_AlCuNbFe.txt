@@ -1,0 +1,8 @@
+# elastic restoration driven by the rate of density change (ajustar_restauracao.py)
+beta_s 0.0767216
+DT_SL 185.246
+tau_r inf
+Gamma_0 3.020799e-07
+dGamma_el_mean 3.936428e-08
+MAPE_loaded 27.396
+MAPE_restored 26.731

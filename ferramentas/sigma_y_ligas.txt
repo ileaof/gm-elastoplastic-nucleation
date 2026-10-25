@@ -1,0 +1,5 @@
+# alloy  sigma_y[N/m]  Gamma*[m K]  (fitted by ajustar_sigma_y.py)
+AlCuNbFe 0.038572 4.041326e-07
+AlSiMgFe 0.157175 6.733873e-07
+AlCuMgFe 0.0422712 3.437638e-07
+H2O 0.0695 nan   # no SDAS data: value of Al-Cu-Nb-Fe kept as a placeholder

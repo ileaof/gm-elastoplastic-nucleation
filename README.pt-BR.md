@@ -19,18 +19,23 @@
 </p>
 
 **Abaixo do escoamento, a superfície elasto-plástica é a própria superfície de Gurtin–Murdoch.** Acima
-dele, a tensão de superfície em excesso fica limitada e, com a área plástica atualizando a referência de
-equilíbrio, a energia de superfície e o tensor de 2ª ordem deixam de depender do gradiente térmico.
-Al-3Cu-5Nb-0,1Fe (FCC_A1), gradiente médio de 3294 K/m:
+dele, a tensão de superfície em excesso fica limitada pela tensão de escoamento de área e a deformação
+permanente fica **armazenada na interface** (modo `stored_total`, adotado em outubro de 2026): a energia
+de superfície e o tensor de 2ª ordem acompanham de perto o ramo elástico e ficam acima do equilíbrio
+$\gamma_0/|\Delta S_V|$, o que permite a nucleação induzida por deformação. Valores no gradiente térmico
+médio experimental de cada liga:
 
-| Superfície | τ [N/m] | γ_SL [J/m²] | Γ²ⁿᵈ [m K] |
-|---|---:|---:|---:|
-| GM elástica | −1,968 | 1,047 | 1,0685e-6 |
-| Elasto-plástica, referência fixa (σ_y = 0,5 N/m, H = 0,1σ₀) | −1,891 | 0,994 | 1,0146e-6 |
-| Elasto-plástica, referência atualizada (σ_y = 0,0695 N/m, H = 0) | −1,446 | 0,381 | 3,887e-7 |
+| Liga | Gradiente médio [K/m] | Escoamento [K/m] | Γ²ⁿᵈ elástico / elasto-plástico [m K] | γ_SL em 10⁵ K/m, el. / EP [J/m²] |
+|---|---:|---:|---|---|
+| Al-3Cu-5Nb-0,1Fe | 3 294 | 731 | 1,0685e-6 / 1,0627e-6 | 5,58 / 5,53 |
+| Al-0,8Si-0,6Mg-0,2Fe | 7 902 | 925 | 1,5745e-6 / 1,5083e-6 | 4,45 / 4,24 |
+| Al-3Cu-0,5Mg-0,2Fe | 3 708 | 562 | 1,0973e-6 / 1,0878e-6 | 4,35 / 4,29 |
 
-Extensão do modelo de nucleação de Ferreira (Physica B 695, 416494, 2024), aplicada à fase FCC_A1 da liga
-Al-3Cu-5Nb-0,1Fe e propagada ao espaçamento dendrítico secundário (SDAS) pelo modelo de Rappaz–Boettinger
+A variante com a área plástica atualizando a referência de equilíbrio (energia de superfície e tensor
+independentes do gradiente) fica em `model/` e nos resultados abaixo, como estudo inicial.
+
+Extensão do modelo de nucleação de Ferreira (Physica B 695, 416494, 2024), aplicada à fase FCC_A1 das
+três ligas e propagada ao espaçamento dendrítico secundário (SDAS) pelo modelo de Rappaz–Boettinger
 modificado (MRB). Inclui um estudo curto de dinâmica molecular (MD) em CPU da tensão de interface
 sólido–líquido do Al, para verificar os parâmetros de superfície.
 
@@ -42,7 +47,7 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 - [Organização do repositório](#organização-do-repositório)
 - [Teoria](#teoria): [superfície de Gurtin–Murdoch](#1-superfície-de-gurtinmurdoch-gurtin-e-murdoch-1978-ferreira-2022-2024) · [proposta elasto-plástica](#2-proposta-elasto-plástica) · [energia da superfície plástica](#3-energia-da-superfície-elasto-plástica)
 - [Verificação: analítico x numérico](#verificação-analítico-x-numérico)
-- [Resultados principais](#resultados-principais-al-3cu-5nb-01fe-gradiente-médio-de-3294-km) · [SDAS com o tensor de 2ª ordem local](#sdas-com-o-tensor-de-2ª-ordem-local)
+- [Resultados principais](#resultados-principais-al-3cu-5nb-01fe-gradiente-médio-de-3294-km) · [SDAS com o tensor de 2ª ordem local](#sdas-com-o-tensor-de-2ª-ordem-local) · [Todas as ligas no modo stored_total](#todas-as-ligas-no-modo-stored_total)
 - [Como rodar](#como-rodar) · [Origem dos dados](#origem-dos-dados) · [Estado](#estado)
 - [Agradecimentos](#agradecimentos)
 
@@ -54,6 +59,10 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 | `docs/` | Figuras (comparação das superfícies, verificação, SDAS), badges e logos |
 | `md_cpu/` | Entradas do LAMMPS e análises da tensão de interface plana e da pressão de Laplace de um núcleo crítico (`E5_results.md`) |
 | `results/` | Tabelas CSV e figuras geradas pelos scripts e pelas corridas de MD |
+| `nucleacao/` | As cópias dos modelos de nucleação com a superfície elasto-plástica (`*_EP.py`, modo `stored_total`), o módulo comum `gm_elastoplastic.py` (return mapping, modos de energia), `figure_layout.py` e os auxiliares; figuras de comparação em toda a faixa de gradiente (`figuras/`) e as tabelas coletadas |
+| `sdas/` | As cópias dos modelos de SDAS (`*_EP.py`) com o tensor de Gibbs–Thomson de 2ª ordem da superfície elasto-plástica, e suas figuras |
+| `ferramentas/` | Scripts que geram as cópias a partir dos modelos elásticos originais, rodam as cópias, desenham as figuras de comparação em toda a faixa de gradiente (até ~10⁶ K/m) e verificam os resultados |
+| `paper/` | Fontes do paper: `build_paper.py`, `make_figures.py` e o modelo em sequência de solução `nucleation_elastoplastic_AlSiMgFe.py` (superfícies elástica e elasto-plástica resolvidas lado a lado), com todas as saídas do paper (tabela da varredura, figuras e painéis) |
 
 ## Teoria
 
@@ -161,7 +170,8 @@ com a referência acompanhando a área plástica):
 
 | Opção `GM_DISSIPATION_MODE` | $\gamma_{SL}$ |
 |---|---|
-| `stored` (padrão) | $\gamma_0\,(r_{eq,p}/r)^2 - s$ (carregada, parte elástica) |
+| `stored_total` (**adotado**) | $\gamma_0\,(r_{eq}/r)^2 + \lvert\sigma_0\rvert\,(\lvert E^e\rvert + \lvert E^p\rvert) - q_{diss} = \gamma_0\,(r_{eq}/r)^2 - s - \sigma_y^s\,\alpha$ para $H_A = 0$ (carregada, referência fixa: a deformação permanente fica armazenada na interface) |
+| `stored` | $\gamma_0\,(r_{eq,p}/r)^2 - s$ (carregada, parte elástica) |
 | `thermo` | $\gamma_0\,(r_{eq,p}/r)^2 - s + \psi^{p}$ |
 | `barrier` | $\gamma_0\,(r_{eq,p}/r)^2 - s + w_p$ (carregada, total: elástica + plástica) |
 | `restored` | $\gamma_0$ (após a restauração elástica) |
@@ -169,6 +179,12 @@ com a referência acompanhando a área plástica):
 
 $\Delta G_{diss} = 4\pi r^2 q_{diss}$ é reportado em todos os modos. Com plasticidade perfeita ($H_A = 0$), $\psi^{p} = 0$
 e a energia elástica recuperável $s^2/(2C_A) = \sigma_y^2/(2C_A)$ fica abaixo de 1 % de $w_p$.
+
+As cópias de nucleação de `nucleacao/` e o paper rodam `stored_total` com $H_A = 0$ como modo de energia
+padrão (decisão do autor, 22/10/2026): com a referência fixa, a deformação permanente armazenada deixa o
+$\Gamma^{2nd}$ só 0,5–4,2 % abaixo do tensor elástico, crescendo com o gradiente do mesmo jeito e sempre
+acima do equilíbrio $\gamma_0/|\Delta S_V|$ — a interface carrega energia disponível para a nucleação
+induzida por deformação. Com a referência atualizando, o tensor em vez disso colapsa numa constante.
 
 ## Verificação: analítico x numérico
 
@@ -239,6 +255,25 @@ dependência suave de Γ²ⁿᵈ com o gradiente; o gap que resta no expoente ve
 (t_SL, β do modelo MRB), não da energia de superfície. Com encruamento ($H_A > 0$), a energia armazenada
 $\psi^{p}$ faz Γ²ⁿᵈ crescer com o gradiente e afasta o SDAS dos dados.
 
+### Todas as ligas no modo stored_total
+
+O conjunto completo de nucleação das três ligas (mais a água) roda com a superfície elasto-plástica no
+modo `stored_total` (`nucleacao/`); as figuras da seção 5.4 do paper vêm de
+`paper/nucleation_elastoplastic_AlSiMgFe.py`. Nas cópias, o ΔT está em forma fechada, então as superfícies
+elástica e elasto-plástica varrem toda a faixa de gradientes de solidificação, até ~1,1 × 10⁶ K/m:
+
+| Liga | Escoamento ∇T [K/m] | Γ²ⁿᵈ el. / EP no ∇T̄ [m K] | Γ²ⁿᵈ el. / EP em 10⁵ K/m [m K] | γ el. / EP em 10⁵ K/m [J/m²] |
+|---|---:|---|---|---|
+| Al-3Cu-5Nb-0,1Fe (3 294 K/m) | 731 | 1,0685e-6 / 1,0627e-6 | 5,693e-6 / 5,644e-6 | 5,58 / 5,53 |
+| Al-0,8Si-0,6Mg-0,2Fe (7 902 K/m) | 925 | 1,5745e-6 / 1,5083e-6 | 4,805e-6 / 4,581e-6 | 4,45 / 4,24 |
+| Al-3Cu-0,5Mg-0,2Fe (3 708 K/m) | 562 | 1,0973e-6 / 1,0878e-6 | 5,210e-6 / 5,142e-6 | 4,35 / 4,29 |
+
+O pico da taxa de nucleação (elástica → elasto-plástica): 6,62e49 → 6,37e49 m⁻³ s⁻¹ (Al-Cu-Nb-Fe),
+1,01e50 → 8,19e49 (Al-Si-Mg-Fe) e 1,43e50 → 1,33e50 (Al-Cu-Mg-Fe). As figuras de comparação contra o ∇T
+com o escoamento marcado (faixa sombreada: regime elástico, linha traço-ponto: escoamento) vêm de
+`ferramentas/comparar_curvas_EP.py`, `comparar_taxa_nucleacao.py`, `energia_superficie_alto_gradiente.py`
+e `gibbs_thomson_alto_gradiente.py`, e também estão em `nucleacao/figuras/`.
+
 ## Como rodar
 
 Python 3.11 com NumPy, SciPy e Matplotlib. Na pasta `model/`:
@@ -249,7 +284,7 @@ GM_SURFACE_MODEL=elastic python Nucleation_model_..._ElastoPlastic_GM.py
 python Nucleation_model_..._ElastoPlastic_GM.py
 # elasto-plástica com a área plástica atualizando a referência
 GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.0695 GM_H_A=0 python Nucleation_model_..._ElastoPlastic_GM.py
-# energia da superfície: GM_DISSIPATION_MODE = stored | thermo | barrier | restored | restored_barrier
+# energia da superfície: GM_DISSIPATION_MODE = stored_total (padrão em nucleacao/) | stored | thermo | barrier | restored | restored_barrier
 GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.03 GM_H_A=0 GM_DISSIPATION_MODE=barrier python Nucleation_model_..._ElastoPlastic_GM.py
 GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.0695 GM_H_A=0 GM_DISSIPATION_MODE=restored python Nucleation_model_..._ElastoPlastic_GM.py
 GM_PLASTIC_REFERENCE=1 GM_SIGMA_YA0=0.03 GM_H_A=0 GM_DISSIPATION_MODE=restored_barrier python Nucleation_model_..._ElastoPlastic_GM.py
@@ -267,6 +302,26 @@ O modelo grava os CSVs na pasta de trabalho; os usados nas figuras também estã
 `results/sdas/`. Quando vários casos rodam em paralelo na mesma pasta, os arquivos da seção de comparação no
 fim do script do modelo são sobrescritos pela última rodada.
 
+O conjunto `stored_total`, a partir da raiz do repositório:
+
+```bash
+cd nucleacao
+GM_SURFACE_MODEL=elastic python Nucleation_model_FCC_A1_new_paper_2024_dev_full_GLH_AlSiMgFe_signal_beta_2nd_Sim_Luane_EP.py  # ramo elástico
+python Nucleation_model_FCC_A1_new_paper_2024_dev_full_GLH_AlSiMgFe_signal_beta_2nd_Sim_Luane_EP.py  # elasto-plástica (stored_total)
+# as três ligas do paper: ..._AlCuNbFe_..._2026_paper_EP.py, ..._AlSiMgFe_..._Sim_Luane_EP.py, ..._AlCuMgFe_..._2026_paper_EP.py
+# cada rodada grava os CSVs e as próprias figuras contra o gradiente térmico (taxa, Γ²ⁿᵈ, γ, τ, energias e entropias)
+cd ../ferramentas
+python comparar_curvas_EP.py             # elástica x elasto-plástica contra o ∇T, escoamento marcado
+python gibbs_thomson_alto_gradiente.py   # Γ²ⁿᵈ das três ligas até 10⁶ K/m
+cd ../paper
+python nucleation_elastoplastic_AlSiMgFe.py   # todas as saídas do paper para Al-0,8Si-0,6Mg-0,2Fe: tabela da varredura, figuras, painéis (padrão --show=all)
+```
+
+`aplicar_elastoplastico.py` regenera as cópias `*_EP.py` a partir dos modelos elásticos originais (os
+caminhos de origem no topo do script apontam para o espaço de trabalho do autor), `rodar_modelos_EP.py`
+roda todas as cópias e coleta as tabelas, e `paper/build_paper.py` (depois de `paper/make_figures.py`)
+monta o manuscrito.
+
 MD (LAMMPS 10Sep2025; no Windows, a versão OpenMP: `lmp -sf omp -pk omp 8 -in ...`). Baixe
 `Ni-Al-Nb.eam.fs` (Borovikov et al., Int. J. Plast. 178, 104004, 2024) do NIST Interatomic Potentials
 Repository para `potentials/`. `in.planar_stress` parte de uma placa sólido–líquido em coexistência
@@ -283,6 +338,11 @@ originais do autor.
 Código de pesquisa em desenvolvimento. A tensão de escoamento da interface ainda precisa de um valor
 independente (a série de núcleos de 1,5–3,0 nm em `md_cpu/` daria a dependência da tensão de interface
 com o raio).
+
+Outubro de 2026: as cópias de nucleação e o paper adotam a energia de superfície `stored_total`
+(referência fixa, deformação permanente armazenada); o manuscrito "Elasto-Plastic Gurtin–Murdoch Surface
+in Non-Equilibrium Phase Nucleation: Stored Permanent Surface Deformation, Elastic Restoration and the
+Thermal-Field Tensor" é montado por `paper/build_paper.py`.
 
 Correção (outubro de 2026): a derivada do trabalho plástico usada em ∂γ/∂r no modo `barrier` estava com o
 sinal trocado; afetava só as grandezas de 1ª ordem nesse modo. γ, ΔT, ∇T e Γ²ⁿᵈ não dependem dela.

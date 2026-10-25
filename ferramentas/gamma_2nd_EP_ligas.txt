@@ -1,0 +1,12 @@
+# copy  alloy  grad_T_mean[K/m]  Gamma_2nd_EP[m K]  (rodar_modelos_EP.py)
+2024_dev_full_GLH_AlSiMgFe_signal_beta_2nd_Sim_Luane AlSiMgFe 7902.38 1.5082942176029673e-06
+B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim AlCuNbFe 3294.0 1.06271e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim AlCuMgFe 3708.2 1.0878e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_2026_paper AlCuMgFe 3708.2 1.0878e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_dev AlCuMgFe 3708.2 1.0878e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_dev_gam AlCuMgFe 3708.2 1.06112e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_dev_old AlCuMgFe 3708.2 1.0878e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_old AlCuMgFe 3708.2 1.0878e-06
+H2O_vapour_solid_Sim_2026_paper H2O 3708.2 9.86679e-07
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_-_Copia AlCuMgFe 3708.2 1.0878e-06
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_2026_paper AlCuMgFe 3708.2 1.0878e-06

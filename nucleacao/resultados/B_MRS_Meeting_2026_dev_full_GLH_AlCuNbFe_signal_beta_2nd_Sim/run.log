@@ -1,0 +1,980 @@
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:999: RuntimeWarning: divide by zero encountered in scalar divide
+  DSc_v[i] = gam_hom_v[i] / DT_v[i] * 1.0/ftheta(theta_2nd_v[i]) * dfthetadr(theta_2nd_v[i])
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:999: RuntimeWarning: invalid value encountered in scalar multiply
+  DSc_v[i] = gam_hom_v[i] / DT_v[i] * 1.0/ftheta(theta_2nd_v[i]) * dfthetadr(theta_2nd_v[i])
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:437: RuntimeWarning: divide by zero encountered in scalar divide
+  GC_ = gammasl / ftheta(theta_het_2nd) * dfthetadr(theta_het_2nd) #( 1/3 * pi * rc_het_2nd ** 3 * GB(Delta_Sv_hom, DT_)  + pi * rc_het_2nd ** 2 ) * ftheta(rc_het_2nd)
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:437: RuntimeWarning: invalid value encountered in scalar multiply
+  GC_ = gammasl / ftheta(theta_het_2nd) * dfthetadr(theta_het_2nd) #( 1/3 * pi * rc_het_2nd ** 3 * GB(Delta_Sv_hom, DT_)  + pi * rc_het_2nd ** 2 ) * ftheta(rc_het_2nd)
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:1028: RuntimeWarning: invalid value encountered in scalar divide
+  mu_Al_v[i] = -(vAl/vPhase * temp_Al_0/temp_Al)**3.0 * Vo_Al/V_Al * ( mu_Al + 1/(x_Al )* S_total * (temp_Al-temp_Al_0))
+
+N_V = 1.131e+28 atoms/m^3
+
+N_V_Al = 1.090e+28 atoms/m^3
+vAl = 0.963622 volumetric fraction
+
+N_V_Cu = 1.900e+25 atoms/m^3
+vCu = 0.001680 volumetric fraction
+
+N_V_Nb = 3.922e+26 atoms/m^3
+vNb = 0.034684 volumetric fraction
+
+N_V_Fe = 1.592e+23 atoms/m^3
+vFe = 0.000014 volumetric fraction
+
+N_V_t  = 1.131e+28 atoms/m^3
+N_Vi = 3.469e+28 conducting -e/m^3
+E_F = 1.24278e-18 [J] = 7.75681 [eV]
+Surface: elasto-plastic Gurtin-Murdoch surface: sigma_y = 0.038572 N/m, H = 0 N/m, reference fixed, energy mode stored_total
+S_total = nan
+
+S_total = -6328293.687398976
+
+r_hom_v[1] = 6.2685e-06,theta_2nd_v[1]= 3.06101,r_het_2nd_v[1] = 6.26848e-06,dTdr_v[1] = 646.441,dTdr_het_v[1] = 647.494,GT_het_v[1]=5.02241e-08,stat_hom_2nd_v[1]=2.89031e+49;-979873; -100711.03943770225
+
+
+S_total = -6158037.828732202
+
+r_hom_v[2] = 6.237e-06,theta_2nd_v[2]= 3.06025,r_het_2nd_v[2] = 6.23698e-06,dTdr_v[2] = 688.255,dTdr_het_v[2] = 689.396,GT_het_v[2]=5.52421e-08,stat_hom_2nd_v[2]=2.98834e+49;-979873; -89646.7063263828
+
+
+S_total = -5899505.624198319
+
+r_hom_v[3] = 6.2055e-06,theta_2nd_v[3]= 3.05913,r_het_2nd_v[3] = 6.20548e-06,dTdr_v[3] = 730.953,dTdr_het_v[3] = 732.199,GT_het_v[3]=6.16298e-08,stat_hom_2nd_v[3]=3.08668e+49;-979873; -85386.30467570345
+
+
+S_total = -5764045.871684052
+
+r_hom_v[4] = 6.174e-06,theta_2nd_v[4]= 3.05847,r_het_2nd_v[4] = 6.17398e-06,dTdr_v[4] = 774.084,dTdr_het_v[4] = 775.425,GT_het_v[4]=6.70555e-08,stat_hom_2nd_v[4]=3.18296e+49;-979873; -70018.77026482181
+
+
+S_total = -5638669.0540068885
+
+r_hom_v[5] = 6.1425e-06,theta_2nd_v[5]= 3.05783,r_het_2nd_v[5] = 6.14248e-06,dTdr_v[5] = 818.317,dTdr_het_v[5] = 819.757,GT_het_v[5]=7.26958e-08,stat_hom_2nd_v[5]=3.27998e+49;-979873; -63199.66617866452
+
+
+S_total = -5522218.795019395
+
+r_hom_v[6] = 6.111e-06,theta_2nd_v[6]= 3.05723,r_het_2nd_v[6] = 6.11098e-06,dTdr_v[6] = 863.684,dTdr_het_v[6] = 865.225,GT_het_v[6]=7.85495e-08,stat_hom_2nd_v[6]=3.37763e+49;-979873; -57223.14718557669
+
+
+S_total = -5413712.8390611615
+
+r_hom_v[7] = 6.0795e-06,theta_2nd_v[7]= 3.05666,r_het_2nd_v[7] = 6.07948e-06,dTdr_v[7] = 910.216,dTdr_het_v[7] = 911.862,GT_het_v[7]=8.46157e-08,stat_hom_2nd_v[7]=3.47579e+49;-979873; -51959.96391146963
+
+
+S_total = -5312311.202218699
+
+r_hom_v[8] = 6.048e-06,theta_2nd_v[8]= 3.05611,r_het_2nd_v[8] = 6.04798e-06,dTdr_v[8] = 957.945,dTdr_het_v[8] = 959.701,GT_het_v[8]=9.08932e-08,stat_hom_2nd_v[8]=3.57434e+49;-979873; -47304.46237745934
+
+
+S_total = -5217291.095121786
+
+r_hom_v[9] = 6.0165e-06,theta_2nd_v[9]= 3.05559,r_het_2nd_v[9] = 6.01648e-06,dTdr_v[9] = 1006.91,dTdr_het_v[9] = 1008.78,GT_het_v[9]=9.73812e-08,stat_hom_2nd_v[9]=3.67318e+49;-979873; -43169.62461904252
+
+
+S_total = -5128026.991524099
+
+r_hom_v[10] = 5.985e-06,theta_2nd_v[10]= 3.05509,r_het_2nd_v[10] = 5.98498e-06,dTdr_v[10] = 1057.14,dTdr_het_v[10] = 1059.12,GT_het_v[10]=1.04079e-07,stat_hom_2nd_v[10]=3.77218e+49;-979873; -39483.28062626935
+
+
+S_total = -5043974.648743972
+
+r_hom_v[11] = 5.9535e-06,theta_2nd_v[11]= 3.05461,r_het_2nd_v[11] = 5.95348e-06,dTdr_v[11] = 1108.67,dTdr_het_v[11] = 1110.78,GT_het_v[11]=1.10985e-07,stat_hom_2nd_v[11]=3.8712e+49;-979873; -36185.186342049084
+
+
+S_total = -4964658.192885015
+
+r_hom_v[12] = 5.922e-06,theta_2nd_v[12]= 3.05416,r_het_2nd_v[12] = 5.92198e-06,dTdr_v[12] = 1161.55,dTdr_het_v[12] = 1163.77,GT_het_v[12]=1.181e-07,stat_hom_2nd_v[12]=3.97013e+49;-979873; -33224.749023027565
+
+
+S_total = -4889659.602573803
+
+r_hom_v[13] = 5.8905e-06,theta_2nd_v[13]= 3.05372,r_het_2nd_v[13] = 5.89048e-06,dTdr_v[13] = 1215.8,dTdr_het_v[13] = 1218.16,GT_het_v[13]=1.25422e-07,stat_hom_2nd_v[13]=4.06882e+49;-979873; -30559.241413509313
+
+
+S_total = -4818610.085744734
+
+r_hom_v[14] = 5.859e-06,theta_2nd_v[14]= 3.05331,r_het_2nd_v[14] = 5.85898e-06,dTdr_v[14] = 1271.48,dTdr_het_v[14] = 1273.97,GT_het_v[14]=1.32951e-07,stat_hom_2nd_v[14]=4.16715e+49;-979873; -28152.38851209198
+
+
+S_total = -4751182.962377959
+
+r_hom_v[15] = 5.8275e-06,theta_2nd_v[15]= 3.05291,r_het_2nd_v[15] = 5.82748e-06,dTdr_v[15] = 1328.62,dTdr_het_v[15] = 1331.25,GT_het_v[15]=1.40687e-07,stat_hom_2nd_v[15]=4.26498e+49;-979873; -25973.24085632228
+
+
+S_total = -4687087.75414087
+
+r_hom_v[16] = 5.796e-06,theta_2nd_v[16]= 3.05253,r_het_2nd_v[16] = 5.79598e-06,dTdr_v[16] = 1387.27,dTdr_het_v[16] = 1390.03,GT_het_v[16]=1.48629e-07,stat_hom_2nd_v[16]=4.36217e+49;-979873; -23995.269960311583
+
+
+S_total = -4626065.247998503
+
+r_hom_v[17] = 5.7645e-06,theta_2nd_v[17]= 3.05216,r_het_2nd_v[17] = 5.76448e-06,dTdr_v[17] = 1447.47,dTdr_het_v[17] = 1450.37,GT_het_v[17]=1.56776e-07,stat_hom_2nd_v[17]=4.45858e+49;-979873; -22195.637337903547
+
+
+S_total = -4567883.350953606
+
+r_hom_v[18] = 5.733e-06,theta_2nd_v[18]= 3.05181,r_het_2nd_v[18] = 5.73298e-06,dTdr_v[18] = 1509.26,dTdr_het_v[18] = 1512.32,GT_het_v[18]=1.65129e-07,stat_hom_2nd_v[18]=4.55408e+49;-979873; -20554.600152540625
+
+
+S_total = -4512333.591354903
+
+r_hom_v[19] = 5.7015e-06,theta_2nd_v[19]= 3.05148,r_het_2nd_v[19] = 5.70148e-06,dTdr_v[19] = 1572.7,dTdr_het_v[19] = 1575.91,GT_het_v[19]=1.73687e-07,stat_hom_2nd_v[19]=4.64851e+49;-979873; -19055.025143515424
+
+
+S_total = -4459228.151693868
+
+r_hom_v[20] = 5.67e-06,theta_2nd_v[20]= 3.05116,r_het_2nd_v[20] = 5.66998e-06,dTdr_v[20] = 1637.84,dTdr_het_v[20] = 1641.2,GT_het_v[20]=1.82451e-07,stat_hom_2nd_v[20]=4.74175e+49;-979873; -17681.988917777475
+
+
+S_total = -4408397.340687533
+
+r_hom_v[21] = 5.6385e-06,theta_2nd_v[21]= 3.05085,r_het_2nd_v[21] = 5.63848e-06,dTdr_v[21] = 1704.71,dTdr_het_v[21] = 1708.24,GT_het_v[21]=1.91419e-07,stat_hom_2nd_v[21]=4.83364e+49;-979873; -16422.44755288964
+
+
+S_total = -4359687.430322725
+
+r_hom_v[22] = 5.607e-06,theta_2nd_v[22]= 3.05056,r_het_2nd_v[22] = 5.60698e-06,dTdr_v[22] = 1773.39,dTdr_het_v[22] = 1777.08,GT_het_v[22]=2.00593e-07,stat_hom_2nd_v[22]=4.92405e+49;-979873; -15264.962146844347
+
+
+S_total = -4312958.797602218
+
+r_hom_v[23] = 5.5755e-06,theta_2nd_v[23]= 3.05028,r_het_2nd_v[23] = 5.57548e-06,dTdr_v[23] = 1843.92,dTdr_het_v[23] = 1847.78,GT_het_v[23]=2.09972e-07,stat_hom_2nd_v[23]=5.01284e+49;-979873; -14199.469776019552
+
+
+S_total = -4268084.321868816
+
+r_hom_v[24] = 5.544e-06,theta_2nd_v[24]= 3.05001,r_het_2nd_v[24] = 5.54398e-06,dTdr_v[24] = 1916.36,dTdr_het_v[24] = 1920.39,GT_het_v[24]=2.19557e-07,stat_hom_2nd_v[24]=5.09986e+49;-979873; -13217.091499891654
+
+
+S_total = -4224947.997452721
+
+r_hom_v[25] = 5.5125e-06,theta_2nd_v[25]= 3.04975,r_het_2nd_v[25] = 5.51248e-06,dTdr_v[25] = 1990.77,dTdr_het_v[25] = 1994.98,GT_het_v[25]=2.29347e-07,stat_hom_2nd_v[25]=5.18499e+49;-979873; -12309.970740902587
+
+
+S_total = -4183443.728492089
+
+r_hom_v[26] = 5.481e-06,theta_2nd_v[26]= 3.0495,r_het_2nd_v[26] = 5.48098e-06,dTdr_v[26] = 2067.21,dTdr_het_v[26] = 2071.6,GT_het_v[26]=2.39342e-07,stat_hom_2nd_v[26]=5.26808e+49;-979873; -11471.136686808322
+
+
+S_total = -4143474.278499234
+
+r_hom_v[27] = 5.4495e-06,theta_2nd_v[27]= 3.04927,r_het_2nd_v[27] = 5.44948e-06,dTdr_v[27] = 2145.74,dTdr_het_v[27] = 2150.33,GT_het_v[27]=2.49545e-07,stat_hom_2nd_v[27]=5.34901e+49;-979873; -10694.388398961726
+
+
+S_total = -4104950.3518771688
+
+r_hom_v[28] = 5.418e-06,theta_2nd_v[28]= 3.04904,r_het_2nd_v[28] = 5.41798e-06,dTdr_v[28] = 2226.43,dTdr_het_v[28] = 2231.21,GT_het_v[28]=2.59953e-07,stat_hom_2nd_v[28]=5.42764e+49;-979873; -9974.196128038771
+
+
+S_total = -4067789.7883604947
+
+r_hom_v[29] = 5.3865e-06,theta_2nd_v[29]= 3.04882,r_het_2nd_v[29] = 5.38648e-06,dTdr_v[29] = 2309.34,dTdr_het_v[29] = 2314.33,GT_het_v[29]=2.7057e-07,stat_hom_2nd_v[29]=5.50384e+49;-979873; -9305.616988506197
+
+
+S_total = -4031916.854435361
+
+r_hom_v[30] = 5.355e-06,theta_2nd_v[30]= 3.04862,r_het_2nd_v[30] = 5.35498e-06,dTdr_v[30] = 2394.56,dTdr_het_v[30] = 2399.75,GT_het_v[30]=2.81393e-07,stat_hom_2nd_v[30]=5.57749e+49;-979873; -8684.222661630185
+
+
+S_total = -3997261.618323108
+
+r_hom_v[31] = 5.3235e-06,theta_2nd_v[31]= 3.04842,r_het_2nd_v[31] = 5.32347e-06,dTdr_v[31] = 2482.14,dTdr_het_v[31] = 2487.55,GT_het_v[31]=2.92426e-07,stat_hom_2nd_v[31]=5.64847e+49;-979873; -8106.037212791161
+
+
+S_total = -3963759.397198152
+
+r_hom_v[32] = 5.292e-06,theta_2nd_v[32]= 3.04823,r_het_2nd_v[32] = 5.29197e-06,dTdr_v[32] = 2572.17,dTdr_het_v[32] = 2577.79,GT_het_v[32]=3.03667e-07,stat_hom_2nd_v[32]=5.71667e+49;-979873; -7567.483444024099
+
+
+S_total = -3931350.267038442
+
+r_hom_v[33] = 5.2605e-06,theta_2nd_v[33]= 3.04806,r_het_2nd_v[33] = 5.26047e-06,dTdr_v[33] = 2664.72,dTdr_het_v[33] = 2670.57,GT_het_v[33]=3.15119e-07,stat_hom_2nd_v[33]=5.78196e+49;-979873; -7065.3364740531815
+
+
+S_total = -3899978.626942581
+
+r_hom_v[34] = 5.229e-06,theta_2nd_v[34]= 3.04789,r_het_2nd_v[34] = 5.22897e-06,dTdr_v[34] = 2759.88,dTdr_het_v[34] = 2765.96,GT_het_v[34]=3.26781e-07,stat_hom_2nd_v[34]=5.84425e+49;-979873; -6596.68345862232
+
+
+S_total = -3869592.810946321
+
+r_hom_v[35] = 5.1975e-06,theta_2nd_v[35]= 3.04772,r_het_2nd_v[35] = 5.19747e-06,dTdr_v[35] = 2857.73,dTdr_het_v[35] = 2864.05,GT_het_v[35]=3.38655e-07,stat_hom_2nd_v[35]=5.90343e+49;-979873; -6158.888544087618
+
+
+S_total = -3840144.7413747865
+
+r_hom_v[36] = 5.166e-06,theta_2nd_v[36]= 3.04757,r_het_2nd_v[36] = 5.16597e-06,dTdr_v[36] = 2958.37,dTdr_het_v[36] = 2964.93,GT_het_v[36]=3.50742e-07,stat_hom_2nd_v[36]=5.9594e+49;-979873; -5749.562294753836
+
+
+S_total = -3811589.6186102005
+
+r_hom_v[37] = 5.1345e-06,theta_2nd_v[37]= 3.04742,r_het_2nd_v[37] = 5.13447e-06,dTdr_v[37] = 3061.87,dTdr_het_v[37] = 3068.68,GT_het_v[37]=3.63042e-07,stat_hom_2nd_v[37]=6.01207e+49;-979873; -5366.5349559074375
+
+
+S_total = -3783885.642866512
+
+r_hom_v[38] = 5.103e-06,theta_2nd_v[38]= 3.04729,r_het_2nd_v[38] = 5.10297e-06,dTdr_v[38] = 3168.34,dTdr_het_v[38] = 3175.41,GT_het_v[38]=3.75558e-07,stat_hom_2nd_v[38]=6.06136e+49;-979873; -5007.833014819611
+
+
+S_total = -3756993.764163923
+
+r_hom_v[39] = 5.0715e-06,theta_2nd_v[39]= 3.04715,r_het_2nd_v[39] = 5.07147e-06,dTdr_v[39] = 3277.87,dTdr_het_v[39] = 3285.2,GT_het_v[39]=3.8829e-07,stat_hom_2nd_v[39]=6.10719e+49;-979873; -4671.658604995777
+
+
+S_total = -3730877.457207095
+
+r_hom_v[40] = 5.04e-06,theta_2nd_v[40]= 3.04703,r_het_2nd_v[40] = 5.03997e-06,dTdr_v[40] = 3390.57,dTdr_het_v[40] = 3398.18,GT_het_v[40]=4.0124e-07,stat_hom_2nd_v[40]=6.14947e+49;-979873; -4356.371368161356
+
+
+S_total = -3705502.518305775
+
+r_hom_v[41] = 5.0085e-06,theta_2nd_v[41]= 3.04691,r_het_2nd_v[41] = 5.00847e-06,dTdr_v[41] = 3506.54,dTdr_het_v[41] = 3514.43,GT_het_v[41]=4.14409e-07,stat_hom_2nd_v[41]=6.18815e+49;-979873; -4060.4724460792836
+
+
+S_total = -3680836.8818473597
+
+r_hom_v[42] = 4.977e-06,theta_2nd_v[42]= 3.0468,r_het_2nd_v[42] = 4.97697e-06,dTdr_v[42] = 3625.9,dTdr_het_v[42] = 3634.08,GT_het_v[42]=4.27798e-07,stat_hom_2nd_v[42]=6.22316e+49;-979873; -3782.5903225020675
+
+
+S_total = -3656850.4541489864
+
+r_hom_v[43] = 4.9455e-06,theta_2nd_v[43]= 3.0467,r_het_2nd_v[43] = 4.94548e-06,dTdr_v[43] = 3748.76,dTdr_het_v[43] = 3757.23,GT_het_v[43]=4.41409e-07,stat_hom_2nd_v[43]=6.25445e+49;-979873; -3521.468276183734
+
+
+S_total = -3633514.9627892324
+
+r_hom_v[44] = 4.914e-06,theta_2nd_v[44]= 3.0466,r_het_2nd_v[44] = 4.91398e-06,dTdr_v[44] = 3875.24,dTdr_het_v[44] = 3884.02,GT_het_v[44]=4.55244e-07,stat_hom_2nd_v[44]=6.28197e+49;-979873; -3275.953239826756
+
+
+S_total = -3610803.819754286
+
+r_hom_v[45] = 4.8825e-06,theta_2nd_v[45]= 3.04651,r_het_2nd_v[45] = 4.88248e-06,dTdr_v[45] = 4005.47,dTdr_het_v[45] = 4014.55,GT_het_v[45]=4.69305e-07,stat_hom_2nd_v[45]=6.30568e+49;-979873; -3044.985888811454
+
+
+S_total = -3588691.996935985
+
+r_hom_v[46] = 4.851e-06,theta_2nd_v[46]= 3.04643,r_het_2nd_v[46] = 4.85098e-06,dTdr_v[46] = 4139.57,dTdr_het_v[46] = 4148.98,GT_het_v[46]=4.83593e-07,stat_hom_2nd_v[46]=6.32555e+49;-979873; -2827.5918077552765
+
+
+S_total = -3567155.912694232
+
+r_hom_v[47] = 4.8195e-06,theta_2nd_v[47]= 3.04635,r_het_2nd_v[47] = 4.81948e-06,dTdr_v[47] = 4277.68,dTdr_het_v[47] = 4287.42,GT_het_v[47]=4.98111e-07,stat_hom_2nd_v[47]=6.34155e+49;-979873; -2622.873603828037
+
+
+S_total = -3546173.328348069
+
+r_hom_v[48] = 4.788e-06,theta_2nd_v[48]= 3.04628,r_het_2nd_v[48] = 4.78798e-06,dTdr_v[48] = 4419.95,dTdr_het_v[48] = 4430.02,GT_het_v[48]=5.12859e-07,stat_hom_2nd_v[48]=6.35367e+49;-979873; -2430.0038532193253
+
+
+S_total = -3525723.2535917987
+
+r_hom_v[49] = 4.7565e-06,theta_2nd_v[49]= 3.04621,r_het_2nd_v[49] = 4.75648e-06,dTdr_v[49] = 4566.51,dTdr_het_v[49] = 4576.94,GT_het_v[49]=5.27842e-07,stat_hom_2nd_v[49]=6.36189e+49;-979873; -2248.2187822905835
+
+
+S_total = -3505785.859947219
+
+r_hom_v[50] = 4.725e-06,theta_2nd_v[50]= 3.04615,r_het_2nd_v[50] = 4.72498e-06,dTdr_v[50] = 4717.53,dTdr_het_v[50] = 4728.31,GT_het_v[50]=5.43059e-07,stat_hom_2nd_v[50]=6.3662e+49;-979873; -2076.8125977515974
+
+
+S_total = -3486342.4014635133
+
+r_hom_v[51] = 4.6935e-06,theta_2nd_v[51]= 3.0461,r_het_2nd_v[51] = 4.69348e-06,dTdr_v[51] = 4873.16,dTdr_het_v[51] = 4884.31,GT_het_v[51]=5.58515e-07,stat_hom_2nd_v[51]=6.36661e+49;-979873; -1915.132391256746
+
+
+S_total = -3467375.1419638363
+
+r_hom_v[52] = 4.662e-06,theta_2nd_v[52]= 3.04605,r_het_2nd_v[52] = 4.66198e-06,dTdr_v[52] = 5033.56,dTdr_het_v[52] = 5045.09,GT_het_v[52]=5.74211e-07,stat_hom_2nd_v[52]=6.36313e+49;-979873; -1762.5735532634121
+
+
+S_total = -3448867.288214658
+
+r_hom_v[53] = 4.6305e-06,theta_2nd_v[53]= 3.046,r_het_2nd_v[53] = 4.63048e-06,dTdr_v[53] = 5198.92,dTdr_het_v[53] = 5210.84,GT_het_v[53]=5.90151e-07,stat_hom_2nd_v[53]=6.35578e+49;-979873; -1618.5756391895284
+
+
+S_total = -3430802.9284611996
+
+r_hom_v[54] = 4.599e-06,theta_2nd_v[54]= 3.04597,r_het_2nd_v[54] = 4.59898e-06,dTdr_v[54] = 5369.41,dTdr_het_v[54] = 5381.74,GT_het_v[54]=6.06335e-07,stat_hom_2nd_v[54]=6.34458e+49;-979873; -1482.6186379183212
+
+
+S_total = -3413166.975831902
+
+r_hom_v[55] = 4.5675e-06,theta_2nd_v[55]= 3.04593,r_het_2nd_v[55] = 4.56748e-06,dTdr_v[55] = 5545.23,dTdr_het_v[55] = 5557.96,GT_het_v[55]=6.22768e-07,stat_hom_2nd_v[55]=6.32956e+49;-979873; -1354.2195988157896
+
+
+S_total = -3395945.1161668724
+
+r_hom_v[56] = 4.536e-06,theta_2nd_v[56]= 3.0459,r_het_2nd_v[56] = 4.53598e-06,dTdr_v[56] = 5726.56,dTdr_het_v[56] = 5739.72,GT_het_v[56]=6.39453e-07,stat_hom_2nd_v[56]=6.31076e+49;-979873; -1232.9295786914481
+
+
+S_total = -3379123.759871662
+
+r_hom_v[57] = 4.5045e-06,theta_2nd_v[57]= 3.04588,r_het_2nd_v[57] = 4.50448e-06,dTdr_v[57] = 5913.62,dTdr_het_v[57] = 5927.22,GT_het_v[57]=6.56391e-07,stat_hom_2nd_v[57]=6.28822e+49;-979873; -1118.3308747147341
+
+
+S_total = -3362689.9974385225
+
+r_hom_v[58] = 4.473e-06,theta_2nd_v[58]= 3.04586,r_het_2nd_v[58] = 4.47298e-06,dTdr_v[58] = 6106.62,dTdr_het_v[58] = 6120.67,GT_het_v[58]=6.73587e-07,stat_hom_2nd_v[58]=6.262e+49;-979873; -1010.0345133112064
+
+
+S_total = -3346631.5583134075
+
+r_hom_v[59] = 4.4415e-06,theta_2nd_v[59]= 3.04585,r_het_2nd_v[59] = 4.44148e-06,dTdr_v[59] = 6305.79,dTdr_het_v[59] = 6320.29,GT_het_v[59]=6.91043e-07,stat_hom_2nd_v[59]=6.23214e+49;-979873; -907.6779685031602
+
+
+S_total = -3330936.772819165
+
+r_hom_v[60] = 4.41e-06,theta_2nd_v[60]= 3.04584,r_het_2nd_v[60] = 4.40998e-06,dTdr_v[60] = 6511.35,dTdr_het_v[60] = 6526.33,GT_het_v[60]=7.08763e-07,stat_hom_2nd_v[60]=6.19873e+49;-979873; -810.9230862370919
+
+
+S_total = -3315594.536873875
+
+r_hom_v[61] = 4.3785e-06,theta_2nd_v[61]= 3.04584,r_het_2nd_v[61] = 4.37848e-06,dTdr_v[61] = 6723.56,dTdr_het_v[61] = 6739.04,GT_het_v[61]=7.2675e-07,stat_hom_2nd_v[61]=6.16181e+49;-979873; -719.4541938496616
+
+
+S_total = -3300594.279268767
+
+r_hom_v[62] = 4.347e-06,theta_2nd_v[62]= 3.04584,r_het_2nd_v[62] = 4.34698e-06,dTdr_v[62] = 6942.68,dTdr_het_v[62] = 6958.65,GT_het_v[62]=7.45008e-07,stat_hom_2nd_v[62]=6.12147e+49;-979873; -632.976376205254
+
+
+S_total = -3285925.9312926712
+
+r_hom_v[63] = 4.3155e-06,theta_2nd_v[63]= 3.04584,r_het_2nd_v[63] = 4.31548e-06,dTdr_v[63] = 7168.96,dTdr_het_v[63] = 7185.46,GT_het_v[63]=7.63541e-07,stat_hom_2nd_v[63]=6.07779e+49;-979873; -551.2139020154722
+
+
+S_total = -3271579.898510368
+
+r_hom_v[64] = 4.284e-06,theta_2nd_v[64]= 3.04585,r_het_2nd_v[64] = 4.28398e-06,dTdr_v[64] = 7402.7,dTdr_het_v[64] = 7419.73,GT_het_v[64]=7.82353e-07,stat_hom_2nd_v[64]=6.03085e+49;-979873; -473.9087857273764
+
+
+S_total = -3257547.0345201003
+
+r_hom_v[65] = 4.2525e-06,theta_2nd_v[65]= 3.04587,r_het_2nd_v[65] = 4.25248e-06,dTdr_v[65] = 7644.18,dTdr_het_v[65] = 7661.76,GT_het_v[65]=8.01447e-07,stat_hom_2nd_v[65]=5.98075e+49;-979873; -400.8194718557858
+
+
+S_total = -3243818.6165319434
+
+r_hom_v[66] = 4.221e-06,theta_2nd_v[66]= 3.04589,r_het_2nd_v[66] = 4.22098e-06,dTdr_v[66] = 7893.72,dTdr_het_v[66] = 7911.87,GT_het_v[66]=8.20828e-07,stat_hom_2nd_v[66]=5.92757e+49;-979873; -331.71963012551475
+
+
+S_total = -3230386.3226229865
+
+r_hom_v[67] = 4.1895e-06,theta_2nd_v[67]= 3.04591,r_het_2nd_v[67] = 4.18948e-06,dTdr_v[67] = 8151.64,dTdr_het_v[67] = 8170.37,GT_het_v[67]=8.40501e-07,stat_hom_2nd_v[67]=5.87141e+49;-979873; -266.39705093045546
+
+
+S_total = -3217242.210538594
+
+r_hom_v[68] = 4.158e-06,theta_2nd_v[68]= 3.04594,r_het_2nd_v[68] = 4.15798e-06,dTdr_v[68] = 8418.27,dTdr_het_v[68] = 8437.6,GT_het_v[68]=8.60469e-07,stat_hom_2nd_v[68]=5.81239e+49;-979873; -204.65263178774697
+
+
+S_total = -3204378.697920539
+
+r_hom_v[69] = 4.1265e-06,theta_2nd_v[69]= 3.04597,r_het_2nd_v[69] = 4.12648e-06,dTdr_v[69] = 8693.97,dTdr_het_v[69] = 8713.92,GT_het_v[69]=8.80738e-07,stat_hom_2nd_v[69]=5.7506e+49;-979873; -146.29944636504862
+
+
+S_total = -3191788.543853504
+
+r_hom_v[70] = 4.095e-06,theta_2nd_v[70]= 3.04601,r_het_2nd_v[70] = 4.09498e-06,dTdr_v[70] = 8979.12,dTdr_het_v[70] = 8999.71,GT_het_v[70]=9.01313e-07,stat_hom_2nd_v[70]=5.68615e+49;-979873; -91.16188855843772
+
+
+S_total = -3179464.831630872
+
+r_hom_v[71] = 4.0635e-06,theta_2nd_v[71]= 3.04605,r_het_2nd_v[71] = 4.06348e-06,dTdr_v[71] = 9274.1,dTdr_het_v[71] = 9295.34,GT_het_v[71]=9.22198e-07,stat_hom_2nd_v[71]=5.61916e+49;-979873; -39.07488483376104
+
+
+S_total = -3167400.9526493945
+
+r_hom_v[72] = 4.032e-06,theta_2nd_v[72]= 3.04609,r_het_2nd_v[72] = 4.03198e-06,dTdr_v[72] = 9579.32,dTdr_het_v[72] = 9601.24,GT_het_v[72]=9.434e-07,stat_hom_2nd_v[72]=5.54974e+49;-979873; 10.116831252881608
+
+
+S_total = -3155590.5913500586
+
+r_hom_v[73] = 4.0005e-06,theta_2nd_v[73]= 3.04614,r_het_2nd_v[73] = 4.00048e-06,dTdr_v[73] = 9895.21,dTdr_het_v[73] = 9917.84,GT_het_v[73]=9.64923e-07,stat_hom_2nd_v[73]=5.47801e+49;-979873; 56.55938787782342
+
+
+S_total = -3144027.7111294707
+
+r_hom_v[74] = 3.969e-06,theta_2nd_v[74]= 3.04619,r_het_2nd_v[74] = 3.96898e-06,dTdr_v[74] = 10222.2,dTdr_het_v[74] = 10245.6,GT_het_v[74]=9.86773e-07,stat_hom_2nd_v[74]=5.40409e+49;-979873; 100.39039205503914
+
+
+S_total = -3132706.5411525415
+
+r_hom_v[75] = 3.9375e-06,theta_2nd_v[75]= 3.04625,r_het_2nd_v[75] = 3.93748e-06,dTdr_v[75] = 10560.9,dTdr_het_v[75] = 10584.9,GT_het_v[75]=1.00896e-06,stat_hom_2nd_v[75]=5.3281e+49;-979873; 141.73949951111842
+
+
+S_total = -3121621.564002892
+
+r_hom_v[76] = 3.906e-06,theta_2nd_v[76]= 3.04631,r_het_2nd_v[76] = 3.90598e-06,dTdr_v[76] = 10911.6,dTdr_het_v[76] = 10936.4,GT_het_v[76]=1.03148e-06,stat_hom_2nd_v[76]=5.25016e+49;-979873; 180.72894138654112
+
+
+S_total = -3110767.504112773
+
+r_hom_v[77] = 3.8745e-06,theta_2nd_v[77]= 3.04638,r_het_2nd_v[77] = 3.87448e-06,dTdr_v[77] = 11274.9,dTdr_het_v[77] = 11300.6,GT_het_v[77]=1.05435e-06,stat_hom_2nd_v[77]=5.17041e+49;-979873; 217.4740114185247
+
+
+S_total = -3100139.316918948
+
+r_hom_v[78] = 3.843e-06,theta_2nd_v[78]= 3.04645,r_het_2nd_v[78] = 3.84298e-06,dTdr_v[78] = 11651.4,dTdr_het_v[78] = 11677.9,GT_het_v[78]=1.07757e-06,stat_hom_2nd_v[78]=5.08896e+49;-979873; 252.0835169449875
+
+
+S_total = -3089732.178695393
+
+r_hom_v[79] = 3.8115e-06,theta_2nd_v[79]= 3.04652,r_het_2nd_v[79] = 3.81148e-06,dTdr_v[79] = 12041.7,dTdr_het_v[79] = 12069,GT_het_v[79]=1.10115e-06,stat_hom_2nd_v[79]=5.00594e+49;-979873; 284.66019672458526
+
+
+S_total = -3079541.477017596
+
+r_hom_v[80] = 3.78e-06,theta_2nd_v[80]= 3.0466,r_het_2nd_v[80] = 3.77998e-06,dTdr_v[80] = 12446.3,dTdr_het_v[80] = 12474.5,GT_het_v[80]=1.1251e-06,stat_hom_2nd_v[80]=4.92147e+49;-979873; 315.3011083271382
+
+
+S_total = -3069562.8018168127
+
+r_hom_v[81] = 3.7485e-06,theta_2nd_v[81]= 3.04668,r_het_2nd_v[81] = 3.74848e-06,dTdr_v[81] = 12866,dTdr_het_v[81] = 12895.1,GT_het_v[81]=1.14942e-06,stat_hom_2nd_v[81]=4.83569e+49;-979873; 344.0979875690352
+
+
+S_total = -3059791.93698594
+
+r_hom_v[82] = 3.717e-06,theta_2nd_v[82]= 3.04676,r_het_2nd_v[82] = 3.71698e-06,dTdr_v[82] = 13301.3,dTdr_het_v[82] = 13331.3,GT_het_v[82]=1.17412e-06,stat_hom_2nd_v[82]=4.74871e+49;-979873; 371.13758226455394
+
+
+S_total = -3050224.852501682
+
+r_hom_v[83] = 3.6855e-06,theta_2nd_v[83]= 3.04685,r_het_2nd_v[83] = 3.68548e-06,dTdr_v[83] = 13753.1,dTdr_het_v[83] = 13784,GT_het_v[83]=1.19921e-06,stat_hom_2nd_v[83]=4.66066e+49;-979873; 396.50196234964915
+
+
+S_total = -3040857.6970303995
+
+r_hom_v[84] = 3.654e-06,theta_2nd_v[84]= 3.04694,r_het_2nd_v[84] = 3.65398e-06,dTdr_v[84] = 14222,dTdr_het_v[84] = 14253.9,GT_het_v[84]=1.22471e-06,stat_hom_2nd_v[84]=4.57166e+49;-979873; 420.26880825789186
+
+
+S_total = -3031686.7909875414
+
+r_hom_v[85] = 3.6225e-06,theta_2nd_v[85]= 3.04704,r_het_2nd_v[85] = 3.62248e-06,dTdr_v[85] = 14708.8,dTdr_het_v[85] = 14741.8,GT_het_v[85]=1.25061e-06,stat_hom_2nd_v[85]=4.48185e+49;-979873; 442.5116792630845
+
+
+S_total = -3022708.6200229116
+
+r_hom_v[86] = 3.591e-06,theta_2nd_v[86]= 3.04714,r_het_2nd_v[86] = 3.59098e-06,dTdr_v[86] = 15214.5,dTdr_het_v[86] = 15248.6,GT_het_v[86]=1.27692e-06,stat_hom_2nd_v[86]=4.39133e+49;-979873; 463.3002633492975
+
+
+S_total = -3013919.828906043
+
+r_hom_v[87] = 3.5595e-06,theta_2nd_v[87]= 3.04724,r_het_2nd_v[87] = 3.55948e-06,dTdr_v[87] = 15739.9,dTdr_het_v[87] = 15775,GT_het_v[87]=1.30366e-06,stat_hom_2nd_v[87]=4.30022e+49;-979873; 482.70061004450497
+
+
+S_total = -3005317.215787969
+
+r_hom_v[88] = 3.528e-06,theta_2nd_v[88]= 3.04735,r_het_2nd_v[88] = 3.52798e-06,dTdr_v[88] = 16285.9,dTdr_het_v[88] = 16322.2,GT_het_v[88]=1.33084e-06,stat_hom_2nd_v[88]=4.20866e+49;-979873; 500.7753475185064
+
+
+S_total = -2996897.726817414
+
+r_hom_v[89] = 3.4965e-06,theta_2nd_v[89]= 3.04746,r_het_2nd_v[89] = 3.49648e-06,dTdr_v[89] = 16853.5,dTdr_het_v[89] = 16890.9,GT_het_v[89]=1.35847e-06,stat_hom_2nd_v[89]=4.11674e+49;-979873; 517.5838851521115
+
+
+S_total = -2988658.451091054
+
+r_hom_v[90] = 3.465e-06,theta_2nd_v[90]= 3.04758,r_het_2nd_v[90] = 3.46498e-06,dTdr_v[90] = 17443.8,dTdr_het_v[90] = 17482.5,GT_het_v[90]=1.38655e-06,stat_hom_2nd_v[90]=4.02458e+49;-979873; 533.1826026610896
+
+
+S_total = -2980596.615919039
+
+r_hom_v[91] = 3.4335e-06,theta_2nd_v[91]= 3.0477,r_het_2nd_v[91] = 3.43348e-06,dTdr_v[91] = 18057.9,dTdr_het_v[91] = 18097.8,GT_het_v[91]=1.4151e-06,stat_hom_2nd_v[91]=3.9323e+49;-979873; 547.6250267968129
+
+
+S_total = -2972709.5823882986
+
+r_hom_v[92] = 3.402e-06,theta_2nd_v[92]= 3.04782,r_het_2nd_v[92] = 3.40198e-06,dTdr_v[92] = 18696.9,dTdr_het_v[92] = 18738.2,GT_het_v[92]=1.44413e-06,stat_hom_2nd_v[92]=3.83999e+49;-979873; 560.9619965356101
+
+
+S_total = -2964994.8412074535
+
+r_hom_v[93] = 3.3705e-06,theta_2nd_v[93]= 3.04795,r_het_2nd_v[93] = 3.37048e-06,dTdr_v[93] = 19362.2,dTdr_het_v[93] = 19404.8,GT_het_v[93]=1.47365e-06,stat_hom_2nd_v[93]=3.74778e+49;-979873; 573.2418176088472
+
+
+S_total = -2957450.008818326
+
+r_hom_v[94] = 3.339e-06,theta_2nd_v[94]= 3.04808,r_het_2nd_v[94] = 3.33898e-06,dTdr_v[94] = 20055,dTdr_het_v[94] = 20099,GT_het_v[94]=1.50368e-06,stat_hom_2nd_v[94]=3.65575e+49;-979873; 584.5104071529581
+
+
+S_total = -2950072.8237601183
+
+r_hom_v[95] = 3.3075e-06,theta_2nd_v[95]= 3.04822,r_het_2nd_v[95] = 3.30748e-06,dTdr_v[95] = 20776.8,dTdr_het_v[95] = 20822.2,GT_het_v[95]=1.53423e-06,stat_hom_2nd_v[95]=3.564e+49;-979873; 594.8114292002742
+
+
+S_total = -2942861.143273312
+
+r_hom_v[96] = 3.276e-06,theta_2nd_v[96]= 3.04836,r_het_2nd_v[96] = 3.27598e-06,dTdr_v[96] = 21529,dTdr_het_v[96] = 21576,GT_het_v[96]=1.56531e-06,stat_hom_2nd_v[96]=3.47264e+49;-979873; 604.1864216642276
+
+
+S_total = -2935812.94013126
+
+r_hom_v[97] = 3.2445e-06,theta_2nd_v[97]= 3.0485,r_het_2nd_v[97] = 3.24448e-06,dTdr_v[97] = 22313.2,dTdr_het_v[97] = 22361.8,GT_het_v[97]=1.59693e-06,stat_hom_2nd_v[97]=3.38174e+49;-979873; 612.6749154306254
+
+
+S_total = -2928926.299688281
+
+r_hom_v[98] = 3.213e-06,theta_2nd_v[98]= 3.04864,r_het_2nd_v[98] = 3.21299e-06,dTdr_v[98] = 23131.2,dTdr_het_v[98] = 23181.3,GT_het_v[98]=1.62912e-06,stat_hom_2nd_v[98]=3.29141e+49;-979873; 620.3145461223751
+
+
+S_total = -2922199.4171338947
+
+r_hom_v[99] = 3.1815e-06,theta_2nd_v[99]= 3.04879,r_het_2nd_v[99] = 3.18149e-06,dTdr_v[99] = 23984.7,dTdr_het_v[99] = 24036.5,GT_het_v[99]=1.66189e-06,stat_hom_2nd_v[99]=3.20173e+49;-979873; 627.1411590422028
+
+
+S_total = -2915630.5949434256
+
+r_hom_v[100] = 3.15e-06,theta_2nd_v[100]= 3.04895,r_het_2nd_v[100] = 3.14999e-06,dTdr_v[100] = 24875.6,dTdr_het_v[100] = 24929.1,GT_het_v[100]=1.69525e-06,stat_hom_2nd_v[100]=3.11277e+49;-979873; 633.188907783437
+
+
+S_total = -2909218.2405160028
+
+r_hom_v[101] = 3.1185e-06,theta_2nd_v[101]= 3.04911,r_het_2nd_v[101] = 3.11849e-06,dTdr_v[101] = 25805.9,dTdr_het_v[101] = 25861.3,GT_het_v[101]=1.72922e-06,stat_hom_2nd_v[101]=3.02461e+49;-979873; 638.490346945071
+
+
+S_total = -2902960.863991517
+
+r_hom_v[102] = 3.087e-06,theta_2nd_v[102]= 3.04927,r_het_2nd_v[102] = 3.08699e-06,dTdr_v[102] = 26777.9,dTdr_het_v[102] = 26835.1,GT_het_v[102]=1.76383e-06,stat_hom_2nd_v[102]=2.93733e+49;-979873; 643.0765193616214
+
+
+S_total = -2896857.076238576
+
+r_hom_v[103] = 3.0555e-06,theta_2nd_v[103]= 3.04944,r_het_2nd_v[103] = 3.05549e-06,dTdr_v[103] = 27793.8,dTdr_het_v[103] = 27853,GT_het_v[103]=1.79908e-06,stat_hom_2nd_v[103]=2.851e+49;-979873; 646.977038223154
+
+
+S_total = -2890905.5870061666
+
+r_hom_v[104] = 3.024e-06,theta_2nd_v[104]= 3.04961,r_het_2nd_v[104] = 3.02399e-06,dTdr_v[104] = 28856,dTdr_het_v[104] = 28917.3,GT_het_v[104]=1.83501e-06,stat_hom_2nd_v[104]=2.76568e+49;-979873; 650.2201644423083
+
+
+S_total = -2885105.2032320267
+
+r_hom_v[105] = 2.9925e-06,theta_2nd_v[105]= 3.04978,r_het_2nd_v[105] = 2.99249e-06,dTdr_v[105] = 29967.3,dTdr_het_v[105] = 30030.7,GT_het_v[105]=1.87163e-06,stat_hom_2nd_v[105]=2.68143e+49;-979873; 652.8328795842431
+
+
+S_total = -2879454.827501214
+
+r_hom_v[106] = 2.961e-06,theta_2nd_v[106]= 3.04996,r_het_2nd_v[106] = 2.96099e-06,dTdr_v[106] = 31130.5,dTdr_het_v[106] = 31196.1,GT_het_v[106]=1.90896e-06,stat_hom_2nd_v[106]=2.59832e+49;-979873; 654.8409546689456
+
+
+S_total = -2873953.4566487526
+
+r_hom_v[107] = 2.9295e-06,theta_2nd_v[107]= 3.05014,r_het_2nd_v[107] = 2.92949e-06,dTdr_v[107] = 32348.5,dTdr_het_v[107] = 32416.3,GT_het_v[107]=1.94702e-06,stat_hom_2nd_v[107]=2.5164e+49;-979873; 656.2690151204373
+
+
+S_total = -2868600.180500474
+
+r_hom_v[108] = 2.898e-06,theta_2nd_v[108]= 3.05032,r_het_2nd_v[108] = 2.89799e-06,dTdr_v[108] = 33624.5,dTdr_het_v[108] = 33694.8,GT_het_v[108]=1.98585e-06,stat_hom_2nd_v[108]=2.43571e+49;-979873; 657.1406021250111
+
+
+S_total = -2863394.180746565
+
+r_hom_v[109] = 2.8665e-06,theta_2nd_v[109]= 3.05051,r_het_2nd_v[109] = 2.86649e-06,dTdr_v[109] = 34962.1,dTdr_het_v[109] = 35034.8,GT_het_v[109]=2.02546e-06,stat_hom_2nd_v[109]=2.3563e+49;-979873; 657.4782306383573
+
+
+S_total = -2858334.729942489
+
+r_hom_v[110] = 2.835e-06,theta_2nd_v[110]= 3.05071,r_het_2nd_v[110] = 2.83499e-06,dTdr_v[110] = 36364.8,dTdr_het_v[110] = 36440.2,GT_het_v[110]=2.06589e-06,stat_hom_2nd_v[110]=2.27823e+49;-979873; 657.3034442681835
+
+
+S_total = -2853421.190632177
+
+r_hom_v[111] = 2.8035e-06,theta_2nd_v[111]= 3.05091,r_het_2nd_v[111] = 2.80349e-06,dTdr_v[111] = 37836.8,dTdr_het_v[111] = 37914.8,GT_het_v[111]=2.10716e-06,stat_hom_2nd_v[111]=2.20152e+49;-979873; 656.6368672398614
+
+
+S_total = -2848653.014588629
+
+r_hom_v[112] = 2.772e-06,theta_2nd_v[112]= 3.05111,r_het_2nd_v[112] = 2.77199e-06,dTdr_v[112] = 39382.1,dTdr_het_v[112] = 39463,GT_het_v[112]=2.1493e-06,stat_hom_2nd_v[112]=2.12621e+49;-979873; 655.4982536403614
+
+
+S_total = -2844029.7421670035
+
+r_hom_v[113] = 2.7405e-06,theta_2nd_v[113]= 3.05132,r_het_2nd_v[113] = 2.74049e-06,dTdr_v[113] = 41005.5,dTdr_het_v[113] = 41089.4,GT_het_v[113]=2.19234e-06,stat_hom_2nd_v[113]=2.05233e+49;-979873; 653.9065341223047
+
+
+S_total = -2839551.0017655934
+
+r_hom_v[114] = 2.709e-06,theta_2nd_v[114]= 3.05153,r_het_2nd_v[114] = 2.70899e-06,dTdr_v[114] = 42711.8,dTdr_het_v[114] = 42798.7,GT_het_v[114]=2.23633e-06,stat_hom_2nd_v[114]=1.97992e+49;-979873; 651.8798602375558
+
+
+S_total = -2835216.509389897
+
+r_hom_v[115] = 2.6775e-06,theta_2nd_v[115]= 3.05174,r_het_2nd_v[115] = 2.67749e-06,dTdr_v[115] = 44506.4,dTdr_het_v[115] = 44596.5,GT_het_v[115]=2.28128e-06,stat_hom_2nd_v[115]=1.90899e+49;-979873; 649.435646557417
+
+
+S_total = -2831026.0683151335
+
+r_hom_v[116] = 2.646e-06,theta_2nd_v[116]= 3.05196,r_het_2nd_v[116] = 2.64599e-06,dTdr_v[116] = 46394.9,dTdr_het_v[116] = 46488.4,GT_het_v[116]=2.32724e-06,stat_hom_2nd_v[116]=1.83957e+49;-979873; 646.5906107289061
+
+
+S_total = -2826979.568842426
+
+r_hom_v[117] = 2.6145e-06,theta_2nd_v[117]= 3.05219,r_het_2nd_v[117] = 2.61449e-06,dTdr_v[117] = 48383.5,dTdr_het_v[117] = 48480.5,GT_het_v[117]=2.37425e-06,stat_hom_2nd_v[117]=1.77168e+49;-979873; 643.3608116026585
+
+
+S_total = -2823076.988143794
+
+r_hom_v[118] = 2.583e-06,theta_2nd_v[118]= 3.05241,r_het_2nd_v[118] = 2.58299e-06,dTdr_v[118] = 50478.8,dTdr_het_v[118] = 50579.5,GT_het_v[118]=2.42235e-06,stat_hom_2nd_v[118]=1.70533e+49;-979873; 639.7616855640412
+
+
+S_total = -2819318.390190875
+
+r_hom_v[119] = 2.5515e-06,theta_2nd_v[119]= 3.05265,r_het_2nd_v[119] = 2.55149e-06,dTdr_v[119] = 52688.1,dTdr_het_v[119] = 52792.6,GT_het_v[119]=2.47159e-06,stat_hom_2nd_v[119]=1.64053e+49;-979873; 635.8080811840406
+
+
+S_total = -2815703.9257621653
+
+r_hom_v[120] = 2.52e-06,theta_2nd_v[120]= 3.05289,r_het_2nd_v[120] = 2.51999e-06,dTdr_v[120] = 55019,dTdr_het_v[120] = 55127.6,GT_het_v[120]=2.522e-06,stat_hom_2nd_v[120]=1.5773e+49;-979873; 631.5142923077452
+
+
+S_total = -2812233.8325231792
+
+r_hom_v[121] = 2.4885e-06,theta_2nd_v[121]= 3.05313,r_het_2nd_v[121] = 2.48849e-06,dTdr_v[121] = 57480.1,dTdr_het_v[121] = 57593,GT_het_v[121]=2.57365e-06,stat_hom_2nd_v[121]=1.51563e+49;-979873; 626.8940896809329
+
+
+S_total = -2808908.435173613
+
+r_hom_v[122] = 2.457e-06,theta_2nd_v[122]= 3.05337,r_het_2nd_v[122] = 2.45699e-06,dTdr_v[122] = 60080.5,dTdr_het_v[122] = 60197.7,GT_het_v[122]=2.62658e-06,stat_hom_2nd_v[122]=1.45554e+49;-979873; 621.9607512151501
+
+
+S_total = -2805728.1456551957
+
+r_hom_v[123] = 2.4255e-06,theta_2nd_v[123]= 3.05362,r_het_2nd_v[123] = 2.42549e-06,dTdr_v[123] = 62829.9,dTdr_het_v[123] = 62951.9,GT_het_v[123]=2.68084e-06,stat_hom_2nd_v[123]=1.39702e+49;-979873; 616.7270909836545
+
+
+S_total = -2802693.4634132814
+
+r_hom_v[124] = 2.394e-06,theta_2nd_v[124]= 3.05388,r_het_2nd_v[124] = 2.39399e-06,dTdr_v[124] = 65739.3,dTdr_het_v[124] = 65866.2,GT_het_v[124]=2.7365e-06,stat_hom_2nd_v[124]=1.34008e+49;-979873; 611.205487034243
+
+
+S_total = -2799804.9757047696
+
+r_hom_v[125] = 2.3625e-06,theta_2nd_v[125]= 3.05414,r_het_2nd_v[125] = 2.36249e-06,dTdr_v[125] = 68820.3,dTdr_het_v[125] = 68952.3,GT_het_v[125]=2.79362e-06,stat_hom_2nd_v[125]=1.2847e+49;-979873; 605.4079080955274
+
+
+S_total = -2797063.3579440573
+
+r_hom_v[126] = 2.331e-06,theta_2nd_v[126]= 3.05441,r_het_2nd_v[126] = 2.33099e-06,dTdr_v[126] = 72085.6,dTdr_het_v[126] = 72223,GT_het_v[126]=2.85227e-06,stat_hom_2nd_v[126]=1.23089e+49;-979873; 599.345939256553
+
+
+S_total = -2794469.374078085
+
+r_hom_v[127] = 2.2995e-06,theta_2nd_v[127]= 3.05468,r_het_2nd_v[127] = 2.29949e-06,dTdr_v[127] = 75549.1,dTdr_het_v[127] = 75692.2,GT_het_v[127]=2.91251e-06,stat_hom_2nd_v[127]=1.17862e+49;-979873; 593.0308066843025
+
+
+S_total = -2792023.8769804104
+
+r_hom_v[128] = 2.268e-06,theta_2nd_v[128]= 3.05495,r_het_2nd_v[128] = 2.26799e-06,dTdr_v[128] = 79226,dTdr_het_v[128] = 79375.1,GT_het_v[128]=2.97443e-06,stat_hom_2nd_v[128]=1.1279e+49;-979873; 586.4734014444234
+
+
+S_total = -2789727.8088532765
+
+r_hom_v[129] = 2.2365e-06,theta_2nd_v[129]= 3.05523,r_het_2nd_v[129] = 2.23649e-06,dTdr_v[129] = 83132.8,dTdr_het_v[129] = 83288.3,GT_het_v[129]=3.0381e-06,stat_hom_2nd_v[129]=1.07871e+49;-979873; 579.6843024843798
+
+
+S_total = -2787582.2016253686
+
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:1859: RuntimeWarning: More than 20 figures have been opened. Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`). Consider using `matplotlib.pyplot.close()`.
+  fig26,ax26 = plt.subplots(1)
+C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\nucleacao\Nucleation_model_FCC_A1_new_paper_B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim_2026_paper_EP.py:2053: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+r_hom_v[130] = 2.205e-06,theta_2nd_v[130]= 3.05552,r_het_2nd_v[130] = 2.20499e-06,dTdr_v[130] = 87287.7,dTdr_het_v[130] = 87449.9,GT_het_v[130]=3.10362e-06,stat_hom_2nd_v[130]=1.03104e+49;-979873; 572.6737988329388
+
+
+Sweep: 131 points, grad T up to 87287.7 K/m, DT up to 4.8373 K, yield at r/req = 0.9850
+
+
+dTdr[39] = 3277.87[K/m],r_hom_v[39] = 5.0715e-06 [m]
+dTdr[39.5] = 3294[K/m], r_hom_int[39.5] = 5.06699e-06 [m]
+dTdr[40] = 3390.57[K/m], r_hom_v[40] = 5.04e-06 [m]
+
+
+dTdr[39] = 3277.87[K/m],r_hom_2nd_v[39] = 5.0715e-06 [m]
+dTdr[39.5] = 3294[K/m], r_hom_2nd_int[39.5] = 5.06699e-06 [m]
+dTdr[40] = 3390.57[K/m], r_hom_2nd_v[40] = 5.04e-06 [m]
+
+
+dTdr[39] = 3277.87[K/m],r_het_v[39] = 1.85874e-06 [m]
+dTdr[39.5] = 3294[K/m], r_het_int[39.5] = 1.86014e-06 [m]
+dTdr[40] = 3390.57[K/m], r_het_v[40] = 1.86849e-06 [m]
+
+
+dTdr[39] = 3277.87[K/m],r_het_2nd_v[39] = 5.07147e-06 [m]
+dTdr[39.5] = 3294[K/m], r_het_2nd_int[39.5] = 5.06697e-06 [m]
+dTdr[40] = 3390.57[K/m], r_het_2nd_v[40] = 5.03997e-06 [m]
+
+
+dTdr[39] = 3277.87[K/m], theta_v[39] = 0.750286 [rad]
+dTdr[39.5] = 3294[K/m], theta_int[39.5] = 0.751311 [rad]
+dTdr[40] = 3390.57[K/m], theta_v[40] = 0.757448 [rad]
+
+
+dTdr[39] = 3277.87[K/m], theta_2nd_v[39] = 3.04715 [rad]
+dTdr[39.5] = 3294[K/m], theta_2nd_int[39.5] = 3.04714 [rad]
+dTdr[40] = 3390.57[K/m], theta_2nd_v[40] = 3.04703 [rad]
+
+
+dTdr[39] = 3277.87[K/m], dfthetadr_2nd_v[39] = -15.9998 [1/m]
+dTdr[39.5] = 3294[K/m], dfthetadr_2nd_int[39.5] = -15.9998 [1/m]
+dTdr[40] = 3390.57[K/m], dfthetadr_2nd_v[40] = -15.9998 [1/m]
+
+
+dTdr[39] = 3277.87[K/m], DT_v[39] = 0.417799 [K]
+dTdr[39.5] = 3294[K/m], DT_int[39.5] = 0.419471 [K]
+dTdr[40] = 3390.57[K/m], DT_v[40] = 0.42948 [K]
+
+
+dTdr[39] = 3277.87[K/m], GT_hom_2nd_v[39] = 1.05943e-06 [m.K]
+dTdr[39.5] = 3294[K/m], GT_hom_2nd_int[39.5] = 1.06271e-06 [m.K]
+dTdr[40] = 3390.57[K/m], GT_hom_2nd_v[40] = 1.08229e-06 [m.K]
+
+
+dTdr[39] = 3277.87[K/m], GT_hom_v[39] = 3.88293e-07 [m.K]
+dTdr[39.5] = 3294[K/m], GT_hom_int[39.5] = 3.90147e-07 [m.K]
+dTdr[40] = 3390.57[K/m], GT_hom_v[40] = 4.01243e-07 [m.K]
+
+
+dTdr[39] = 3277.87[K/m], GT_het_v[39] = 3.8829e-07 [m.K]
+dTdr[39.5] = 3294[K/m], GT_het_int[39.5] = 3.90144e-07 [m.K]
+dTdr[40] = 3390.57[K/m], GT_het_v[40] = 4.0124e-07 [m.K]
+
+
+dTdr[39] = 3277.87[K/m], GT_het_2nd_v[39] = 1.05944e-06 [m.K]
+dTdr[39.5] = 3294[K/m], GT_het_2nd_int[39.5] = 1.06271e-06 [m.K]
+dTdr[40] = 3390.57[K/m], GT_het_2nd_v[40] = 1.08229e-06 [m.K]
+
+
+dTdr[39] = 3277.87[K/m], sigma_v[39] = 1.41467 [N.m^-1]
+dTdr[39.5] = 3294[K/m], sigma_int[39.5] = -1.41467 [N.m^-1]
+dTdr[40] = 3390.57[K/m], sigma_v[40] = 1.41467 [N.m^-1]
+
+
+dTdr[39] = 3277.87[K/m], surface_stress_v[39] = -0.038572 [N.m^-1]
+dTdr[39.5] = 3294[K/m], surface_stress_int[39.5] = -0.038572 [N.m^-1]
+dTdr[40] = 3390.57[K/m], surface_stress_v[40] = -0.038572 [N.m^-1]
+
+
+dTdr[39] = 3277.87[K/m], gam_hom_v[39] = 1.03811 [J.m^-2]
+dTdr[39.5] = 3294[K/m], gam_hom_v[39.5] = 1.04132 [J.m^-2]
+dTdr[40] = 3390.57[K/m], gam_hom_v[40] = 1.06051 [J.m^-2]
+
+
+dTdr[39] = 3277.87[K/m], gam_het_v[39] = 0.204434 [J.m^-2]
+dTdr[39.5] = 3294[K/m], gam_het_v[39.5] = 0.206111 [J.m^-2]
+dTdr[40] = 3390.57[K/m], gam_het_v[40] = 0.216151 [J.m^-2]
+
+
+dTdr[39] = 3277.87[K/m], gam_het_2nd_v[39] = 1.0381 [J.m^-2]
+dTdr[39.5] = 3294[K/m], gam_het_2nd_v[39.5] = 1.0413 [J.m^-2]
+dTdr[40] = 3390.57[K/m], gam_het_2nd_v[40] = 1.06049 [J.m^-2]
+
+
+dTdr[39] = 3277.87[K/m], dfgamdr_hom_v[39] = -707607 [J.m^-3]
+dTdr[39.5] = 3294[K/m], dfgamdr_hom_v[39.5] = -708565 [J.m^-3]
+dTdr[40] = 3390.57[K/m], dfgamdr_hom_v[40] = -714302 [J.m^-3]
+
+
+dTdr[39] = 3277.87[K/m], dfgamdr_het_v[39] = -139349 [J.m^-3]
+dTdr[39.5] = 3294[K/m], dfgamdr_het_v[39.5] = -140242 [J.m^-3]
+dTdr[40] = 3390.57[K/m], dfgamdr_het_v[40] = -145589 [J.m^-3]
+
+
+dTdr[39] = 3277.87[K/m], dDeltaSvhomDTdr_v[39] = -6.19624e+10 [J.m^-4]
+dTdr[39.5] = 3294[K/m], dDeltaSvhomDTdr_int[39.5] = -6.15951e+10 [J.m^-4]
+dTdr[40] = 3390.57[K/m], dDeltaSvhomDTdr_v[40] = -5.9396e+10 [J.m^-4]
+
+
+dTdr[39] = 3277.87[K/m], dDeltaSvhomDTdr_v[39] = -2.47839e+11 [J.m^-4]
+dTdr[39.5] = 3294[K/m], dDeltaSvhomDTfthetadr_int[39.5] = -2.4637e+11 [J.m^-4]
+dTdr[40] = 3390.57[K/m], dDeltaSvhomDTfthetadr_v[40] = -2.37574e+11 [J.m^-4]
+
+
+dTdr[39] = 3277.87[K/m], DGc_hom_2nd_expr_v[39] = 1.11842e-10 [J]
+dTdr[39.5] = 3294[K/m], dDGc_hom_2nd_expr_int[39.5] = 1.11985e-10 [J]
+dTdr[40] = 3390.57[K/m], DGc_hom_2nd_expr_v[40] = 1.1284e-10 [J]
+
+
+dTdr[39] = 3277.87[K/m], DGc_het_2nd_expr_v[39] = 1.1184e-10 [J]
+dTdr[39.5] = 3294[K/m], dDGc_het_2nd_expr_int[39.5] = 1.11983e-10 [J]
+dTdr[40] = 3390.57[K/m], DGc_het_2nd_expr_v[40] = 1.12838e-10 [J]
+
+
+
+
+dTdr[39] = 3277.87[K/m], DSv_hom_v[39] = -2.06339e+06 [J.m^-3.K^-1]
+dTdr[39.5] = 3294[K/m], DSv_hom_int[39.5] = -2.06401e+06 [J.m^-3.K^-1]
+dTdr[40] = 3390.57[K/m], DSv_hom_v[40] = -2.06774e+06 [J.m^-3.K^-1]
+
+
+dTdr[39] = 3277.87[K/m], dDSv_homdr_v[39] = 1.48307e+11 [J.m^-3.K^-1]
+dTdr[39.5] = 3294[K/m], dDSv_homdr_int[39.5] = 1.46874e+11 [J.m^-3.K^-1]
+dTdr[40] = 3390.57[K/m], dDSv_homdr_v[40] = 1.38298e+11 [J.m^-3.K^-1]
+
+
+dTdr[39] = 3277.87[K/m], DSv_het_v[39] = -2.06336e+06 [J.m^-3.K^-1]
+dTdr[39.5] = 3294[K/m], DSv_het_int[39.5] = -2.06398e+06 [J.m^-3.K^-1]
+dTdr[40] = 3390.57[K/m], DSv_het_v[40] = -2.06771e+06 [J.m^-3.K^-1]
+
+
+dTdr[39] = 3277.87[K/m], DSs_hom_v[39] = -1.69365e+06 [J.m^-3.K^-1]
+dTdr[39.5] = 3294[K/m], DSs_hom_int[39.5] = -1.68929e+06 [J.m^-3.K^-1]
+dTdr[40] = 3390.57[K/m], DSs_hom_v[40] = -1.66318e+06 [J.m^-3.K^-1]
+
+
+dTdr[39] = 3277.87[K/m], DSs_het_v[39] = -1.69363e+06 [J.m^-3.K^-1]
+dTdr[39.5] = 3294[K/m], DSs_het_int[39.5] = -1.68927e+06 [J.m^-3.K^-1]
+dTdr[40] = 3390.57[K/m], DSs_het_v[40] = -1.66316e+06 [J.m^-3.K^-1]
+
+
+dTdr[39] = 3277.87[K/m], DSc_v[39] = -9.93885 [J.m^-3.K^-1]
+dTdr[39.5] = 3294[K/m], DSc_int[39.5] = -9.93002 [J.m^-3.K^-1]
+dTdr[40] = 3390.57[K/m], DSc_v[40] = -9.87712 [J.m^-3.K^-1]
+
+
+dTdr[39] = 3277.87[K/m], gb_v[39] = -862082 [J/m^3]
+dTdr[39.5] = 3294[K/m], gb_int[39.5] = -865799 [J/m^3]
+dTdr[40] = 3390.57[K/m], gb_v[40] = -888054 [J/m^3]
+
+
+
+
+dTdr[39] = 3277.87[K/m], gs_v[39] = 1.03811 [J/m^2]
+dTdr[39.5] = 3294[K/m], gs_int[39.5] = 1.04132 [J/m^2]
+dTdr[40] = 3390.57[K/m], gs_v[40] = 1.06051 [J/m^2]
+
+
+
+
+dTdr[39] = 3277.87[K/m], gc_v[39] = -4.15245 [J]
+dTdr[39.5] = 3294[K/m], gc_int[39.5] = -4.16527 [J]
+dTdr[40] = 3390.57[K/m], gs_v[40] = -4.24202 [J]
+
+
+
+
+dTdr[39] = 3277.87[K/m], Vm_v[39] = 5.07732e-06 [m^3/mol]
+dTdr[39.5] = 3294[K/m], Vm_int[39.5] = 5.07735e-06 [m^3/mol]
+dTdr[40] = 3390.57[K/m], Vm_v[40] = 5.07751e-06 [m^3/mol]
+
+
+
+
+dTdr[39] = 3277.87[K/m], density_v[39] = 2888.37 [kg/m^3]
+dTdr[39.5] = 3294[K/m], density_int[39.5] = 2888.35 [kg/m^3]
+dTdr[40] = 3390.57[K/m], density_v[40] = 2888.26 [kg/m^3]
+
+
+
+
+dTdr[39] = 3277.87[K/m], mu_Al_v[39] = -899924 [J/mol]
+dTdr[39.5] = 3294[K/m], mu_Al_int[39.5] = -907991 [J/mol]
+dTdr[40] = 3390.57[K/m], mu_Al_v[40] = -956279 [J/mol]
+
+
+r_hom_int[39.5] = 5.06699e-06 [m], r_het_int[39.5] = 1.86014e-06 [m],  theta_int[39.5] = 0.751311 [rad], dTdr[39.5] = 3294 [K/m],  GT_hom_int[39.5] = 1.06271e-06 [m.K], GT_het_int[39.5] = 1.06271e-06 [m.K], sigma_int[39.5] = -1.41467 [N.m^-1], surface_stress_int[39.5] = -0.038572 [N.m^-1], gam_hom_v[39.5] = 1.04132 [J.m^-2],  dfgamdr_hom_v[39.5] = -708565 [J.m^-3]
+936.58K, 7.44e-09 m^2/s
+936.57K, 7.43987e-09 m^2/s
+936.56K, 7.43973e-09 m^2/s
+936.55K, 7.4396e-09 m^2/s
+936.54K, 7.43947e-09 m^2/s
+936.53K, 7.43934e-09 m^2/s
+936.52K, 7.4392e-09 m^2/s
+936.51K, 7.43907e-09 m^2/s
+936.5K, 7.43894e-09 m^2/s
+936.49K, 7.4388e-09 m^2/s
+936.48K, 7.43867e-09 m^2/s
+936.47K, 7.43854e-09 m^2/s
+936.46K, 7.4384e-09 m^2/s
+936.45K, 7.43827e-09 m^2/s
+936.44K, 7.43814e-09 m^2/s
+936.43K, 7.43801e-09 m^2/s
+936.42K, 7.43787e-09 m^2/s
+936.41K, 7.43774e-09 m^2/s
+936.4K, 7.43761e-09 m^2/s
+936.39K, 7.43747e-09 m^2/s
+936.38K, 7.43734e-09 m^2/s
+936.37K, 7.43721e-09 m^2/s
+936.36K, 7.43708e-09 m^2/s
+936.35K, 7.43694e-09 m^2/s
+936.34K, 7.43681e-09 m^2/s
+936.33K, 7.43668e-09 m^2/s
+936.32K, 7.43654e-09 m^2/s
+936.31K, 7.43641e-09 m^2/s
+936.3K, 7.43628e-09 m^2/s
+936.29K, 7.43615e-09 m^2/s
+936.28K, 7.43601e-09 m^2/s
+936.27K, 7.43588e-09 m^2/s
+936.26K, 7.43575e-09 m^2/s
+936.25K, 7.43561e-09 m^2/s
+936.24K, 7.43548e-09 m^2/s
+936.23K, 7.43535e-09 m^2/s
+936.22K, 7.43522e-09 m^2/s
+936.21K, 7.43508e-09 m^2/s
+936.2K, 7.43495e-09 m^2/s
+936.19K, 7.43482e-09 m^2/s
+936.18K, 7.43468e-09 m^2/s
+936.17K, 7.43455e-09 m^2/s
+936.16K, 7.43442e-09 m^2/s
+936.15K, 7.43429e-09 m^2/s
+936.14K, 7.43415e-09 m^2/s
+936.13K, 7.43402e-09 m^2/s
+936.12K, 7.43389e-09 m^2/s
+936.11K, 7.43375e-09 m^2/s
+936.1K, 7.43362e-09 m^2/s
+936.09K, 7.43349e-09 m^2/s
+936.08K, 7.43336e-09 m^2/s
+936.07K, 7.43322e-09 m^2/s
+936.06K, 7.43309e-09 m^2/s
+936.05K, 7.43296e-09 m^2/s
+936.04K, 7.43282e-09 m^2/s
+936.03K, 7.43269e-09 m^2/s
+936.02K, 7.43256e-09 m^2/s
+936.01K, 7.43243e-09 m^2/s
+936K, 7.43229e-09 m^2/s
+935.99K, 7.43216e-09 m^2/s
+935.98K, 7.43203e-09 m^2/s
+935.97K, 7.43189e-09 m^2/s
+935.96K, 7.43176e-09 m^2/s
+935.95K, 7.43163e-09 m^2/s
+935.94K, 7.4315e-09 m^2/s
+935.93K, 7.43136e-09 m^2/s
+935.92K, 7.43123e-09 m^2/s
+935.91K, 7.4311e-09 m^2/s
+935.9K, 7.43096e-09 m^2/s
+935.89K, 7.43083e-09 m^2/s
+935.88K, 7.4307e-09 m^2/s
+935.87K, 7.43057e-09 m^2/s
+935.86K, 7.43043e-09 m^2/s
+935.85K, 7.4303e-09 m^2/s
+935.84K, 7.43017e-09 m^2/s
+935.83K, 7.43003e-09 m^2/s
+935.82K, 7.4299e-09 m^2/s
+935.81K, 7.42977e-09 m^2/s
+935.8K, 7.42964e-09 m^2/s
+935.79K, 7.4295e-09 m^2/s
+935.78K, 7.42937e-09 m^2/s
+935.77K, 7.42924e-09 m^2/s
+935.76K, 7.4291e-09 m^2/s
+935.75K, 7.42897e-09 m^2/s
+935.74K, 7.42884e-09 m^2/s
+935.73K, 7.42871e-09 m^2/s
+935.72K, 7.42857e-09 m^2/s
+935.71K, 7.42844e-09 m^2/s
+935.7K, 7.42831e-09 m^2/s
+935.69K, 7.42817e-09 m^2/s
+935.68K, 7.42804e-09 m^2/s
+935.67K, 7.42791e-09 m^2/s
+935.66K, 7.42778e-09 m^2/s
+935.65K, 7.42764e-09 m^2/s
+935.64K, 7.42751e-09 m^2/s
+935.63K, 7.42738e-09 m^2/s
+935.62K, 7.42724e-09 m^2/s
+935.61K, 7.42711e-09 m^2/s
+935.6K, 7.42698e-09 m^2/s
+935.59K, 7.42685e-09 m^2/s
+CL_hom = 1.17594e+28
+N_V = 1.1307814934579796e+28
+N_V_T = 1.1876469896693333e+29
+V_T = 5.07053e-06 m^3/mol
