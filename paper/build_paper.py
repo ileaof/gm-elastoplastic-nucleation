@@ -782,9 +782,14 @@ if e64:
       'permanent deformation, which is what allows it to keep the larger thermal-field tensor of Section 5. The prediction '
       'of the stored_total mode with the $\\sigma_y^s$ fitted to the SDAS data (0.157 N m⁻¹) sits below these MD remainders of '
       'the deep states; the bridge between the two is the thickness $\\delta$ of the deformed zone of Eq. '
-      f'({EQS["grec"]}), measured from the energy profiles: it converts the areal storage of the interface into the '
-      'volumetric one the cell carries. This calibration of $\\sigma_y^s$ and $\\delta$ against the molecular-dynamics states '
-      'is the natural continuation of the test.')
+      f'({EQS["grec"]}), and it is measured, not assumed: the energy profile of the sheared state (Figure 9) '
+      'concentrates its excess in a band of $\\delta=0.32$ nm for the alloy (0.19 nm for the pure-Al control), one '
+      'to two atomic planes. With this measured $\\delta$, $\\sigma_y^s\\alpha/\\delta=7.6\\times 10^{7}$ J m⁻³ sits '
+      'within an order of magnitude of the 4 × 10⁸ J m⁻³ the unloaded cells carry, and the same factor of about 5 '
+      'appears independently in Table 8 between the model and the effective areal flow stress - the two routes '
+      'agree. The stored deformation therefore lives in the atomic-thick interface zone the model assumes; the '
+      'remaining difference is the value of $\\sigma_y^s$, which the SDAS fit underestimates by about this factor '
+      'and whose calibration against the molecular-dynamics states is the natural continuation of the test.')
 P('The size consistency of the measurement was tested against a 16 384-atom cell: the stored energy and the '
   'flow of the big cell reproduce the 2 048-atom ones within 3-5 % (stored 0.027, 0.049 and 0.040 eV/atom at '
   '0.14, 0.20 and 0.30 - the last one after the flow released the peak - shear stresses 3.49/3.52 GPa and '
