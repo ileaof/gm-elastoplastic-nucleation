@@ -1,0 +1,43 @@
+# E6.4 — descarregamento elástico DETERMINÍSTICO: reversão completa do cisalhamento
+# (erate -0.002, 150 ps = 0.30 de reversão: o estado chega a -eps em tensão positiva);
+# a tensão cruza ZERO no caminho e o cruzamento (com a PE ali) vem do log por interpolação.
+# O resto de energia no cruzamento = análogo MD de sigma_y*alpha (stored_total).
+# Uso:  lmp -sf omp -pk omp 8 -in in.descarregar.lmp -var pot jelinek -var alloy 1 -var datafile data_jelinek_0.20.data
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot      index jelinek
+variable     alloy    index 1
+variable     datafile index data_jelinek_0.20.data
+variable     seed     index 4928459
+variable     a0       equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+
+read_data    ${datafile}
+include      pot_${pot}.lmp
+neigh_modify every 1 delay 0 check yes
+
+compute      esp all pe/atom
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       100
+
+run          0
+variable     eps equal xy/lx
+print        "BASE strain=$(v_eps) e_at=$(pe/atoms) pxy=$(pxy)" append descarregado_${pot}.dat
+
+# reversão total: -0.002 ps^-1 por 150 ps (degraus de 5000 = 10 ps para o thermo ficar legível)
+fix          integ all nvt temp 300.0 300.0 0.1
+fix          revd all deform 1 xy erate -0.002 remap v
+run          75000
+unfix        integ
+unfix        revd
+run          3000
+variable     epsf equal xy/lx
+print        "FIM strain=$(v_epsf) e_at=$(pe/atoms) pxy=$(pxy)" append descarregado_${pot}.dat
+write_data   descarregado_final_${pot}_${datafile}.data
+print        "E6.4 completa: descarga no log de descarregado_${pot}.dat"
