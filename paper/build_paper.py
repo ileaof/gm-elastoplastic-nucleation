@@ -206,7 +206,10 @@ P('In previous works, the Gibbs–Thomson coefficient was generalized as a therm
   'yielding occurs at gradients of 560–925 K m⁻¹. Thereafter, the elasto-plastic tensor remains 0.6–4.2% below its '
   'elastic counterpart, while nucleation-rate maxima decrease by 4–19%. Surface tension differs from the elastic '
   'prediction by 0.6–5.3%. Across gradients up to 10⁶ K m⁻¹, surface energy reaches 19–25 times its equilibrium '
-  'value at 10⁵ K m⁻¹.')
+  'value at 10⁵ K m⁻¹. The stored energy is verified by molecular dynamics on the alloy and on a pure-Al '
+  'control: cells annealed at 800-900 K release 47-67 % of the stored excess in 100-300 ps onto a '
+  'persistent plateau of 3-6 × 10⁷ J m⁻³, the order of the model potential '
+  '$\\sigma_y^s\\alpha/\\delta$ with the measured deformed-zone thickness.')
 P('Keywords: Phase nucleation; Non-equilibrium thermodynamics; Surface plasticity; Gurtin–Murdoch surface stress; '
   'Thermal-field tensor; Gibbs–Thomson coefficient; Aluminum alloys.', size=11)
 
@@ -824,7 +827,7 @@ def g3_events():
             continue
         step, temp, pe = best[:, 0], best[:, 1], best[:, 3]
         dpe = np.diff(pe)
-        i = int(np.argmax(dpe))
+        i = int(np.argmax(dpe[1:])) + 1     # the first thermo diff is the run-start warm-up, not an event
         raw = open(log, encoding='utf-8', errors='replace').read()
         lost = re.search(r'Lost atoms: original (\d+) current (\d+)', raw)
         n_lost = int(lost.group(1)) - int(lost.group(2)) if lost else 0
@@ -856,10 +859,10 @@ def long_run_row():
         return None
     step, temp, pe = best[:, 0], best[:, 1], best[:, 3]
     dpe = np.diff(pe)
-    i = int(np.argmax(dpe))
+    i = int(np.argmax(dpe[1:])) + 1     # the run-start warm-up of the thermo is not an event
     big = int(lost.group(1)) > 3000
     return ['750', '777 (long run, ' + ('big cell' if big else 'small cell') + ')',
-            f'{step[i] * 0.002:.0f}', f'{dpe[i]:+.0f}', f'{temp.max():.0f}',
+            f'{step[i] * 0.002:.0f}-{step[i + 1] * 0.002:.0f}', f'{dpe[i]:+.0f}', f'{temp.max():.0f}',
             str(int(lost.group(1)) - int(lost.group(2)))]
 
 
@@ -1082,9 +1085,10 @@ P('The anneals of the unloaded states read against the ruler of their own barost
 P('The plateau is the deformation the 1 ns window does not consume, and it closes the scale: as a bulk '
   'density (16.5 Å³ of volume per atom) it gives 3-6 × 10⁷ J m⁻³, the order of the model potential '
   '$\\sigma_y^s\\alpha/\\delta$ with the measured $\\delta$ of Figure 9 (0.19 nm for this control): '
-  '$\\sigma_y^s\\alpha/\\delta\\approx 3.2\\times 10^{7}$ J m⁻³ with the control parameters - the '
-  'reading of this agreement, and of the $\\sigma_y^s$ calibration behind it, is the discussion of '
-  'Section 5.7.')
+  '$\\sigma_y^s\\alpha/\\delta\\approx 3.2\\times 10^{7}$ J m⁻³ with the control parameters - and the '
+  'plateau therefore agrees with the model potential to within about a factor of two, the same order of '
+  'agreement Section 5.7 found between the model and the deep-state remainders; the reading of this '
+  'agreement, and of the $\\sigma_y^s$ calibration behind it, is the discussion of Section 5.7.')
 FIG(os.path.join(HERE, 'Fig12_E66_unload_release.png'),
     'Figure 12. The unloading and the release of the E6.6 series on the 62 500-atom control. '
     '(a) The in-line shear at 300 K and its reversal until the shear stress crosses zero: the '
@@ -1138,6 +1142,13 @@ for c in [
     'structure of Section 2 describes with $\\sigma_y^s\\alpha/\\delta$ in the place of $\\Delta S_V\\Delta T$. The deep '
     'state of the control (0.30) was unloaded independently on the two machines: 0.190 J m⁻² on the GPU box and '
     '0.184 J m⁻² on the laptop, an agreement of 4 %.',
+    'The 62 500-atom tests separate the protocols: the in-line shear of $\\gamma=0.10$ is elastic (its '
+    'unloading returns to $\\varepsilon=0.00$ with no remainder), the $\\gamma=0.30$ state glides through '
+    'the shear and unloads at $\\varepsilon=0.252$ with the plastic remainder of 0.0119 eV/atom (1.17 J m⁻², '
+    'twice the small-cell per-atom remainder), and the anneal release is gradual - 47-67 % of the excess in '
+    '100-300 ps - onto a plateau of +3 to +6 meV/atom that the 1 ns window does not consume. The decay '
+    'catastrophe of the small cells is absent from the big cell; the plateau density, 3-6 × 10⁷ J m⁻³, is '
+    'the order of $\\sigma_y^s\\alpha/\\delta$ with the measured $\\delta$.',
 ]:
     par = doc.add_paragraph(style='List Number')
     par.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
