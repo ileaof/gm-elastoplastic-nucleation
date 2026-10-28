@@ -729,9 +729,10 @@ P('Here $\\delta$ is the thickness of the deformed zone, which converts the area
   'Closed with this potential, the framework is self-consistent with the rules adopted in Section 3: the elastic '
   'part of the surface energy is restorable on its own (the elastic unloading), and the permanent part only leaves '
   'the interface consumed by the recrystallization, which returns the interface to equilibrium.')
-P('The molecular-dynamics test (LAMMPS) runs FCC periodic cells of 2 048 atoms of Al‑0.8Si‑0.6Mg‑0.2Fe with the '
-  'MEAM interatomic potential of Jelinek et al. [18] (the Cu of the parameterization is not included) and of pure '
-  'Al with the EAM of Mendelev et al. [19] as the control. The cells are sheared at 300 K in strain steps of 10 ps '
+P('The molecular-dynamics test runs face-centered cubic (FCC) periodic cells of 2 048 atoms of Al‑0.8Si‑0.6Mg‑0.2Fe '
+  'with the modified embedded-atom method (MEAM) potential of Jelinek et al. [18] (the Cu of the parameterization is '
+  'not included) and pure Al with the embedded-atom method (EAM) of Mendelev et al. [19] as the control; the runs are '
+  'made with the LAMMPS code (Large-scale Atomic/Molecular Massively Parallel Simulator). The cells are sheared at 300 K in strain steps of 10 ps '
   'at rates of 4–10 × 10⁹ s⁻¹, with a relaxation of 20 ps after each step; the stored energy is the potential '
   'energy per atom of the relaxed state relative to the undeformed reference, and $E_A^p=\\sigma_y^s/\\left|\\sigma_0\\right|=0.144$ '
   'of the model (the yield strain of the Al-Si-Mg-Fe interface) marks Figure 7.')
@@ -928,13 +929,15 @@ def e65_serie():
 H2('5.9. The big-cell design at 800-900 K: the metastable sheared state and the hot-temperature baseline')
 P('The 800-900 K strip of Figures 8 and 10 collected every regime on the 2 048-atom cell: the control of '
   'pure Al releases there, the alloy crosses its violent threshold, and the periodic cell itself ejects atoms '
-  'at the front of the ramp. The E6.5 series transfers the anneal to a design in which the ejection does not '
+  'at the front of the ramp. A big-cell series, E6.5 in the records of the repository cited here, transfers the '
+  'anneal to a design in which the ejection does not '
   'take place: a 62 500-atom cell (25 × 25 × 25 FCC unit cells) of the same EAM control [19], the shear '
   'applied in-line at 300 K ($\\dot{\\gamma}=10^{10}$ s⁻¹, the rate of one step of Figure 7), the temperature '
-  'ramped to the hold in a single blind step and 1 ns of NVT anneal, in steps at 800, 850 and 900 K. No run '
+  'ramped to the hold in a single blind step and 1 ns of anneal with the number of atoms, volume and temperature '
+  'held (NVT), in steps at 800, 850 and 900 K. No run '
   'lost an atom: the ejection catastrophe belongs to the small cell of the unloaded protocol, not to the '
   'deformed state itself.')
-P('At the anneal temperatures the labels of the common-neighbor analysis need their own reference: with the '
+P('At the anneal temperatures the labels of the common-neighbor analysis (CNA) need their own reference: with the '
   'standard in-shell cutoff, 0.854 a₀, the pristine FCC control classifies 17.7 %, 22.8 % and 28.6 % of its '
   'perfectly crystalline atoms outside FCC at 800, 850 and 900 K, against 99.99 % FCC at 300 K in the same '
   'compute - the thermal vibration at 0.85-0.97 T_m misclassifies about a quarter of the atoms of a perfect '
@@ -950,8 +953,9 @@ P('The series is summarized in Figure 11 and Table 10. Against the pristine cont
   'unloading test of Section 5.10 shows this surplus to be the energy of the loaded geometry itself.')
 P('The contrast with Figures 8 and 10 is thereby a statement about the protocol, and the map separates its '
   'factors. The decay of the small cells happened in states unloaded from $\\varepsilon=0.30$ - several times '
-  'the stored content of the $\\gamma=0.10$ state, per the flow map of Figure 7 - and annealed under NPT at '
-  'zero pressure; the E6.5 states are loaded (the $\\sigma_{xy}$ residual stays) and annealed under NVT at '
+  'the stored content of the $\\gamma=0.10$ state, per the flow map of Figure 7 - and annealed under NPT, the '
+  'ensemble in which the number of atoms, the pressure and the temperature are held, here at zero pressure; '
+  'the E6.5 states are loaded (the $\\sigma_{xy}$ residual stays) and annealed under NVT at '
   'the cold-built volume (about 45-53 kbar of confinement at the hold temperature). Which factor controls '
   'the onset - the magnitude of the released potential or the barostat - is what the next experiment reads: '
   'unload to zero stress and anneal at zero pressure, in the same 62 500-atom cell.')
@@ -965,9 +969,11 @@ FIG(os.path.join(HERE, 'Fig11_E65_series.png'),
     'no recrystallization starts within 1 ns at 800-900 K.')
 e65 = e65_serie()
 if e65:
-    TABLE('Table 10. The E6.5 series: the sheared 62 500-atom cells against the pristine FCC control of '
-          'their own temperature (CNA label "5" and potential energy, 1 ns holds; $\\sigma_{xy}$ = the '
-          'residual shear stress of the loaded state, flat within the hold).',
+    TABLE('Table 10. The big-cell series (E6.5): the sheared 62 500-atom cells against the pristine FCC '
+          'control of their own temperature; ΔPE = the potential-energy surplus of the sheared state over '
+          'the control, ΔE_st = the same surplus as a bulk density; the CNA label "5" of the sheared state '
+          'is read as the excess over the control\'s label fraction; σxy = the residual shear stress of the '
+          'loaded state, flat within the hold.',
           ['T [K]', 'Label "5" [%]', 'Baseline [%]', 'Excess [%]', 'ΔPE [eV/atom]',
            'ΔE_st [10⁸ J m⁻³]', 'σxy [kbar]'],
           e65, [1.4, 2.2, 2.2, 2.2, 2.4, 2.4, 2.0])
@@ -1071,16 +1077,16 @@ P('Because the E6.5 series anneals the loaded state, the unloading measurement o
   'protocol gives on the small cell (0.250, Table 8) - with the stored remainder of 0.0119 eV/atom '
   '(1.17 J m⁻²), twice the per-atom remainder of the small cell in the same potential (0.0059 eV/atom): '
   'the continuous in-line shear stores about twice more.')
-P('The anneals of the unloaded states read against the ruler of their own barostat: a P = 0 state is '
+P('The anneals of the unloaded states read against the reference of their own barostat: a P = 0 state is '
   'compared to the pristine control annealed under NPT, the NVT family to the NVT one (Figure 12b-d) '
   '- the NPT control expands to the zero-pressure volume, and the potential energy of a confined and '
   'of a free cell differ by the elastic volume term. None of the 21 runs lost an atom and none jumped; '
   'the release is gradual: the three plastic states (0.30 unloaded, 0.20 and 0.30 loaded) shed 47-67 % '
-  'of their initial excess of 10-13 meV/atom over the ruler inside 100-300 ps and flatten on a common '
+  'of their initial excess of 10-13 meV/atom over the reference inside 100-300 ps and flatten on a common '
   'plateau of +3 to +6 meV/atom that persists to the end of the 1 ns. No recrystallization completes '
   'and no event occurs: the decay catastrophe of the fine frontier (Figure 10) is absent from the big '
   'cell entirely. The unloaded $\\gamma=0.10$ states, annealed under NPT at independent seeds, sit '
-  'within ±1.7 meV/atom of the NPT ruler - the equilibration noise between seeds -, replicating the '
+  'within ±1.7 meV/atom of the NPT reference - the equilibration noise between seeds -, replicating the '
   'control.')
 P('The plateau is the deformation the 1 ns window does not consume, and it closes the scale: as a bulk '
   'density (16.5 Å³ of volume per atom) it gives 3-6 × 10⁷ J m⁻³, the order of the model potential '
@@ -1096,16 +1102,16 @@ FIG(os.path.join(HERE, 'Fig12_E66_unload_release.png'),
     'circle, remainder within noise); the $\\gamma=0.30$ load crosses the glide inside the deformation '
     '(the stress peak of 7.3 GPa at $\\varepsilon\\approx 0.18$ falls to below 1.2 GPa) and the unload '
     'crosses at $\\varepsilon=0.252$ with the plastic remainder of 0.0119 eV/atom. (b-d) The potential-'
-    'energy excess over the ruler of the same barostat (thin = raw, solid = running mean) for the '
+    'energy excess over the reference of the same barostat (thin = raw, solid = running mean) for the '
     'unloaded 0.30 state under NPT and the loaded 0.20/0.30 states under NVT: 47-67 % of the excess '
     'releases inside 100-300 ps and the states flatten on a common plateau of +3 to +6 meV/atom that '
-    'the 1 ns window does not consume. The unloaded $\\gamma=0.10$ states sit on the NPT ruler '
+    'the 1 ns window does not consume. The unloaded $\\gamma=0.10$ states sit on the NPT reference '
     '(Table 11).')
 e66 = e66_filas()
 if e66:
     TABLE('Table 11. The E6.6 unloading and anneal: the unload crossing and the stored remainder '
-          'per state (left), and the release of the potential-energy excess over the ruler of the '
-          'same barostat (right; the NPT states against the NPT ruler of the same temperature, the '
+          'per state (left), and the release of the potential-energy excess over the reference of the '
+          'same barostat (right; the NPT states against the NPT reference of the same temperature, the '
           'NVT states against the NVT baseline). The unloaded $\\gamma=0.10$ cells return to pristine '
           'and are not a plastic measurement.',
           ['State', 'T [K]', 'Seed', '$\\varepsilon$ of the unload crossing', 'Stored remainder [J m⁻²]',
