@@ -114,3 +114,36 @@ Composição da liga proposta (at% de 99,4% Al da liga): Al 98,46 / Si 0,77 / Mg
 |        | T700 ok nos dois potenciais lá; T800 ejetou átomos TAMBÉM na GPU: a catástrofe da fronteira real | 
 | 11:20 | `fig_E6_maquinas.png`: comparação laptop × GPU; próxima etapa E6.4: descarregamento elástico (reversão até pxy=0) |
 |        | para medir a parte plástica remanescente = o análogo MD de σ_y·α (o dado que falta para a comparação da §5) |
+
+## 9. E6.5 e E6.6 (26-27/10/2026): a célula grande de 62 500 átomos, as réguas do CNA e os platôs
+
+**Desenho E6.5** (`in.rec_gpu.lmp`; cadeia `ser_e65.sh`): control de Mendelev com nx=25 (62 500 átomos),
+equilíbrio 300 K, cisalhamento em linha (erate 0.010/ps → γ=0,10), rampa cega e recozimento NVT de 1 ns
+(900 K, e em seguida 850/800 K), dumps a cada 50 ps. **Cadeia E6.6** (`ser_e66.sh`, 21 corridas, tudo
+`-sf gpu`, ~13,5 h): controles puros NVT 500-900 K e NPT 800-900 K (as réguas), descarregamentos
+(protocolo E6.4: reverso até σxy≥0) de γ=0,10 (2 sementes) e γ=0,30 + recozimento NPT de 1 ns, e as
+largas γ=0,20/0,30 carregadas NVT. (`in.ctrl_fcc.lmp`, `in.ctrl_npt.lmp`, `in.descar_npt.lmp`,
+`in.rec_largo.lmp`.)
+
+**Resultados** (números completos: `analyze_e66.py` → `e66_analise/`; paper `v7_total`, seções
+5.9/5.10, Figs 11-12, Tabelas 10-11):
+
+* o rótulo "5" do `cna/atom` (rc = 0.854 a₀) em dump quente é artefato térmico: no FCC puro ele dá
+  1,1 % (500 K) → 28,6 % (900 K) em NVT, e **42,6/52,7/62,2 %** em 800/850/900 K a P = 0 (NPT); a 300 K
+  o mesmo compute é limpo (99,99 % FCC). Frações de defeito em T quente só se leem como **excesso sobre
+  a régua do mesmo barostato**;
+* o cisalhamento em linha a γ=0,10 é **elástico** (unload cruza em ε=0,000; resto 0,02-0,03 J m⁻²,
+  ruído): o excedente da série carregada (Tabela 10) é energia da geometria carregada (σxy −33/−35 kbar);
+* γ=0,30: **desliza dentro do cisalhamento** (pico de σxy 7,3 GPa em ε≈0,18 → 0,7-1,2 GPa) e o unload
+  cruza em **ε=0,252** (= 0,250 do protocolo em degraus, Tabela 8 do paper) com resto plástico
+  **0,0119 eV/átomo (1,17 J m⁻²)**, ~2× o por-átomo da célula pequena no mesmo potencial (0,0059);
+* **a catástrofe das células pequenas não existe na célula grande**: 21/21 corridas sem átomo perdido e
+  sem evento; a liberação do armazenado é **recuperação gradual**: 47-67 % do excesso inicial
+  (10-13 meV/átomo) em 100-300 ps, com **platô de +3 a +6 meV/átomo que os 1 ns não consomem**;
+* o platô como densidade volumétrica = 3-6 × 10⁷ J m⁻³ ≈ a ordem do potencial σ_y·α/δ com δ = 0,19 nm
+  (3,2 × 10⁷ J m⁻³, parâmetros do controle) — a leitura fica na discussão de σ_y do paper (§5.7).
+
+**Como reproduzir**: na caixa GPU (`GPU.md`), `git pull`, cd `recristalizacao`, ajustar `LMP` e rodar
+`bash ser_e66.sh` (a cadeia inteira); análise na caixa com `python3 -I analyze_e66.py` → `e66_analise/`;
+as Figuras 11-12 do paper: `make_fig_E65.py` / `make_fig_E66.py`. Os logs crus das Tabelas 8/9 (descarga,
+deform e gpu2) agora estão no repositório para que o build do paper nunca silencie essas tabelas.

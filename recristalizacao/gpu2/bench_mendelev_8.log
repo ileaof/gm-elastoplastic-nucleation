@@ -1,0 +1,98 @@
+LAMMPS (10 Sep 2025)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Users\ileao\AppData\Local\LAMMPS 64-bit 10Sep2025\plugins
+package omp 8
+set 8 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+# Benchmark de cronometragem do E6 (não é produção): 1000 passos NVT a 300 K
+# Uso:  lmp -sf omp -pk omp <nt> -in in.bench.lmp -var pot jelinek -var alloy 1 -var nx 8
+units metal
+atom_style atomic
+boundary p p p
+variable pot index jelinek
+variable alloy index 1
+variable nx index 8
+variable nsteps index 1000
+variable a0 equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable a0 equal 4.045
+variable ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+lattice fcc ${a0}
+lattice fcc 4.045
+Lattice spacing in x,y,z = 4.045 4.045 4.045
+region box block 0 ${nx} 0 ${nx} 0 ${nx}
+region box block 0 8 0 ${nx} 0 ${nx}
+region box block 0 8 0 8 0 ${nx}
+region box block 0 8 0 8 0 8
+create_box ${ntypes} box
+create_box 1 box
+Created orthogonal box = (0 0 0) to (32.36 32.36 32.36)
+  1 by 1 by 1 MPI processor grid
+create_atoms 1 box
+Created 2048 atoms
+  using lattice units in orthogonal box = (0 0 0) to (32.36 32.36 32.36)
+  create_atoms CPU = 0.001 seconds
+if "${pot} == jelinek" then "mass 1 26.982"
+if "${pot} == jelinek && ${alloy} == 1" then "mass 2 28.086" "mass 3 24.305" "mass 4 55.845"
+if "${pot} == jelinek && ${alloy} == 1" then "set type 1 type/fraction 2 0.0077 4928459" "set type 1 type/fraction 3 0.00675 8294273" "set type 1 type/fraction 4 0.000974 1307723"
+include pot_${pot}.lmp
+include pot_mendelev.lmp
+# Mendelev, Kramer, Becker, Asta, Philos. Mag. 88 (2008) 1723 — EAM/FS Al puro (distribuição do LAMMPS)
+# T_m = 932,3 K no e2 (coexistência). Só Al (ntypes = 1).
+pair_style eam/fs
+pair_coeff * * ./potencias/Al_Mendelev2008/Al_mm.eam.fs Al
+Reading eam/fs potential file ./potencias/Al_Mendelev2008/Al_mm.eam.fs with DATE: 2007-06-11
+velocity all create 300.0 4928459 mom yes rot no dist gaussian
+timestep 0.002
+thermo 500
+thermo_style custom step temp pe
+fix 1 all nvt temp 300.0 300.0 0.1
+run ${nsteps}
+run 1000
+Last active /omp style is pair_style eam/fs/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.5
+  ghost atom cutoff = 8.5
+  binsize = 4.25, bins = 8 8 8
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/fs/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/atomonly/newton/omp
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 9.758 | 9.758 | 9.758 Mbytes
+   Step          Temp          PotEng    
+         0   300           -6985.0251    
+       500   276.77982     -6904.9684    
+      1000   312.73522     -6908.9806    
+Loop time of 4.36414 on 8 procs for 1000 steps with 2048 atoms
+
+Performance: 39.595 ns/day, 0.606 hours/ns, 229.140 timesteps/s, 469.279 katom-step/s
+58.7% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 3.196      | 3.196      | 3.196      |   0.0 | 73.23
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.058481   | 0.058481   | 0.058481   |   0.0 |  1.34
+Output  | 7e-05      | 7e-05      | 7e-05      |   0.0 |  0.00
+Modify  | 1.0948     | 1.0948     | 1.0948     |   0.0 | 25.09
+Other   |            | 0.01477    |            |       |  0.34
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           5765 ave        5765 max        5765 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         143360 ave      143360 max      143360 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 143360
+Ave neighs/atom = 70
+Neighbor list builds = 0
+Dangerous builds = 0
+Total wall time: 0:00:04

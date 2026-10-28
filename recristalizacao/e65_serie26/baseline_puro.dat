@@ -1,0 +1,6 @@
+# FCC puro, 62 500 atoms, same computes: CNA label-5 fraction and PE per atom at the
+# anneal temperature (the per-temperature baseline of the hot-CNA artifact).
+# T[K] f5_pure PE_pure[eV/atom]
+800 0.176608 -3.301813
+850 0.227648 -3.293991
+900 0.285880 -3.286420

@@ -37,3 +37,12 @@ Depois, qualquer um dos dois caminhos:
    copie também os `recozido_*.dump` de interesse.
 
 De volta ao laptop, o agente roda `analyze_recristalizacao.py` sobre os resultados completos.
+
+## Rodar as séries do desenho grande (E6.5/E6.6, o estado atual do trabalho)
+
+    bash ser_e65.sh        # controles puros + a célula de 62 500 átomos a 850/800 K (~1 h; Mendelev, -sf gpu)
+    bash ser_e66.sh        # a cadeia completa: réguas NVT/NPT, descarregamentos γ=0.10/0.30 + NPT e largas (21 corridas, ~13-14 h)
+
+Ajustar `LMP` no topo de cada script. Depois: `python3 -I analyze_e66.py` (cria `e66_analise/` com
+`reguas.csv`, `descarrega.csv`, `largo.csv` e as séries de frames) — o registro de números está no
+`PLANO.md` §9 e no paper (seções 5.9/5.10, Figs 11-12, Tabelas 10-11).

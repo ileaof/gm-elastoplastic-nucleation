@@ -13,7 +13,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = r'C:\Users\ileao\OneDrive\Documentos\Paper Nucleation\Manuscript_ElastoPlastic_Surface_NonEquilibrium_Nucleation_v7_final.docx'
+OUT = r'C:\Users\ileao\OneDrive\Documentos\Paper Nucleation\Manuscript_ElastoPlastic_Surface_NonEquilibrium_Nucleation_v7_total.docx'
 XSLT = etree.XSLT(etree.parse(r'C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL'))
 
 doc = Document()
@@ -886,6 +886,228 @@ if g3e:
         '(750-800 K, three thermal seeds): 6 of the 9 anneals decayed within 17-66 ps and the clean cells '
         'reached the full 100 ps window (squares) - no simple temperature trend at this spacing: the decay '
         'is probabilistic in the small cell. The big cell (16 384 atoms) decayed 2 ps into the anneal.')
+
+# ------------------------------------------------------------------ 5.9 E6.5 series
+E65 = os.path.join(EP6, 'e65_serie26')
+
+
+def e65_serie():
+    """The E6.5 series on the GPU box (26 Oct 2026): the 62 500-atom control design annealed at
+    800/850/900 K, 1 ns each. Reads the per-temperature analysis CSVs, the pristine-FCC baseline
+    and the thermo logs of the holds. Returns the rows of Table 10."""
+    base = {}
+    for ln in open(os.path.join(E65, 'baseline_puro.dat'), encoding='utf-8'):
+        if not ln.lstrip().startswith('#') and ln.strip():
+            w = ln.split()
+            base[int(float(w[0]))] = (float(w[1]), float(w[2]))
+    out = []
+    for T in (800, 850, 900):
+        c = np.genfromtxt(os.path.join(E65, f'e65_resumo_T{T}.csv'), delimiter=',', names=True)
+        rows = []
+        for ln in open(os.path.join(E65, f'rec_gpu_T{T}.log'), encoding='utf-8', errors='replace'):
+            w1 = ln.split()
+            if len(w1) == 6:
+                try:
+                    rows.append([float(x) for x in w1])
+                except ValueError:
+                    pass
+        hold = np.array(rows)
+        hold = hold[hold[:, 0] >= 15000]
+        f5 = c['f_diamante'].mean()
+        pe = c['PE_medio'].mean()
+        bp, pep = base[T]
+        dens = (pe - pep) * 62500 * 1.602177e-19 / 1.034e-24
+        out.append([str(T), f'{100 * f5:.1f}', f'{100 * bp:.1f}', f'{100 * (f5 - bp):.1f}',
+                    f'{pe - pep:+.4f}', f'{dens / 1e8:.2f}', f'{hold[:, 4].mean() / 1000:.1f}'])
+    return out
+
+
+H2('5.9. The big-cell design at 800-900 K: the metastable sheared state and the hot-temperature baseline')
+P('The 800-900 K strip of Figures 8 and 10 collected every regime on the 2 048-atom cell: the control of '
+  'pure Al releases there, the alloy crosses its violent threshold, and the periodic cell itself ejects atoms '
+  'at the front of the ramp. The E6.5 series transfers the anneal to a design in which the ejection does not '
+  'take place: a 62 500-atom cell (25 × 25 × 25 FCC unit cells) of the same EAM control [19], the shear '
+  'applied in-line at 300 K ($\\dot{\\gamma}=10^{10}$ s⁻¹, the rate of one step of Figure 7), the temperature '
+  'ramped to the hold in a single blind step and 1 ns of NVT anneal, in steps at 800, 850 and 900 K. No run '
+  'lost an atom: the ejection catastrophe belongs to the small cell of the unloaded protocol, not to the '
+  'deformed state itself.')
+P('At the anneal temperatures the labels of the common-neighbor analysis need their own reference: with the '
+  'standard in-shell cutoff, 0.854 a₀, the pristine FCC control classifies 17.7 %, 22.8 % and 28.6 % of its '
+  'perfectly crystalline atoms outside FCC at 800, 850 and 900 K, against 99.99 % FCC at 300 K in the same '
+  'compute - the thermal vibration at 0.85-0.97 T_m misclassifies about a quarter of the atoms of a perfect '
+  'lattice. Every defect fraction of a hot dump is therefore read as the excess over this per-temperature '
+  'baseline; the CNA label alone, whatever type it claims to be, is not a structure at these temperatures. '
+  'The energy comparisons are untouched: they use the potential energies, not the labels.')
+P('The series is summarized in Figure 11 and Table 10. Against the pristine control of its own temperature, '
+  'the sheared cell keeps a potential-energy surplus of 0.025-0.027 eV/atom (2.4-2.6 × 10⁸ J m⁻³) with a '
+  'defect-label excess of 20.0, 21.5 and 21.9 % at 800, 850 and 900 K, and the residual shear stress of the '
+  'loaded state, $\\sigma_{xy}$ of about $-33$ to $-35$ kbar, does not relax within the 1 ns: along all three '
+  'holds the potential energy and the labels are flat. The loaded $\\gamma=0.10$ state holds through the '
+  'full nanosecond at 800-900 K: no release, no recrystallization within 1 ns in this design - and the '
+  'unloading test of Section 5.10 shows this surplus to be the energy of the loaded geometry itself.')
+P('The contrast with Figures 8 and 10 is thereby a statement about the protocol, and the map separates its '
+  'factors. The decay of the small cells happened in states unloaded from $\\varepsilon=0.30$ - several times '
+  'the stored content of the $\\gamma=0.10$ state, per the flow map of Figure 7 - and annealed under NPT at '
+  'zero pressure; the E6.5 states are loaded (the $\\sigma_{xy}$ residual stays) and annealed under NVT at '
+  'the cold-built volume (about 45-53 kbar of confinement at the hold temperature). Which factor controls '
+  'the onset - the magnitude of the released potential or the barostat - is what the next experiment reads: '
+  'unload to zero stress and anneal at zero pressure, in the same 62 500-atom cell.')
+FIG(os.path.join(HERE, 'Fig11_E65_series.png'),
+    'Figure 11. The E6.5 series on the 62 500-atom control (shear in-line, $\\gamma=0.10$, blind ramp, 1 ns '
+    'NVT anneal): (a) potential energy per atom along the anneals at 800, 850 and 900 K, with the '
+    'pristine-FCC control of the same temperature (dashed); (b) the CNA label "5" against its '
+    'per-temperature pristine baseline - the shaded area is the real defect excess of the sheared state, '
+    'stable within 1 ns; (c) the residual shear stress $\\sigma_{xy}$, unchanged within 1 ns. The sheared '
+    'state is metastable: the stored deformation (about 0.026 eV/atom, 2.5 × 10⁸ J m⁻³) is not released and '
+    'no recrystallization starts within 1 ns at 800-900 K.')
+e65 = e65_serie()
+if e65:
+    TABLE('Table 10. The E6.5 series: the sheared 62 500-atom cells against the pristine FCC control of '
+          'their own temperature (CNA label "5" and potential energy, 1 ns holds; $\\sigma_{xy}$ = the '
+          'residual shear stress of the loaded state, flat within the hold).',
+          ['T [K]', 'Label "5" [%]', 'Baseline [%]', 'Excess [%]', 'ΔPE [eV/atom]',
+           'ΔE_st [10⁸ J m⁻³]', 'σxy [kbar]'],
+          e65, [1.4, 2.2, 2.2, 2.2, 2.4, 2.4, 2.0])
+
+# ------------------------------------------------------------------ 5.10 E6.6: unload + release
+E66D = os.path.join(EP6, 'e66_data')
+
+
+def _thermo66(path):
+    rr = []
+    for ln in open(path, encoding='utf-8', errors='replace'):
+        w1 = ln.split()
+        if len(w1) == 6:
+            try:
+                rr.append([float(x) for x in w1])
+            except ValueError:
+                pass
+    return np.array(rr)
+
+
+def e66_filas():
+    """The E6.6 series (27 Oct): the in-line sheared 62 500-atom cells unloaded (E6.4 protocol)
+    and annealed under their own barostat. Reads the desca/largo/control logs in e66_data/ and
+    the NVT baseline_puro.dat of e65_serie26/. Returns the rows of Table 11."""
+    N, AREA, JEV = 62500, (101.125e-10) ** 2, 1.602177e-19
+    r_npt = {}
+    for T in (800, 850, 900):
+        p_ = os.path.join(E66D, f'ctrl_npt_T{T}.log')
+        if os.path.exists(p_):
+            h_ = _thermo66(p_)
+            h_ = h_[h_[:, 0] >= 10002]
+            r_npt[T] = h_[:, 3].mean() / N
+        else:
+            r_npt[T] = None
+    r_nvt = {}
+    bp = os.path.join(EP6, 'e65_serie26', 'baseline_puro.dat')
+    if os.path.exists(bp):
+        for ln in open(bp, encoding='utf-8'):
+            if not ln.lstrip().startswith('#') and ln.strip():
+                w1 = ln.split()
+                r_nvt[int(float(w1[0]))] = float(w1[2])
+    out = []
+    casos = (('$\\gamma$=0.10 unloaded + NPT', 'desca_npt_T{t}_s{S}', (101, 202), 'NPT', '0.10', True),
+             ('$\\gamma$=0.30 unloaded + NPT', 'desca_npt30_T{t}', (101,), 'NPT', '0.30', True),
+             ('$\\gamma$=0.20 loaded + NVT', 'rec_largo20_T{t}', (91,), 'NVT', '0.20', False),
+             ('$\\gamma$=0.30 loaded + NVT', 'rec_largo30_T{t}', (91,), 'NVT', '0.30', False))
+    for estado, mk, seeds, chave, gam, descarregada in casos:
+        for T in (800, 850, 900):
+            for S in seeds:
+                p_ = os.path.join(E66D, mk.format(t=T, S=S) + '.log')
+                if not os.path.exists(p_):
+                    continue
+                h = _thermo66(p_)
+                pe_ref = h[(h[:, 0] >= 4990) & (h[:, 0] <= 5010)][:, 3]
+                if not len(pe_ref):
+                    continue
+                pe_ref = pe_ref.mean() / N
+                fim_cis = 5000 + int(round(50000 * float(gam)))
+                eps_cruz = resto = None
+                if descarregada:
+                    bruto = open(p_, encoding='utf-8', errors='replace').read()
+                    mc = re.search(r'DESCA_CROSS step=(\d+) pxy=([-\d.]+) PE=(-[\d.]+)', bruto)
+                    if not mc:
+                        continue
+                    pc = int(mc.group(1))
+                    pe_cross = float(mc.group(3)) / N
+                    eps_cruz = float(gam) - 2e-5 * (pc - fim_cis)
+                    resto = (pe_cross - pe_ref) * N * JEV / AREA
+                    ini_hold = pc + 7000
+                else:
+                    ini_hold = fim_cis + 5000
+                hh = h[h[:, 0] >= ini_hold]
+                if not len(hh):
+                    continue
+                r_ = r_npt.get(T) if chave == 'NPT' else r_nvt.get(T)
+                if r_ is None:
+                    continue
+                e_ini, e_fim = hh[0, 3] / N - r_, hh[-1, 3] / N - r_
+                lib = 100 * (1 - e_fim / e_ini) if abs(e_ini) > 3e-3 else float('nan')
+                out.append([estado, str(T), str(S),
+                            '—' if eps_cruz is None else f'{eps_cruz:.3f}',
+                            '—' if resto is None else f'{resto:.3f}',
+                            f'{e_ini * 1000:+.1f}', f'{e_fim * 1000:+.1f}',
+                            '—' if lib != lib else f'{lib:.0f}',
+                            f'{hh[:, 4].mean() / 1000:.1f}'])
+    return out
+
+
+H2('5.10. Unloading the in-line sheared states and the release plateau of the anneal (E6.6)')
+P('Because the E6.5 series anneals the loaded state, the unloading measurement of the fine-frontier '
+  'protocol is repeated on the same 62 500-atom cells at 300 K: the shear is reversed in small steps at '
+  'the same rate until the shear stress crosses zero, and the state at the crossing carries the plastic '
+  'remainder of the deformation (Figure 12a). At $\\gamma=0.10$ the unload retraces the elastic path and '
+  'crosses at $\\varepsilon=0.00$ in every seed and temperature, with a remainder of 0.02-0.03 J m⁻², '
+  'inside the equilibration noise of the elastic measurement of Table 8: the in-line shear of the big '
+  'cell stays elastic at this rate, the stress climbs to 42 kbar and the unload returns it all - the '
+  'surplus of Table 10 is the energy of the loaded geometry itself ($\\sigma_{xy}$ residual of 33-35 kbar '
+  'held by the fixed tilt), not a stored plastic deformation. At $\\gamma=0.30$ the shear crosses the '
+  'glide inside the deformation (the stress peaks at 7.3 GPa near $\\varepsilon=0.18$ and falls to '
+  '0.7-1.2 GPa) and the unload crosses at $\\varepsilon=0.252$ - the same crossing the step-and-relax '
+  'protocol gives on the small cell (0.250, Table 8) - with the stored remainder of 0.0119 eV/atom '
+  '(1.17 J m⁻²), twice the per-atom remainder of the small cell in the same potential (0.0059 eV/atom): '
+  'the continuous in-line shear stores about twice more.')
+P('The anneals of the unloaded states read against the ruler of their own barostat: a P = 0 state is '
+  'compared to the pristine control annealed under NPT, the NVT family to the NVT one (Figure 12b-d) '
+  '- the NPT control expands to the zero-pressure volume, and the potential energy of a confined and '
+  'of a free cell differ by the elastic volume term. None of the 21 runs lost an atom and none jumped; '
+  'the release is gradual: the three plastic states (0.30 unloaded, 0.20 and 0.30 loaded) shed 47-67 % '
+  'of their initial excess of 10-13 meV/atom over the ruler inside 100-300 ps and flatten on a common '
+  'plateau of +3 to +6 meV/atom that persists to the end of the 1 ns. No recrystallization completes '
+  'and no event occurs: the decay catastrophe of the fine frontier (Figure 10) is absent from the big '
+  'cell entirely. The unloaded $\\gamma=0.10$ states, annealed under NPT at independent seeds, sit '
+  'within ±1.7 meV/atom of the NPT ruler - the equilibration noise between seeds -, replicating the '
+  'control.')
+P('The plateau is the deformation the 1 ns window does not consume, and it closes the scale: as a bulk '
+  'density (16.5 Å³ of volume per atom) it gives 3-6 × 10⁷ J m⁻³, the order of the model potential '
+  '$\\sigma_y^s\\alpha/\\delta$ with the measured $\\delta$ of Figure 9 (0.19 nm for this control): '
+  '$\\sigma_y^s\\alpha/\\delta\\approx 3.2\\times 10^{7}$ J m⁻³ with the control parameters - the '
+  'reading of this agreement, and of the $\\sigma_y^s$ calibration behind it, is the discussion of '
+  'Section 5.7.')
+FIG(os.path.join(HERE, 'Fig12_E66_unload_release.png'),
+    'Figure 12. The unloading and the release of the E6.6 series on the 62 500-atom control. '
+    '(a) The in-line shear at 300 K and its reversal until the shear stress crosses zero: the '
+    '$\\gamma=0.10$ load is elastic and returns through the same path to $\\varepsilon=0.00$ (open '
+    'circle, remainder within noise); the $\\gamma=0.30$ load crosses the glide inside the deformation '
+    '(the stress peak of 7.3 GPa at $\\varepsilon\\approx 0.18$ falls to below 1.2 GPa) and the unload '
+    'crosses at $\\varepsilon=0.252$ with the plastic remainder of 0.0119 eV/atom. (b-d) The potential-'
+    'energy excess over the ruler of the same barostat (thin = raw, solid = running mean) for the '
+    'unloaded 0.30 state under NPT and the loaded 0.20/0.30 states under NVT: 47-67 % of the excess '
+    'releases inside 100-300 ps and the states flatten on a common plateau of +3 to +6 meV/atom that '
+    'the 1 ns window does not consume. The unloaded $\\gamma=0.10$ states sit on the NPT ruler '
+    '(Table 11).')
+e66 = e66_filas()
+if e66:
+    TABLE('Table 11. The E6.6 unloading and anneal: the unload crossing and the stored remainder '
+          'per state (left), and the release of the potential-energy excess over the ruler of the '
+          'same barostat (right; the NPT states against the NPT ruler of the same temperature, the '
+          'NVT states against the NVT baseline). The unloaded $\\gamma=0.10$ cells return to pristine '
+          'and are not a plastic measurement.',
+          ['State', 'T [K]', 'Seed', '$\\varepsilon$ of the unload crossing', 'Stored remainder [J m⁻²]',
+           'Excess at hold start [meV/atom]', 'Excess at 1 ns [meV/atom]', 'Released [%]',
+           '$\\sigma_{xy}$ [kbar]'],
+          e66, [3.3, 0.9, 0.9, 1.9, 2.0, 1.9, 1.7, 1.3, 1.3])
 
 # ------------------------------------------------------------------ 6
 H1('6. Conclusions')

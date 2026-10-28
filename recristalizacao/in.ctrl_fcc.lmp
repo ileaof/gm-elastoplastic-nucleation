@@ -1,0 +1,56 @@
+# E6.5-controle — FCC puro (62 500 átomos), mesmos computes/CNA do E6.5, SEM cisalhamento.
+# Decisão do enigma: CNA dá ~100% FCC no controle? Se der 50/50 como no E6.5, o
+# cna/atom rc=0.854*a0 deste build classifica metade sob vibração térmica (artefato).
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     nx     index 25
+variable     T2     index 900
+variable     seed   index 91
+variable     a0     equal 4.045
+variable     rc     equal 0.854*${a0}
+
+lattice      fcc ${a0}
+region       box block 0 ${nx} 0 ${nx} 0 ${nx}
+create_box   1 box
+change_box   all triclinic
+create_atoms 1 box
+mass         1 26.982
+include      pot_mendelev.lmp
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+
+velocity     all create 300.0 ${seed} mom yes rot no dist gaussian
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       1000
+
+fix          e1 all nvt temp 300.0 300.0 0.1
+run          5000
+unfix        e1
+
+# frame de reference a 300 K (estrutura equilibrada, sem cisalhamento)
+dump         d0 all custom 1 ctrl_fcc_T${T2}_300.dump id type x y z c_esp c_cnatmp
+dump_modify  d0 sort id
+run          1
+undump       d0
+
+fix          ramp all nvt temp 300.0 ${T2} 0.1
+run          5000
+unfix        ramp
+
+# frame no início do hold em ${T2} K
+fix          an all nvt temp ${T2} ${T2} 0.1
+dump         d1 all custom 1 ctrl_fcc_T${T2}_hold0.dump id type x y z c_esp c_cnatmp
+dump_modify  d1 sort id
+run          1
+undump       d1
+
+# 40 ps de holding em ${T2} K, frame final
+run          20000
+dump         d2 all custom 1 ctrl_fcc_T${T2}_late.dump id type x y z c_esp c_cnatmp
+dump_modify  d2 sort id
+run          1
+print        "E6.5-controle em ${T2} K completa"

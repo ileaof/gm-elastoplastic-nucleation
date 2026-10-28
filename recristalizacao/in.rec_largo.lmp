@@ -1,0 +1,50 @@
+# E6.6 — célula grande do Mendelev (62 500 átomos, EAM + -sf gpu), cisalhamento em linha
+# até gam (carregado, sem descarregamento) + recozimento NVT 1 ns: a variação em γ do
+# desenho E6.5 (que é gam = 0.10). Variáveis: -var T2 <T> -var gam <0.20|0.30>
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     gam    index 0.20
+variable     nx     index 25
+variable     T2     index 900
+variable     seed   index 91
+variable     nprod  index 500000
+variable     DF     index 25000
+variable     a0     equal 4.045
+variable     rc     equal 0.854*${a0}
+variable     nsh    equal 50000*${gam}
+
+lattice      fcc ${a0}
+region       box block 0 ${nx} 0 ${nx} 0 ${nx}
+create_box   1 box
+change_box   all triclinic
+create_atoms 1 box
+mass         1 26.982
+include      pot_mendelev.lmp
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+
+velocity     all create 300.0 ${seed} mom yes rot no dist gaussian
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       1000
+
+fix          e1 all nvt temp 300.0 300.0 0.1
+run          5000
+unfix        e1
+fix          e2 all nvt temp 300.0 300.0 0.1
+fix          sh all deform 1 xy erate 0.010 remap v
+run          ${nsh}
+unfix        sh
+unfix        e2
+
+fix          ramp all nvt temp 300.0 ${T2} 0.1
+run          5000
+unfix        ramp
+
+fix          an all nvt temp ${T2} ${T2} 0.1
+dump         d1 all custom ${DF} reciz_largo_T${T2}_g${gam}.dump id type x y z c_esp c_cnatmp
+run          ${nprod}
+print        "E6.6-larga completa: reciz_largo_T${T2}_g${gam}.dump"

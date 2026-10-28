@@ -1,0 +1,245 @@
+LAMMPS (30 Sep 2026)
+  using 8 OpenMP thread(s) per MPI task
+package omp 8
+using multi-threaded neighbor list subroutines
+# E6.2 — recozimento: um patamar de temperatura por chamada; a difusão ativa, a recristalização inicia
+# Uso:  lmp -sf omp -pk omp 16 -in in.recozer.lmp -var pot jelinek -var alloy 1 -var datafile data_jelinek_0.14.data -var T 800
+#   T: temperatura do patamar (abaixo de T_m = 936 ± 3 K do Jelinek);  série sugerida: 500 600 700 800 850 900
+#   nrampe = passos da subida 300 K -> T (padrão 10000 = 20 ps);  nprod = passos no patamar (padrão 50000 = 100 ps)
+# O termômetro da recristalização: queda de pe (além da recuperação) + fração CNA; dumps para o OVITO.
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot      index jelinek
+variable     alloy    index 1
+variable     datafile index data_jelinek_0.14.data
+variable     T        index 800
+variable     nrampe   index 10000
+variable     nprod    index 50000
+variable     tag      index _s0
+variable     dumpfreq index 2000
+variable     seed     index 4928459
+variable     a0       equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable     rc       equal 0.854*${a0}
+variable     rc       equal 0.854*4.05
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+variable ntypes equal 4
+
+read_data    ${datafile}
+read_data    data_jelinek_0.14.data
+Reading data file ...
+  triclinic box = (0 0 0) to (32.4 32.4 32.4) with tilt (4.536 0 0)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2048 atoms
+  reading velocities ...
+  2048 velocities
+  read_data CPU = 0.007 seconds
+include      pot_${pot}.lmp
+include      pot_jelinek.lmp
+# Jelinek et al., Phys. Rev. B 85 (2012) 245102 — MEAM Al-Si-Mg-Cu-Fe (distribuição do LAMMPS)
+# ntypes = 1: Al puro na família Jelinek; ntypes = 4: liga Al-Si-Mg-Fe (ordem dos tipos: Al, Si, Mg, Fe)
+if "${ntypes} == 1" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS"
+if "${ntypes} == 4" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS"
+pair_style meam
+pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS
+Reading MEAM library file ./potencias/AlSiMgCuFe_Jelinek2012/library.meam with DATE: 2012-06-29
+Reading MEAM potential file ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam with DATE: 2012-06-29
+
+# protecao contra 'lost atoms': minimiza as sobreposicoes residuais da configuracao
+# deformada e acompanha os vizinhos passo a passo (o evento de 700 K vem daqui)
+min_style    cg
+minimize     1.0e-10 1.0e-10 5000 200000
+No /omp style for force computation currently active
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7
+  ghost atom cutoff = 7
+  binsize = 3.5, bins = 11 10 10
+  2 neighbor lists, perpetual/occasional/extra = 2 0 0
+  (1) pair meam, perpetual
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on, omp
+      pair build: halffull/newton/tri/omp
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 21.35 | 21.35 | 21.35 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   294.59443     -6749.0568      0             -6671.1085      13914.494    
+       101   294.59443     -6830.7146      0             -6752.7662      6123.0567    
+Loop time of 8.62238 on 8 procs for 101 steps with 2048 atoms
+
+413.9% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -6749.05682596886  -6830.71455723544  -6830.71455759109
+  Force two-norm initial, final = 32.252433 1.3674306
+  Force max component initial, final = 2.0007943 0.68571324
+  Final line search alpha, max atom move = 0.13917218 0.095432205
+  Iterations, force evaluations = 101 377
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.3822     | 8.3822     | 8.3822     |   0.0 | 97.21
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0056595  | 0.0056595  | 0.0056595  |   0.0 |  0.07
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0.22647    | 0.22647    | 0.22647    |   0.0 |  2.63
+Other   |            | 0.008053   |            |       |  0.09
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           4036 ave        4036 max        4036 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          85042 ave       85042 max       85042 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       170084 ave      170084 max      170084 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 170084
+Ave neighs/atom = 83.048828
+Neighbor list builds = 0
+Dangerous builds = 0
+neigh_modify every 1 delay 0 check yes
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+compute      cnatmp all cna/atom 3.4587
+
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       500
+
+# subida 300 K -> T (20 ps por padrão), depois patamar em T (100 ps por padrão)
+velocity     all create 300.0 ${seed} mom yes rot no dist gaussian
+velocity     all create 300.0 11750 mom yes rot no dist gaussian
+fix          ramp all nvt temp 300.0 ${T} 0.1
+fix          ramp all nvt temp 300.0 750 0.1
+run          ${nrampe}
+run          10000
+No /omp style for force computation currently active
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7
+  ghost atom cutoff = 7
+  binsize = 3.5, bins = 11 10 10
+  3 neighbor lists, perpetual/occasional/extra = 2 1 0
+  (1) pair meam, perpetual
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on, omp
+      pair build: halffull/newton/tri/omp
+      stencil: none
+      bin: none
+  (3) compute cna/atom/omp, occasional, copy from (1)
+      attributes: full, newton on, omp
+      pair build: copy
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 20.22 | 20.22 | 20.22 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+       101   300            6167.9734     -6830.7146     -37257.13       34012.224    
+       500   328.28348      14809.043     -6742.1708     -34932.647      34012.224    
+      1000   333.08916      14802.374     -6741.2263     -34148.66       34012.224    
+      1500   378.61974      15951.415     -6733.5423     -34853.341      34012.224    
+      2000   378.97249      16539.918     -6726.0781     -34537.752      34012.224    
+      2500   403.62191      17421.125     -6718.6315     -34560.945      34012.224    
+      3000   438.50189      18542.917     -6712.649      -33738.368      34012.224    
+      3500   449.33349      18437.577     -6712.3499     -33998.479      34012.224    
+      4000   458.24372      19537.936     -6702.3979     -33952.602      34012.224    
+      4500   486.47527      20049.925     -6700.1335     -33531.662      34012.224    
+      5000   528.77409      20665.897     -6695.2871     -32821.421      34012.224    
+      5500   534.63721      21945.354     -6684.1704     -33625.015      34012.224    
+      6000   556.05112      23165.007     -6674.5017     -32389.988      34012.224    
+      6500   585.33109      23069.168     -6677.9228     -33119.857      34012.224    
+      7000   608.76308      24720         -6665.7696     -32736.608      34012.224    
+      7500   621.18379      25216.069     -6662.8894     -32515.676      34012.224    
+      8000   651.91992      25722.803     -6654.8626     -32364.574      34012.224    
+      8500   676.89829      27060.411     -6648.905      -32588.609      34012.224    
+      9000   714.69049      27439.49      -6641.8523     -32256.424      34012.224    
+      9500   720.2019       30914.223     -6621.5171     -29496.072      34012.224    
+     10000   746.2596       31058.8       -6615.4307     -31672.493      34012.224    
+     10101   751.1926       30955.738     -6621.9112     -30814.285      34012.224    
+Loop time of 233.1 on 8 procs for 10000 steps with 2048 atoms
+
+Performance: 7.413 ns/day, 3.238 hours/ns, 42.900 timesteps/s, 87.859 katom-step/s
+454.8% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 206.24     | 206.24     | 206.24     |   0.0 | 88.48
+Neigh   | 0.093241   | 0.093241   | 0.093241   |   0.0 |  0.04
+Comm    | 0.16642    | 0.16642    | 0.16642    |   0.0 |  0.07
+Output  | 0.00055303 | 0.00055303 | 0.00055303 |   0.0 |  0.00
+Modify  | 26.529     | 26.529     | 26.529     |   0.0 | 11.38
+Other   |            | 0.07475    |            |       |  0.03
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           4035 ave        4035 max        4035 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          85721 ave       85721 max       85721 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       171442 ave      171442 max      171442 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 171442
+Ave neighs/atom = 83.711914
+Neighbor list builds = 99
+Dangerous builds = 0
+unfix        ramp
+fix          hold all nvt temp ${T} ${T} 0.1
+fix          hold all nvt temp 750 ${T} 0.1
+fix          hold all nvt temp 750 750 0.1
+dump         d1 all custom ${dumpfreq} recozido_${pot}_T${T}${tag}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 5000 recozido_${pot}_T${T}${tag}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 5000 recozido_jelinek_T${T}${tag}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 5000 recozido_jelinek_T750${tag}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 5000 recozido_jelinek_T750_s11.dump id type x y z c_esp c_cnatmp
+run          ${nprod}
+run          50000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 20.24 | 20.24 | 20.24 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     10101   751.1926       30955.738     -6621.9112     -30814.285      34012.224    
+     10500   749.03074      30861.985     -6616.0081     -31567.458      34012.224    
+     11000   768.36081      29322.759     -6629.5945     -32435.843      34012.224    
+     11500   746.94975      30406.721     -6619.0986     -31674.004      34012.224    
+     12000   751.52454      29502.556     -6627.6043     -32119.307      34012.224    
+     12500   757.30543      29635.455     -6625.6711     -32790.104      34012.224    
+     13000   732.72069      29980.688     -6622.0181     -32434.916      34012.224    
+     13500   754.12317      29634.617     -6624.6114     -31701.741      34012.224    
+     14000   768.78446      30384.559     -6620.618      -33144.124      34012.224    
+     14500   751.93617      29595.928     -6626.1832     -32210.881      34012.224    
+     15000   754.05419      30095.079     -6621.3681     -31973.985      34012.224    
+     15500   865.43613      43188.419     -6552.8723     -25907.386      34012.224    
+     16000   706.5436       32731.76      -6605.1118     -27079.208      34012.224    
+     16500   763.43852      33578.691     -6603.2867     -27627.643      34012.224    
+     17000   750.05064      32614.506     -6613.9087     -28311.632      34012.224    
+     17500   766.79226      33143.074     -6604.8597     -29134.058      34012.224    
+     18000   758.47416      31663.226     -6616.6508     -30001.55       34012.224    
+     18500   755.20729      31757.389     -6613.6322     -30220.564      34012.224    
+     19000   757.35372      31235.605     -6619.6776     -29898.332      34012.224    
+     19500   755.92782      31452.996     -6616.3862     -30375.631      34012.224    
+     20000   1795.0748      91269.921     -6252.56       -19301.119      34012.224    
+     20500   593.06351      41047.219     -6569.9986     -4650.2581      34012.224    
+     21000   50101.062      517623.17     -5840.3373     -451417.6       34012.224    
+ERROR: Lost atoms: original 2048 current 2046
+For more information see https://docs.lammps.org/err0008 (src/thermo.cpp:550)

@@ -1,0 +1,629 @@
+LAMMPS (30 Sep 2026)
+  using 8 OpenMP thread(s) per MPI task
+package omp 8
+using multi-threaded neighbor list subroutines
+# E6.1 — deformar e medir: energia plástica armazenada do sólido ciselado (piloto)
+# Uso:  lmp -sf omp -pk omp 16 -in in.deformar.lmp -var pot jelinek -var alloy 1 -var nx 8
+#   pot = jelinek (MEAM Al-Si-Mg-Fe, Jelinek 2012; T_m = 936 ± 3 K no e2) | mendelev (EAM Al puro, 932,3 K)
+#   alloy = 1 (composição da liga) | 0 (Al puro);  nx = células (nx=8 → 2048 átomos)
+# Cisalhamento xy remap v a volume constante (NVT): 5 degraus de 10 ps com Δε = 0.05, +0.05, +0.04,
+# +0.06, +0.10 (acumulado 0.05, 0.10, 0.14 = E_A^p do escoamento do AlSiMgFe, 0.20, 0.30), relaxação
+# NVT de 20 ps após cada degrau. Saídas: stored.dat (ε, pe/átomo, temp, pxy, lx), stress no próprio
+# stored.dat (curva σ(ε) do cristal), data_<eps>.data para o E6.2 e perfil_Es_${pot}.dat (perfil de energia).
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot    index jelinek
+variable     alloy  index 1
+variable     nx     index 8
+variable     T0     equal 300.0
+variable     seed   index 4928459
+variable     a0     equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable     rc     equal 0.854*${a0}
+variable     rc     equal 0.854*4.05
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+variable ntypes equal 4
+
+lattice      fcc ${a0}
+lattice      fcc 4.05
+Lattice spacing in x,y,z = 4.05 4.05 4.05
+region       box block 0 ${nx} 0 ${nx} 0 ${nx}
+region       box block 0 16 0 ${nx} 0 ${nx}
+region       box block 0 16 0 16 0 ${nx}
+region       box block 0 16 0 16 0 16
+create_box   ${ntypes} box
+create_box   4 box
+Created orthogonal box = (0 0 0) to (64.8 64.8 64.8)
+  1 by 1 by 1 MPI processor grid
+change_box   all triclinic
+Changing box ...
+  triclinic box = (0 0 0) to (64.8 64.8 64.8) with tilt (0 0 0)
+create_atoms 1 box
+Created 16384 atoms
+  using lattice units in triclinic box = (0 0 0) to (64.8 64.8 64.8) with tilt (0 0 0)
+  create_atoms CPU = 0.005 seconds
+if "${pot} == jelinek" then "mass 1 26.982"
+mass 1 26.982
+if "${pot} == jelinek && ${alloy} == 1" then "mass 2 28.086" "mass 3 24.305" "mass 4 55.845"
+mass 2 28.086
+mass 3 24.305
+mass 4 55.845
+if "${pot} == mendelev" then "mass 1 26.982"
+# composição em fração atômica (Al-0.8Si-0.6Mg-0.2Fe em peso → 98.46% Al, 0.77% Si, 0.67% Mg, 0.096% Fe)
+if "${pot} == jelinek && ${alloy} == 1" then   "set type 1 type/fraction 2 0.0077 4928459"   "set type 1 type/fraction 3 0.00675 8294273"   "set type 1 type/fraction 4 0.000974 1307723"
+set type 1 type/fraction 2 0.0077 4928459
+Setting atom values ...
+  130 settings made for type/fraction
+set type 1 type/fraction 3 0.00675 8294273
+Setting atom values ...
+  104 settings made for type/fraction
+set type 1 type/fraction 4 0.000974 1307723
+Setting atom values ...
+  13 settings made for type/fraction
+
+include      pot_${pot}.lmp
+include      pot_jelinek.lmp
+# Jelinek et al., Phys. Rev. B 85 (2012) 245102 — MEAM Al-Si-Mg-Cu-Fe (distribuição do LAMMPS)
+# ntypes = 1: Al puro na família Jelinek; ntypes = 4: liga Al-Si-Mg-Fe (ordem dos tipos: Al, Si, Mg, Fe)
+if "${ntypes} == 1" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS"
+if "${ntypes} == 4" then "pair_style meam" "pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS"
+pair_style meam
+pair_coeff * * ./potencias/AlSiMgCuFe_Jelinek2012/library.meam AlS SiS MgS CuS FeS ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam AlS SiS MgS FeS
+Reading MEAM library file ./potencias/AlSiMgCuFe_Jelinek2012/library.meam with DATE: 2012-06-29
+Reading MEAM potential file ./potencias/AlSiMgCuFe_Jelinek2012/AlSiMgCuFe.meam with DATE: 2012-06-29
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+compute      cnatmp all cna/atom 3.4587
+
+velocity     all create ${T0} ${seed} mom yes rot no dist gaussian
+velocity     all create 300 ${seed} mom yes rot no dist gaussian
+velocity     all create 300 4928459 mom yes rot no dist gaussian
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       1000
+
+# equilíbrio a 300 K (20 ps) e referência de energia
+fix          nvt1 all nvt temp ${T0} ${T0} 0.1
+fix          nvt1 all nvt temp 300 ${T0} 0.1
+fix          nvt1 all nvt temp 300 300 0.1
+compute      zbin all chunk/atom bin/1d z lower 0.02 units reduced
+fix          prof all ave/chunk 50 100 10000 zbin c_esp ave one file perfil_Es_${pot}.dat
+fix          prof all ave/chunk 50 100 10000 zbin c_esp ave one file perfil_Es_jelinek.dat
+run          10000
+No /omp style for force computation currently active
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7
+  ghost atom cutoff = 7
+  binsize = 3.5, bins = 19 19 19
+  3 neighbor lists, perpetual/occasional/extra = 2 1 0
+  (1) pair meam, perpetual
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+  (2) pair meam, perpetual, half/full from (1)
+      attributes: half, newton on, omp
+      pair build: halffull/newton/tri/omp
+      stencil: none
+      bin: none
+  (3) compute cna/atom/omp, occasional, copy from (1)
+      attributes: full, newton on, omp
+      pair build: copy
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 48.91 | 48.91 | 48.91 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+         0   300            4295.5104     -54797.201     -18.175616      272097.79    
+      1000   297.04938      10044.386     -54325.741      71.219309      272097.79    
+      2000   302.66958      10081.429     -54323.994     -308.46183      272097.79    
+      3000   301.61475      10161.105     -54317.874     -135.28656      272097.79    
+      4000   300.5035       10138.75      -54318.639     -97.94249       272097.79    
+      5000   299.09725      10009.81      -54324.511     -52.254603      272097.79    
+      6000   296.94289      9963.9871     -54326.964      28.479153      272097.79    
+      7000   299.81917      9965.4147     -54330.907      180.63897      272097.79    
+      8000   300.14262      9899.7399     -54331.97       110.58562      272097.79    
+      9000   302.80119      10043.21      -54322.886     -106.16609      272097.79    
+     10000   298.17205      10029.127     -54323.49      -153.00199      272097.79    
+Loop time of 3617.4 on 8 procs for 10000 steps with 16384 atoms
+
+Performance: 0.478 ns/day, 50.242 hours/ns, 2.764 timesteps/s, 45.292 katom-step/s
+149.2% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 2747.3     | 2747.3     | 2747.3     |   0.0 | 75.95
+Neigh   | 0.15415    | 0.15415    | 0.15415    |   0.0 |  0.00
+Comm    | 1.3183     | 1.3183     | 1.3183     |   0.0 |  0.04
+Output  | 0.0013916  | 0.0013916  | 0.0013916  |   0.0 |  0.00
+Modify  | 867.84     | 867.84     | 867.84     |   0.0 | 23.99
+Other   |            | 0.7463     |            |       |  0.02
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13275 ave       13275 max       13275 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         668450 ave      668450 max      668450 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:   1.3369e+06 ave  1.3369e+06 max  1.3369e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1336900
+Ave neighs/atom = 81.5979
+Neighbor list builds = 5
+Dangerous builds = 0
+print        "REF $(pe/atoms) $(temp)"
+REF -3.3156427004607080811 298.1720525697092512
+print        "# eps e_at temp pxy lx" file stored_${pot}.dat
+print        "# eps e_at temp pxy lx" file stored_jelinek.dat
+# eps e_at temp pxy lx
+
+# degrau 1: 0 -> 0.05
+fix          shear all deform 1 xy erate 0.005 remap v
+run          5000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 49.86 | 49.86 | 49.86 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     10000   298.14493      10028.901     -54323.49      -153.17616      272097.79    
+     11000   295.35962      10035.401     -54319.418     -2810.1691      272097.79    
+     12000   298.76213      10023.19      -54323.651     -5525.6027      272097.79    
+     13000   301.51666      10404.433     -54293.946     -8260.0453      272097.79    
+     14000   298.74406      10407.216     -54292.658     -10864.535      272097.79    
+     15000   300.49237      10722.893     -54271.03      -13261.438      272097.79    
+Loop time of 2275.33 on 8 procs for 5000 steps with 16384 atoms
+
+Performance: 0.380 ns/day, 63.204 hours/ns, 2.197 timesteps/s, 36.004 katom-step/s
+140.3% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1660.1     | 1660.1     | 1660.1     |   0.0 | 72.96
+Neigh   | 0.92248    | 0.92248    | 0.92248    |   0.0 |  0.04
+Comm    | 1.2793     | 1.2793     | 1.2793     |   0.0 |  0.06
+Output  | 0.00087509 | 0.00087509 | 0.00087509 |   0.0 |  0.00
+Modify  | 611.49     | 611.49     | 611.49     |   0.0 | 26.87
+Other   |            | 1.531      |            |       |  0.07
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13276 ave       13276 max       13276 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         669732 ave      669732 max      669732 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.33946e+06 ave 1.33946e+06 max 1.33946e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1339464
+Ave neighs/atom = 81.754395
+Neighbor list builds = 19
+Dangerous builds = 0
+unfix        shear
+run          10000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 49.88 | 49.88 | 49.88 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     15000   300.49237      10723.215     -54271.008     -13265.314      272097.79    
+     16000   299.34411      10686.375     -54271.688     -13135.264      272097.79    
+     17000   294.97725      10622.201     -54268.176     -13041.568      272097.79    
+     18000   301.67457      10678.305     -54271.196     -12955.76       272097.79    
+     19000   300.69959      10672.495     -54271.152     -12925.254      272097.79    
+     20000   298.23397      10634.036     -54271.784     -13165.476      272097.79    
+     21000   300.28455      10621.134     -54272.46      -12839.724      272097.79    
+     22000   299.98241      10691.191     -54275.471     -12808.63       272097.79    
+     23000   301.22597      10618.43      -54270.891     -12846.686      272097.79    
+     24000   299.53018      10660.404     -54269.685     -12891.296      272097.79    
+     25000   299.29999      10569.188     -54277.441     -12701.898      272097.79    
+Loop time of 2752.29 on 8 procs for 10000 steps with 16384 atoms
+
+Performance: 0.628 ns/day, 38.226 hours/ns, 3.633 timesteps/s, 59.529 katom-step/s
+163.6% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 2237.6     | 2237.6     | 2237.6     |   0.0 | 81.30
+Neigh   | 0.011105   | 0.011105   | 0.011105   |   0.0 |  0.00
+Comm    | 0.9736     | 0.9736     | 0.9736     |   0.0 |  0.04
+Output  | 0.0012143  | 0.0012143  | 0.0012143  |   0.0 |  0.00
+Modify  | 513.11     | 513.11     | 513.11     |   0.0 | 18.64
+Other   |            | 0.5731     |            |       |  0.02
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13276 ave       13276 max       13276 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         669908 ave      669908 max      669908 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.33982e+06 ave 1.33982e+06 max 1.33982e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1339816
+Ave neighs/atom = 81.775879
+Neighbor list builds = 1
+Dangerous builds = 0
+print        "STORED 0.05 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+print        "STORED 0.05 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_jelinek.dat
+STORED 0.05 -3.3128320695275474961 299.29998514962403533 -12701.897717645033481 64.799999999999997158
+write_data   data_${pot}_0.05.data
+write_data   data_jelinek_0.05.data
+System init for write_data ...
+No /omp style for force computation currently active
+# degrau 2: +0.05 -> 0.10
+fix          shear all deform 1 xy erate 0.005 remap v
+run          5000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 49.9 | 49.9 | 49.9 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     25000   299.29999      10569.188     -54277.441     -12701.898      272097.79    
+     26000   298.45816      10836.849     -54251.311     -15518.197      272097.79    
+     27000   296.87079      11245.391     -54221.298     -18114.183      272097.79    
+     28000   301.77881      11756.674     -54182.191     -20794.423      272097.79    
+     29000   299.40511      12110.595     -54147.297     -23263.877      272097.79    
+     30000   300.24782      12815.447     -54100.46      -26014.703      272097.79    
+Loop time of 924.178 on 8 procs for 5000 steps with 16384 atoms
+
+Performance: 0.935 ns/day, 25.672 hours/ns, 5.410 timesteps/s, 88.641 katom-step/s
+176.1% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 876.03     | 876.03     | 876.03     |   0.0 | 94.79
+Neigh   | 0.15679    | 0.15679    | 0.15679    |   0.0 |  0.02
+Comm    | 0.44227    | 0.44227    | 0.44227    |   0.0 |  0.05
+Output  | 0.00066452 | 0.00066452 | 0.00066452 |   0.0 |  0.00
+Modify  | 47.209     | 47.209     | 47.209     |   0.0 |  5.11
+Other   |            | 0.3363     |            |       |  0.04
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13055 ave       13055 max       13055 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         672821 ave      672821 max      672821 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.34564e+06 ave 1.34564e+06 max 1.34564e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1345642
+Ave neighs/atom = 82.13147
+Neighbor list builds = 14
+Dangerous builds = 0
+unfix        shear
+run          10000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 49.95 | 49.95 | 49.95 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     30000   300.24782      12816.024     -54100.422     -26018.491      272097.79    
+     31000   296.31121      12683.727     -54105.692     -25799.052      272097.79    
+     32000   298.66941      12735.422     -54106.078     -26068.243      272097.79    
+     33000   299.58141      12695.168     -54105.699     -25550.332      272097.79    
+     34000   299.32309      12733.882     -54104.026     -25939.195      272097.79    
+     35000   304.19778      12767.799     -54103.316     -25716.816      272097.79    
+     36000   301.03084      12713.396     -54103.233     -25737.328      272097.79    
+     37000   304.08917      12741.665     -54106.545     -25953.848      272097.79    
+     38000   301.07751      12667.989     -54107.992     -25704.294      272097.79    
+     39000   298.18931      12763.366     -54098.518     -25817.906      272097.79    
+     40000   298.00758      12657.331     -54106.121     -25665.312      272097.79    
+Loop time of 1834.42 on 8 procs for 10000 steps with 16384 atoms
+
+Performance: 0.942 ns/day, 25.478 hours/ns, 5.451 timesteps/s, 89.314 katom-step/s
+177.5% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1736.5     | 1736.5     | 1736.5     |   0.0 | 94.66
+Neigh   | 0.12245    | 0.12245    | 0.12245    |   0.0 |  0.01
+Comm    | 0.81196    | 0.81196    | 0.81196    |   0.0 |  0.04
+Output  | 0.0010456  | 0.0010456  | 0.0010456  |   0.0 |  0.00
+Modify  | 96.472     | 96.472     | 96.472     |   0.0 |  5.26
+Other   |            | 0.5253     |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13201 ave       13201 max       13201 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         673121 ave      673121 max      673121 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.34624e+06 ave 1.34624e+06 max 1.34624e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1346242
+Ave neighs/atom = 82.168091
+Neighbor list builds = 4
+Dangerous builds = 0
+print        "STORED 0.10 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+print        "STORED 0.10 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_jelinek.dat
+STORED 0.10 -3.302375527085906981 298.00757536052890373 -25665.312161139245291 64.799999999999997158
+write_data   data_${pot}_0.10.data
+write_data   data_jelinek_0.10.data
+System init for write_data ...
+No /omp style for force computation currently active
+# degrau 3: +0.04 -> 0.14 (a deformação do escoamento da Al-Si-Mg-Fe, E_A^p ≈ σ_y/|σ₀|)
+fix          shear all deform 1 xy erate 0.004 remap v
+run          5000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 49.97 | 49.97 | 49.97 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     40000   298.00758      12657.331     -54106.121     -25665.312      272097.79    
+     41000   301.32734      13218.869     -54068.509     -27639.799      272097.79    
+     42000   297.12669      13708.324     -54023.125     -29660.09       272097.79    
+     43000   299.99103      14311.648     -53985.457     -31486.525      272097.79    
+     44000   299.06715      14906.457     -53941.901     -33513.066      272097.79    
+     45000   297.36217      15627.272     -53884.239     -35269.787      272097.79    
+Loop time of 910.697 on 8 procs for 5000 steps with 16384 atoms
+
+Performance: 0.949 ns/day, 25.297 hours/ns, 5.490 timesteps/s, 89.953 katom-step/s
+174.9% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 866.55     | 866.55     | 866.55     |   0.0 | 95.15
+Neigh   | 0.15623    | 0.15623    | 0.15623    |   0.0 |  0.02
+Comm    | 0.41752    | 0.41752    | 0.41752    |   0.0 |  0.05
+Output  | 0.00049883 | 0.00049883 | 0.00049883 |   0.0 |  0.00
+Modify  | 43.317     | 43.317     | 43.317     |   0.0 |  4.76
+Other   |            | 0.255      |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13275 ave       13275 max       13275 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         680013 ave      680013 max      680013 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.36003e+06 ave 1.36003e+06 max 1.36003e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1360026
+Ave neighs/atom = 83.009399
+Neighbor list builds = 14
+Dangerous builds = 0
+unfix        shear
+run          10000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 50.12 | 50.12 | 50.12 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     45000   297.36217      15628.01      -53884.19      -35272.376      272097.79    
+     46000   297.80495      15520.934     -53889.331     -35043.431      272097.79    
+     47000   302.8294       15603.566     -53883.619     -34654.245      272097.79    
+     48000   302.16998      15651.543     -53886.691     -35015.258      272097.79    
+     49000   298.17514      15642.855     -53884.153     -35187.513      272097.79    
+     50000   301.01746      15635.368     -53885.181     -34725.185      272097.79    
+     51000   301.10513      15586.015     -53883.802     -34917.87       272097.79    
+     52000   299.35142      15640.256     -53882.482     -34873.303      272097.79    
+     53000   301.3529       15600.07      -53885.537     -35008.754      272097.79    
+     54000   299.02694      15494.308     -53882.502     -34974.754      272097.79    
+     55000   298.56959      15647.248     -53883.36      -34930.249      272097.79    
+Loop time of 1802.63 on 8 procs for 10000 steps with 16384 atoms
+
+Performance: 0.959 ns/day, 25.036 hours/ns, 5.547 timesteps/s, 90.890 katom-step/s
+175.5% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1714       | 1714       | 1714       |   0.0 | 95.08
+Neigh   | 0.0066359  | 0.0066359  | 0.0066359  |   0.0 |  0.00
+Comm    | 0.79173    | 0.79173    | 0.79173    |   0.0 |  0.04
+Output  | 0.0011003  | 0.0011003  | 0.0011003  |   0.0 |  0.00
+Modify  | 87.352     | 87.352     | 87.352     |   0.0 |  4.85
+Other   |            | 0.4767     |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13275 ave       13275 max       13275 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         680159 ave      680159 max      680159 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.36032e+06 ave 1.36032e+06 max 1.36032e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1360318
+Ave neighs/atom = 83.027222
+Neighbor list builds = 1
+Dangerous builds = 0
+print        "STORED 0.14 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+print        "STORED 0.14 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_jelinek.dat
+STORED 0.14 -3.2887793097085760152 298.56959228793823513 -34930.249160762999963 64.799999999999997158
+write_data   data_${pot}_0.14.data
+write_data   data_jelinek_0.14.data
+System init for write_data ...
+No /omp style for force computation currently active
+# degrau 4: +0.06 -> 0.20
+fix          shear all deform 1 xy erate 0.006 remap v
+run          5000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 50.14 | 50.14 | 50.14 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     55000   298.56959      15647.248     -53883.36      -34930.249      272097.79    
+     56000   298.48961      16683.299     -53807.698     -37345.062      272097.79    
+     57000   297.42524      17755.2       -53724.434     -39513.122      272097.79    
+     58000   298.90693      19079.737     -53636.562     -41763.027      272097.79    
+     59000   298.81772      20248.648     -53558.306     -43091.996      272097.79    
+     60000   302.06701      21240.049     -53518.408     -38276.452      272097.79    
+Loop time of 878.023 on 8 procs for 5000 steps with 16384 atoms
+
+Performance: 0.984 ns/day, 24.390 hours/ns, 5.695 timesteps/s, 93.301 katom-step/s
+177.2% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 834.93     | 834.93     | 834.93     |   0.0 | 95.09
+Neigh   | 0.22933    | 0.22933    | 0.22933    |   0.0 |  0.03
+Comm    | 0.39783    | 0.39783    | 0.39783    |   0.0 |  0.05
+Output  | 0.00048353 | 0.00048353 | 0.00048353 |   0.0 |  0.00
+Modify  | 42.172     | 42.172     | 42.172     |   0.0 |  4.80
+Other   |            | 0.293      |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13230 ave       13230 max       13230 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         701181 ave      701181 max      701181 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.40236e+06 ave 1.40236e+06 max 1.40236e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1402362
+Ave neighs/atom = 85.593384
+Neighbor list builds = 29
+Dangerous builds = 0
+unfix        shear
+run          10000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 50.61 | 50.61 | 50.61 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     60000   302.06701      21241.363     -53518.326     -38280.746      272097.79    
+     61000   303.77911      21363.288     -53504.282     -38938.54       272097.79    
+     62000   299.72079      21218.148     -53510.518     -39651.085      272097.79    
+     63000   299.99884      20754.457     -53521.063     -40985.359      272097.79    
+     64000   301.92808      20910.5       -53519.761     -40711.485      272097.79    
+     65000   301.29281      20902.22      -53516.97      -40868.139      272097.79    
+     66000   299.53442      20772.499     -53522.259     -40673.462      272097.79    
+     67000   301.67055      20797.323     -53525.931     -40447.676      272097.79    
+     68000   301.43076      20784.144     -53521.904     -40367.79       272097.79    
+     69000   300.54485      20997.065     -53506.762     -40668.236      272097.79    
+     70000   300.03929      20854.304     -53518.932     -40966.762      272097.79    
+Loop time of 1633.91 on 8 procs for 10000 steps with 16384 atoms
+
+Performance: 1.058 ns/day, 22.693 hours/ns, 6.120 timesteps/s, 100.275 katom-step/s
+179.3% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1554.4     | 1554.4     | 1554.4     |   0.0 | 95.14
+Neigh   | 0.25298    | 0.25298    | 0.25298    |   0.0 |  0.02
+Comm    | 0.74635    | 0.74635    | 0.74635    |   0.0 |  0.05
+Output  | 0.0012287  | 0.0012287  | 0.0012287  |   0.0 |  0.00
+Modify  | 77.995     | 77.995     | 77.995     |   0.0 |  4.77
+Other   |            | 0.4701     |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13248 ave       13248 max       13248 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         701899 ave      701899 max      701899 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:   1.4038e+06 ave  1.4038e+06 max  1.4038e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1403798
+Ave neighs/atom = 85.68103
+Neighbor list builds = 31
+Dangerous builds = 0
+print        "STORED 0.20 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+print        "STORED 0.20 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_jelinek.dat
+STORED 0.20 -3.266536377094124699 300.03928953856262751 -40966.762456500422559 64.799999999999997158
+write_data   data_${pot}_0.20.data
+write_data   data_jelinek_0.20.data
+System init for write_data ...
+No /omp style for force computation currently active
+# degrau 5: +0.10 -> 0.30
+fix          shear all deform 1 xy erate 0.010 remap v
+run          5000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 50.65 | 50.65 | 50.65 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     70000   300.03929      20854.304     -53518.932     -40966.762      272097.79    
+     71000   301.112        23319.718     -53380.168     -43529.48       272097.79    
+     72000   302.31322      25880.717     -53245.407     -44211.854      272097.79    
+     73000   299.87791      28431.373     -53100.487     -46763.65       272097.79    
+     74000   307.31025      31458.364     -52915.682     -48591.406      272097.79    
+     75000   304.86856      33837.115     -52839.02      -45964.252      272097.79    
+Loop time of 775.955 on 8 procs for 5000 steps with 16384 atoms
+
+Performance: 1.113 ns/day, 21.554 hours/ns, 6.444 timesteps/s, 105.573 katom-step/s
+189.5% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 727.12     | 727.12     | 727.12     |   0.0 | 93.71
+Neigh   | 0.54152    | 0.54152    | 0.54152    |   0.0 |  0.07
+Comm    | 0.3814     | 0.3814     | 0.3814     |   0.0 |  0.05
+Output  | 0.00054674 | 0.00054674 | 0.00054674 |   0.0 |  0.00
+Modify  | 47.679     | 47.679     | 47.679     |   0.0 |  6.14
+Other   |            | 0.231      |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13309 ave       13309 max       13309 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         717471 ave      717471 max      717471 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.43494e+06 ave 1.43494e+06 max 1.43494e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1434942
+Ave neighs/atom = 87.581909
+Neighbor list builds = 74
+Dangerous builds = 0
+unfix        shear
+run          10000
+No /omp style for force computation currently active
+Per MPI rank memory allocation (min/avg/max) = 51.07 | 51.07 | 51.07 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     75000   304.86856      33839.636     -52838.874     -45970.415      272097.79    
+     76000   316.82414      34481.77      -53017.932     -33389.957      272097.79    
+     77000   301.53767      32437.537     -53217.961     -28307.524      272097.79    
+     78000   302.86705      31525.019     -53300.505     -25163.848      272097.79    
+     79000   300.61943      30650.652     -53355.273     -23267.881      272097.79    
+     80000   301.58129      29799.753     -53420.286     -21610.506      272097.79    
+     81000   297.61634      29382.354     -53486.069     -19453.013      272097.79    
+     82000   300.92794      28460.16      -53572.362     -17021.633      272097.79    
+     83000   301.15763      28063.009     -53622.527     -15165.739      272097.79    
+     84000   300.61704      28075.397     -53657.897     -14656.602      272097.79    
+     85000   299.66317      28098.565     -53675.016     -13828.092      272097.79    
+Loop time of 1518.65 on 8 procs for 10000 steps with 16384 atoms
+
+Performance: 1.138 ns/day, 21.092 hours/ns, 6.585 timesteps/s, 107.885 katom-step/s
+190.1% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1424.3     | 1424.3     | 1424.3     |   0.0 | 93.79
+Neigh   | 1.7565     | 1.7565     | 1.7565     |   0.0 |  0.12
+Comm    | 0.81239    | 0.81239    | 0.81239    |   0.0 |  0.05
+Output  | 0.0010767  | 0.0010767  | 0.0010767  |   0.0 |  0.00
+Modify  | 91.31      | 91.31      | 91.31      |   0.0 |  6.01
+Other   |            | 0.479      |            |       |  0.03
+
+Nlocal:          16384 ave       16384 max       16384 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          13417 ave       13417 max       13417 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         677814 ave      677814 max      677814 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:  1.35563e+06 ave 1.35563e+06 max 1.35563e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1355628
+Ave neighs/atom = 82.740967
+Neighbor list builds = 240
+Dangerous builds = 0
+print        "STORED 0.30 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_${pot}.dat
+print        "STORED 0.30 $(pe/atoms) $(temp) $(pxy) $(lx)" append stored_jelinek.dat
+STORED 0.30 -3.2760629785454833396 299.66316997667576061 -13828.091642847835828 64.799999999999997158
+write_data   data_${pot}_0.30.data
+write_data   data_jelinek_0.30.data
+System init for write_data ...
+No /omp style for force computation currently active
+
+dump         d1 all custom 2000 deformed_${pot}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 2000 deformed_jelinek.dump id type x y z c_esp c_cnatmp
+print        "E6.1 concluída: stored.dat, data_*.data, perfil_Es_${pot}.dat, deformed_${pot}.dump"
+WARNING: Detected non-ASCII characters in input. Will try to continue by replacing with ASCII equivalents where known. (src/input.cpp:477)
+E6.1 conclu�da: stored.dat, data_*.data, perfil_Es_jelinek.dat, deformed_jelinek.dump
+Total wall time: 5:15:26
