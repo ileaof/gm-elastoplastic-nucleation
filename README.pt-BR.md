@@ -62,7 +62,8 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 | `nucleacao/` | As cópias dos modelos de nucleação com a superfície elasto-plástica (`*_EP.py`, modo `stored_total`), o módulo comum `gm_elastoplastic.py` (return mapping, modos de energia), `figure_layout.py` e os auxiliares; figuras de comparação em toda a faixa de gradiente (`figuras/`) e as tabelas coletadas |
 | `sdas/` | As cópias dos modelos de SDAS (`*_EP.py`) com o tensor de Gibbs–Thomson de 2ª ordem da superfície elasto-plástica, e suas figuras |
 | `ferramentas/` | Scripts que geram as cópias a partir dos modelos elásticos originais, rodam as cópias, desenham as figuras de comparação em toda a faixa de gradiente (até ~10⁶ K/m) e verificam os resultados |
-| `paper/` | Fontes do paper: `build_paper.py`, `make_figures.py` e o modelo em sequência de solução `nucleation_elastoplastic_AlSiMgFe.py` (superfícies elástica e elasto-plástica resolvidas lado a lado), com todas as saídas do paper (tabela da varredura, figuras e painéis) |
+| `paper/` | Fontes do paper: `build_paper.py`, `make_figures.py` e o modelo em sequência de solução `nucleation_elastoplastic_AlSiMgFe.py` (superfícies elástica e elasto-plástica resolvidas lado a lado), com todas as saídas do paper (tabela da varredura, figuras e painéis). As seções 5.7–5.10 carregam a campanha de recristalização (Figuras 7–12, Tabelas 8–11); o manuscrito sai como `..._v7_total.docx` |
+| `recristalizacao/` | A campanha de recristalização (séries E6, E6.5 e E6.6 nos registros): entradas e cadeias do LAMMPS (`ser_e65.sh`, `ser_e66.sh`), os logs crus por trás das Tabelas 8, 9 e 11 do paper, as réguas dos rótulos CNA quentes dos controles puros (`e65_serie26/`, `e66_data/`, `e66_analise/`), os scripts de análise e as figuras |
 
 ## Teoria
 
@@ -320,7 +321,19 @@ python nucleation_elastoplastic_AlSiMgFe.py   # todas as saídas do paper para A
 `aplicar_elastoplastico.py` regenera as cópias `*_EP.py` a partir dos modelos elásticos originais (os
 caminhos de origem no topo do script apontam para o espaço de trabalho do autor), `rodar_modelos_EP.py`
 roda todas as cópias e coleta as tabelas, e `paper/build_paper.py` (depois de `paper/make_figures.py`)
-monta o manuscrito.
+monta o manuscrito (o arquivo `Manuscript_..._v7_total.docx` na pasta Paper do autor).
+
+Campanha de recristalização (família E6; na caixa GPU, LAMMPS 30Sep2026 com o pacote GPU):
+
+```bash
+cd recristalizacao
+bash ser_e65.sh            # a série E6.5 da célula grande + os controles puros (Mendelev EAM, -sf gpu, ~1 h)
+bash ser_e66.sh            # E6.6: as réguas NVT/NPT, os descarregamentos (protocolo E6.4) e as largas em γ; 21 corridas, ~13,5 h
+python3 -I analyze_e66.py  # na caixa: reguas.csv, descarrega.csv, largo.csv e as séries de frames -> e66_analise/
+```
+
+Os códigos das séries (E5 em `md_cpu/`, E6.1–E6.6 em `recristalizacao/`) são os registros da campanha;
+as seções 5.7–5.10 do paper os apresentam exatamente assim, ancorados neste repositório.
 
 MD (LAMMPS 10Sep2025; no Windows, a versão OpenMP: `lmp -sf omp -pk omp 8 -in ...`). Baixe
 `Ni-Al-Nb.eam.fs` (Borovikov et al., Int. J. Plast. 178, 104004, 2024) do NIST Interatomic Potentials
@@ -342,7 +355,11 @@ com o raio).
 Outubro de 2026: as cópias de nucleação e o paper adotam a energia de superfície `stored_total`
 (referência fixa, deformação permanente armazenada); o manuscrito "Elasto-Plastic Gurtin–Murdoch Surface
 in Non-Equilibrium Phase Nucleation: Stored Permanent Surface Deformation, Elastic Restoration and the
-Thermal-Field Tensor" é montado por `paper/build_paper.py`.
+Thermal-Field Tensor" é montado por `paper/build_paper.py` (saída atual: `..._v7_total.docx`, com a
+campanha de recristalização de `recristalizacao/` nas seções 5.7–5.10: Figuras 7–12 e Tabelas 8–11 — a
+verificação MD da energia armazenada, as réguas quentes do CNA dos controles puros, os descarregamentos
+até tensão nula e a liberação gradual sobre o platô persistente de 3–6 × 10⁷ J m⁻³, a ordem de
+σ_y^s·α/δ com a espessura δ medida).
 
 Correção (outubro de 2026): a derivada do trabalho plástico usada em ∂γ/∂r no modo `barrier` estava com o
 sinal trocado; afetava só as grandezas de 1ª ordem nesse modo. γ, ΔT, ∇T e Γ²ⁿᵈ não dependem dela.

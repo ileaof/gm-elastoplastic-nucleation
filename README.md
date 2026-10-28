@@ -61,7 +61,8 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 | `nucleacao/` | The nucleation-model copies with the elasto-plastic surface (`*_EP.py`, mode `stored_total`), the shared module `gm_elastoplastic.py` (return mapping, energy modes), `figure_layout.py` and the helpers; comparison figures against the full gradient range (`figuras/`) and the collected tables |
 | `sdas/` | The SDAS-model copies (`*_EP.py`) with the 2nd-order Gibbs–Thomson tensor of the elasto-plastic surface, and their figures |
 | `ferramentas/` | Scripts that generate the copies from the original elastic models, run them, draw the comparison figures against the full gradient range (up to ~10⁶ K/m) and verify the results |
-| `paper/` | The paper sources: `build_paper.py`, `make_figures.py` and the solution-sequence model `nucleation_elastoplastic_AlSiMgFe.py` (elastic and elasto-plastic surfaces solved side by side), with all paper outputs (sweep table, figures and panels) |
+| `paper/` | The paper sources: `build_paper.py`, `make_figures.py` and the solution-sequence model `nucleation_elastoplastic_AlSiMgFe.py` (elastic and elasto-plastic surfaces solved side by side), with all paper outputs (sweep table, figures and panels). Sections 5.7-5.10 carry the recrystallization campaign (Figures 7-12, Tables 8-11); the manuscript is built to `..._v7_total.docx` |
+| `recristalizacao/` | The recrystallization campaign (series E6, E6.5 and E6.6 in the records): LAMMPS inputs and chains (`ser_e65.sh`, `ser_e66.sh`), the raw logs behind the paper's Tables 8, 9 and 11, the pristine-control rulers of the hot-temperature CNA labels (`e65_serie26/`, `e66_data/`, `e66_analise/`), the analysis scripts and the figures |
 
 ## Theory
 
@@ -318,7 +319,20 @@ python nucleation_elastoplastic_AlSiMgFe.py   # every output of the paper for Al
 
 `aplicar_elastoplastico.py` regenerates the `*_EP.py` copies from the original elastic models (the source
 paths in its header point to the author's workspace), `rodar_modelos_EP.py` runs every copy and collects
-the tables, and `paper/build_paper.py` (after `paper/make_figures.py`) builds the manuscript.
+the tables, and `paper/build_paper.py` (after `paper/make_figures.py`) builds the manuscript (saved as
+`Manuscript_..._v7_total.docx` in the author's Paper folder).
+
+Recrystallization campaign (E6 family; on the GPU box, LAMMPS 30Sep2026 with the GPU package):
+
+```bash
+cd recristalizacao
+bash ser_e65.sh            # the big-cell E6.5 series + the pristine controls (Mendelev EAM, -sf gpu, ~1 h)
+bash ser_e66.sh            # E6.6: the NVT/NPT rulers, the unloadings (E6.4 protocol) and the wide-gamma runs; 21 runs, ~13.5 h
+python3 -I analyze_e66.py  # on the box: reguas.csv, descarrega.csv, largo.csv and the frame series -> e66_analise/
+```
+
+The series codes (E5 in `md_cpu/`, E6.1-E6.6 in `recristalizacao/`) are the campaign's records; the
+paper's Sections 5.7-5.10 introduce them exactly so, anchored to this repository.
 
 MD (LAMMPS 10Sep2025; on Windows the OpenMP build: `lmp -sf omp -pk omp 8 -in ...`). Download
 `Ni-Al-Nb.eam.fs` (Borovikov et al., Int. J. Plast. 178, 104004, 2024) from the NIST Interatomic
@@ -339,7 +353,12 @@ Research code under development. The yield stress of the interface still needs a
 October 2026: the nucleation copies and the paper adopt the `stored_total` surface energy (fixed
 reference, permanent deformation stored); the manuscript
 "Elasto-Plastic Gurtin–Murdoch Surface in Non-Equilibrium Phase Nucleation: Stored Permanent Surface
-Deformation, Elastic Restoration and the Thermal-Field Tensor" is built by `paper/build_paper.py`.
+Deformation, Elastic Restoration and the Thermal-Field Tensor" is built by `paper/build_paper.py`
+(current output: `..._v7_total.docx`, with the recrystallization campaign of `recristalizacao/` in
+Sections 5.7-5.10: Figures 7-12 and Tables 8-11 - the MD verification of the stored energy, the
+hot-temperature CNA baselines of the pristine controls, the unloadings to zero stress and the
+gradual release onto the persistent plateau of 3-6 × 10⁷ J m⁻³, the order of σ_y^s·α/δ with the
+measured deformed-zone thickness).
 
 Correction (October 2026): the derivative of the plastic work used in ∂γ/∂r in the `barrier` mode had
 the wrong sign; it affected only the 1st-order quantities in that mode. γ, ΔT, ∇T and Γ²ⁿᵈ do not
