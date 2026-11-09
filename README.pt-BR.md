@@ -45,7 +45,7 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 
 - [**Formulação completa**](docs/FORMULACAO.pt-BR.md): campo térmico pela 1ª lei, tensor de campo térmico, nucleação (raios críticos e tensores de 1ª e 2ª ordem), taxa de nucleação, superfície de Gurtin–Murdoch, superfície elasto-plástica e sua energia, solução numérica em função do gradiente térmico, modelo MRB do SDAS
 - [Organização do repositório](#organização-do-repositório)
-- [Teoria](#teoria): [superfície de Gurtin–Murdoch](#1-superfície-de-gurtinmurdoch-gurtin-e-murdoch-1978-ferreira-2022-2024) · [proposta elasto-plástica](#2-proposta-elasto-plástica) · [energia da superfície plástica](#3-energia-da-superfície-elasto-plástica)
+- [Teoria](#teoria): [superfície de Gurtin–Murdoch](#1-superfície-de-gurtinmurdoch-gurtin-e-murdoch-1978-ferreira-2022-2024) · [proposta elasto-plástica](#2-proposta-elasto-plástica) · [energia da superfície plástica](#3-energia-da-superfície-elasto-plástica) · [Butler com deslocamento do equilíbrio](#4-formulação-de-butler-para-o-deslocamento-do-equilíbrio-termodinâmico-ferreira-2026)
 - [Verificação: analítico x numérico](#verificação-analítico-x-numérico)
 - [Resultados principais](#resultados-principais-al-3cu-5nb-01fe-gradiente-médio-de-3294-km) · [SDAS com o tensor de 2ª ordem local](#sdas-com-o-tensor-de-2ª-ordem-local) · [Todas as ligas no modo stored_total](#todas-as-ligas-no-modo-stored_total)
 - [Como rodar](#como-rodar) · [Origem dos dados](#origem-dos-dados) · [Estado](#estado)
@@ -62,7 +62,8 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 | `nucleacao/` | As cópias dos modelos de nucleação com a superfície elasto-plástica (`*_EP.py`, modo `stored_total`), o módulo comum `gm_elastoplastic.py` (return mapping, modos de energia), `figure_layout.py` e os auxiliares; figuras de comparação em toda a faixa de gradiente (`figuras/`) e as tabelas coletadas |
 | `sdas/` | As cópias dos modelos de SDAS (`*_EP.py`) com o tensor de Gibbs–Thomson de 2ª ordem da superfície elasto-plástica, e suas figuras |
 | `ferramentas/` | Scripts que geram as cópias a partir dos modelos elásticos originais, rodam as cópias, desenham as figuras de comparação em toda a faixa de gradiente (até ~10⁶ K/m) e verificam os resultados |
-| `paper/` | Fontes do paper: `build_paper.py`, `make_figures.py` e o modelo em sequência de solução `nucleation_elastoplastic_AlSiMgFe.py` (superfícies elástica e elasto-plástica resolvidas lado a lado), com todas as saídas do paper (tabela da varredura, figuras e painéis). As seções 5.7–5.10 carregam a campanha de recristalização (Figuras 7–12, Tabelas 8–11); o manuscrito sai como `..._v7_total.docx` |
+| `paper/` | Fontes do paper: `build_paper.py`, `make_figures.py` e o modelo em sequência de solução `nucleation_elastoplastic_AlSiMgFe.py` (superfícies elástica e elasto-plástica resolvidas lado a lado), com todas as saídas do paper (tabela da varredura, figuras e painéis). As seções 5.7–5.10 carregam a campanha de recristalização (Figuras 7–12, Tabelas 8–11); o manuscrito sai como `..._v7_total.docx`. Equação de Butler com deslocamento do equilíbrio termodinâmico: `butler_*.py`, `make_butler_figure.py` e o montador da v9 `build_paper_butler.py` ([Teoria §4](#4-formulação-de-butler-para-o-deslocamento-do-equilíbrio-termodinâmico-ferreira-2026)) |
+| `ambiente/` | Ambiente no Mac: `requirements.txt`, `setup_mac.sh` (venv do Python), `criar_vm_lammps.sh` e `compilar_lammps_vm.sh` (VM Multipass com o LAMMPS stable_30Sep2026: MEAM, MANYBODY, OPENMP) |
 | `recristalizacao/` | A campanha de recristalização (séries E6, E6.5 e E6.6 nos registros): entradas e cadeias do LAMMPS (`ser_e65.sh`, `ser_e66.sh`), os logs crus por trás das Tabelas 8, 9 e 11 do paper, as réguas dos rótulos CNA quentes dos controles puros (`e65_serie26/`, `e66_data/`, `e66_analise/`), os scripts de análise e as figuras |
 
 ## Teoria
@@ -187,6 +188,47 @@ $\Gamma^{2nd}$ só 0,5–4,2 % abaixo do tensor elástico, crescendo com o gradi
 acima do equilíbrio $\gamma_0/|\Delta S_V|$ — a interface carrega energia disponível para a nucleação
 induzida por deformação. Com a referência atualizando, o tensor em vez disso colapsa numa constante.
 
+### 4. Formulação de Butler para o deslocamento do equilíbrio termodinâmico (Ferreira, 2026)
+
+A equação de Butler (Butler, 1932) iguala o potencial químico de cada componente nas fases superfície e
+volume, mas não tem a contribuição do substrato: vale só perto do equilíbrio e, à medida que o gradiente
+térmico afasta o núcleo do equilíbrio, a energia de superfície se afasta do valor verdadeiro. Ferreira
+(Materials 19, 4676, 2026, seção 3.2) restaura o substrato pela energia livre configuracional do núcleo,
+
+$$\Delta G_C=\frac{\gamma_{SL}}{f(\theta)}\,\frac{\partial f(\theta)}{\partial r}$$
+
+o que dá, para uma liga de $n$ componentes sobre um substrato (SV), $n+1$ equações para a energia de
+interface $\gamma$ e as $n$ frações de superfície $X^{S}_{SL_k}$:
+
+$$\gamma=\gamma_{SV}+\frac{RT}{A_{SV}}\ln\frac{1-\sum_{i=1}^{n}X^{S}_{SL_i}}{1-\sum_{i=1}^{n}X^{B}_{SL_i}}+\frac{1}{A_{SV}}\left[G^{E,S}_{SV}-G^{E,B}_{SV}-G^{E,C}_{SV}\right]$$
+
+$$\gamma=\gamma_{SL_k}+\frac{RT}{A_{SL_k}}\ln\frac{X^{S}_{SL_k}}{X^{B}_{SL_k}}+\frac{1}{A_{SL_k}}\left[G^{E,S}_{SL_k}-G^{E,B}_{SL_k}-G^{E,C}_{SL_k}\right],\qquad k=1,\dots,n$$
+
+$G^{E,S}$ e $G^{E,B}$ são as energias de Gibbs parciais de excesso das fases superfície e volume (funções de
+$T$ e das frações de superfície ou de volume) e $G^{E,C}$ é a contribuição configuracional; sem ela voltam as
+equações clássicas de Butler. As derivadas radiais (a forma de potencial de superfície, Eqs. 35a–c do artigo)
+entram no raio crítico de 2ª ordem. O sistema não se resolve sem os dados da nucleação: a temperatura e o
+termo configuracional vêm da solução de nucleação com a superfície GM elástica ou elasto-plástica,
+
+$$\frac{G^{E,C}_{i}}{A_{i}}=X^{S}_{i}\,\Delta G_C(\nabla T),\qquad T=T_L-\Delta T(\nabla T)$$
+
+com o termo configuracional dividido entre os componentes na proporção da ocupação da superfície.
+
+**Implementação** em `paper/` (núcleo FCC_A1 de Al-0,8Si-0,6Mg-0,2Fe, alimentado pela varredura
+`outputs_AlSiMgFe/sweep_AlSiMgFe.csv` de `nucleation_elastoplastic_AlSiMgFe.py`):
+
+| Script | Conteúdo |
+|---|---|
+| `butler_AlSiMgFe.py` | Butler padrão em $T_L$ e Butler com deslocamento do equilíbrio ao longo de $\nabla T$, para as superfícies elástica e elasto-plástica. Energia de Gibbs de excesso do líquido por Redlich–Kister–Muggianu com os parâmetros do COST507 (`COST507-modified.tdb`), $G^{E,S}=\beta\,G^{E,B}$ com $\beta=0{,}83$, $\gamma_i$ dos componentes puros e áreas molares $A_i$ pela regra de Turnbull → `outputs_AlSiMgFe/butler_AlSiMgFe.csv` |
+| `make_butler_figure.py` | `Fig11_butler.png` (termo configuracional $\Delta G_C$ do núcleo) e `Fig12_butler_equilibrium_start.png` (o termo contado a partir do equilíbrio, $\Delta G_C(1-\gamma_0/\gamma)$) |
+| `butler_inverse_AlSiMgFe.py` | Problema inverso: $\gamma$ imposto pela solução de nucleação, dando a composição da interface $X^{S}_i(\nabla T)$ e a fração de $\Delta G_C$ tomada pela interface → `Fig12_butler_surface_composition.png` |
+| `butler_fit_AlSiMgFe.py` | Ajustes por mínimos quadrados dos parâmetros que fazem $\gamma_{Butler}=\gamma_{SL}(\nabla T)$ (exploratório) |
+| `butler_mech_AlSiMgFe.py` | Variante exploratória com um termo mecânico por elemento; **não faz parte da formulação** |
+| `build_paper_butler.py` | Variante v9 do manuscrito com essas soluções (a seção 5.9 dela) |
+
+Estado atual: os scripts resolvem uma equação por componente (Al, Si, Mg, Fe), com o alumínio no lugar do
+solvente; a equação do substrato (a primeira acima) ainda não está implementada.
+
 ## Verificação: analítico x numérico
 
 `model/verify_gm_elastoplastic_tensor.py` testa as funções do próprio arquivo do modelo (extraídas dele,
@@ -277,7 +319,7 @@ e `gibbs_thomson_alto_gradiente.py`, e também estão em `nucleacao/figuras/`.
 
 ## Como rodar
 
-Python 3.11 com NumPy, SciPy e Matplotlib. Na pasta `model/`:
+Python 3.11 com NumPy, SciPy e Matplotlib (no Mac: `bash ambiente/setup_mac.sh` e depois `source .venv/bin/activate`). Na pasta `model/`:
 
 ```bash
 # GM elástica (reproduz exatamente o script original) e GM elasto-plástica
@@ -321,7 +363,17 @@ python nucleation_elastoplastic_AlSiMgFe.py   # todas as saídas do paper para A
 `aplicar_elastoplastico.py` regenera as cópias `*_EP.py` a partir dos modelos elásticos originais (os
 caminhos de origem no topo do script apontam para o espaço de trabalho do autor), `rodar_modelos_EP.py`
 roda todas as cópias e coleta as tabelas, e `paper/build_paper.py` (depois de `paper/make_figures.py`)
-monta o manuscrito (o arquivo `Manuscript_..._v7_total.docx` na pasta Paper do autor).
+monta o manuscrito (o arquivo `paper/out/Manuscript_..._v7_total.docx`).
+
+Equação de Butler com deslocamento do equilíbrio (depois de `nucleation_elastoplastic_AlSiMgFe.py`, que grava a varredura):
+
+```bash
+cd paper
+python butler_AlSiMgFe.py          # Butler padrão e Butler com deslocamento do equilíbrio -> outputs_AlSiMgFe/butler_AlSiMgFe.csv
+python make_butler_figure.py       # Fig11_butler.png, Fig12_butler_equilibrium_start.png
+python butler_inverse_AlSiMgFe.py  # composição da interface com gamma imposto -> Fig12_butler_surface_composition.png
+python build_paper_butler.py       # variante v9 do manuscrito -> paper/out/
+```
 
 Campanha de recristalização (família E6; na caixa GPU, LAMMPS 30Sep2026 com o pacote GPU):
 
@@ -360,6 +412,12 @@ campanha de recristalização de `recristalizacao/` nas seções 5.7–5.10: Fig
 verificação MD da energia armazenada, as réguas quentes do CNA dos controles puros, os descarregamentos
 até tensão nula e a liberação gradual sobre o platô persistente de 3–6 × 10⁷ J m⁻³, a ordem de
 σ_y^s·α/δ com a espessura δ medida).
+
+Novembro de 2026: a formulação de Butler para o deslocamento do equilíbrio termodinâmico (Ferreira,
+Materials 19, 4676, 2026) está sendo levada ao paper; os scripts `paper/butler_*.py` dão a primeira solução
+dela ao longo do gradiente para Al-0,8Si-0,6Mg-0,2Fe ([Teoria §4](#4-formulação-de-butler-para-o-deslocamento-do-equilíbrio-termodinâmico-ferreira-2026)).
+O projeto agora roda numa única máquina macOS: `ambiente/` tem a instalação do Python e a compilação do
+LAMMPS numa VM Multipass (Apple Silicon, sem o pacote GPU: as rodadas antes com `-sf gpu` usam `-sf omp`).
 
 Correção (outubro de 2026): a derivada do trabalho plástico usada em ∂γ/∂r no modo `barrier` estava com o
 sinal trocado; afetava só as grandezas de 1ª ordem nesse modo. γ, ΔT, ∇T e Γ²ⁿᵈ não dependem dela.

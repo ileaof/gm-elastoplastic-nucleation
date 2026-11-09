@@ -44,7 +44,7 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 
 - [**Full formulation**](docs/FORMULATION.md): thermal field from the first law, thermal-field tensor, nucleation (critical radii and tensors of 1st and 2nd order), nucleation rate, Gurtin–Murdoch surface, elasto-plastic surface and its energy, numerical solution against the thermal gradient, MRB model of the SDAS
 - [Repository layout](#repository-layout)
-- [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal) · [energy of the plastic surface](#3-energy-of-the-elasto-plastic-surface)
+- [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal) · [energy of the plastic surface](#3-energy-of-the-elasto-plastic-surface) · [Butler with equilibrium shift](#4-butlers-formulation-for-the-thermodynamic-equilibrium-shift-ferreira-2026)
 - [Verification: analytical x numerical](#verification-analytical-x-numerical)
 - [Main results](#main-results-al-3cu-5nb-01fe-mean-gradient-3294-km) · [SDAS with the local 2nd-order tensor](#sdas-with-the-local-2nd-order-tensor) · [All alloys in the stored_total mode](#all-alloys-in-the-stored_total-mode)
 - [Running](#running) · [Data sources](#data-sources) · [Status](#status)
@@ -61,7 +61,8 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 | `nucleacao/` | The nucleation-model copies with the elasto-plastic surface (`*_EP.py`, mode `stored_total`), the shared module `gm_elastoplastic.py` (return mapping, energy modes), `figure_layout.py` and the helpers; comparison figures against the full gradient range (`figuras/`) and the collected tables |
 | `sdas/` | The SDAS-model copies (`*_EP.py`) with the 2nd-order Gibbs–Thomson tensor of the elasto-plastic surface, and their figures |
 | `ferramentas/` | Scripts that generate the copies from the original elastic models, run them, draw the comparison figures against the full gradient range (up to ~10⁶ K/m) and verify the results |
-| `paper/` | The paper sources: `build_paper.py`, `make_figures.py` and the solution-sequence model `nucleation_elastoplastic_AlSiMgFe.py` (elastic and elasto-plastic surfaces solved side by side), with all paper outputs (sweep table, figures and panels). Sections 5.7-5.10 carry the recrystallization campaign (Figures 7-12, Tables 8-11); the manuscript is built to `..._v7_total.docx` |
+| `paper/` | The paper sources: `build_paper.py`, `make_figures.py` and the solution-sequence model `nucleation_elastoplastic_AlSiMgFe.py` (elastic and elasto-plastic surfaces solved side by side), with all paper outputs (sweep table, figures and panels). Sections 5.7-5.10 carry the recrystallization campaign (Figures 7-12, Tables 8-11); the manuscript is built to `..._v7_total.docx`. Butler's equation with the thermodynamic equilibrium shift: `butler_*.py`, `make_butler_figure.py` and the v9 builder `build_paper_butler.py` ([Theory §4](#4-butlers-formulation-for-the-thermodynamic-equilibrium-shift-ferreira-2026)) |
+| `ambiente/` | Environment on the Mac: `requirements.txt`, `setup_mac.sh` (Python venv), `criar_vm_lammps.sh` and `compilar_lammps_vm.sh` (Multipass VM with LAMMPS stable_30Sep2026: MEAM, MANYBODY, OPENMP) |
 | `recristalizacao/` | The recrystallization campaign (series E6, E6.5 and E6.6 in the records): LAMMPS inputs and chains (`ser_e65.sh`, `ser_e66.sh`), the raw logs behind the paper's Tables 8, 9 and 11, the pristine-control rulers of the hot-temperature CNA labels (`e65_serie26/`, `e66_data/`, `e66_analise/`), the analysis scripts and the figures |
 
 ## Theory
@@ -187,6 +188,49 @@ $\Gamma^{2nd}$ only 0.5–4.2 % below the elastic tensor, growing with the gradi
 above the equilibrium $\gamma_0/|\Delta S_V|$ — the interface carries energy available for
 deformation-induced nucleation. With the reference updating, the tensor instead collapses onto a constant.
 
+### 4. Butler's formulation for the thermodynamic equilibrium shift (Ferreira, 2026)
+
+Butler's equation (Butler, 1932) equates the chemical potential of each component in the surface and in the
+bulk phases, but it has no contribution of the substrate: it holds only close to equilibrium, and as the
+thermal gradient drives the nucleus away from equilibrium its surface energy departs from the true value.
+Ferreira (Materials 19, 4676, 2026, Section 3.2) restores the substrate through the configurational free
+energy of the nucleus,
+
+$$\Delta G_C=\frac{\gamma_{SL}}{f(\theta)}\,\frac{\partial f(\theta)}{\partial r}$$
+
+which gives, for an $n$-component alloy on a substrate (SV), $n+1$ equations for the interfacial energy
+$\gamma$ and the $n$ surface fractions $X^{S}_{SL_k}$:
+
+$$\gamma=\gamma_{SV}+\frac{RT}{A_{SV}}\ln\frac{1-\sum_{i=1}^{n}X^{S}_{SL_i}}{1-\sum_{i=1}^{n}X^{B}_{SL_i}}+\frac{1}{A_{SV}}\left[G^{E,S}_{SV}-G^{E,B}_{SV}-G^{E,C}_{SV}\right]$$
+
+$$\gamma=\gamma_{SL_k}+\frac{RT}{A_{SL_k}}\ln\frac{X^{S}_{SL_k}}{X^{B}_{SL_k}}+\frac{1}{A_{SL_k}}\left[G^{E,S}_{SL_k}-G^{E,B}_{SL_k}-G^{E,C}_{SL_k}\right],\qquad k=1,\dots,n$$
+
+$G^{E,S}$ and $G^{E,B}$ are the partial excess Gibbs energies of the surface and bulk phases (functions of
+$T$ and of the surface or bulk fractions) and $G^{E,C}$ is the configurational contribution; without it the
+classical Butler equations are recovered. Their radial derivatives (the surface-potential form, Eqs. 35a–c of
+the article) enter the second-order critical radius. The system cannot be solved without the nucleation data:
+the temperature and the configurational term come from the nucleation solution with the elastic or the
+elasto-plastic GM surface,
+
+$$\frac{G^{E,C}_{i}}{A_{i}}=X^{S}_{i}\,\Delta G_C(\nabla T),\qquad T=T_L-\Delta T(\nabla T)$$
+
+with the configurational term shared among the components in proportion to their occupation of the surface.
+
+**Implementation** in `paper/` (FCC_A1 nucleus of Al-0.8Si-0.6Mg-0.2Fe, fed by the sweep
+`outputs_AlSiMgFe/sweep_AlSiMgFe.csv` of `nucleation_elastoplastic_AlSiMgFe.py`):
+
+| Script | Content |
+|---|---|
+| `butler_AlSiMgFe.py` | Standard Butler at $T_L$ and Butler with the equilibrium shift along $\nabla T$, for the elastic and the elasto-plastic surfaces. Liquid excess Gibbs energy by Redlich–Kister–Muggianu with the COST507 parameters (`COST507-modified.tdb`), $G^{E,S}=\beta\,G^{E,B}$ with $\beta=0.83$, pure-component $\gamma_i$ and molar areas $A_i$ by Turnbull's rule → `outputs_AlSiMgFe/butler_AlSiMgFe.csv` |
+| `make_butler_figure.py` | `Fig11_butler.png` (configurational term $\Delta G_C$ of the nucleus) and `Fig12_butler_equilibrium_start.png` (the term counted from equilibrium, $\Delta G_C(1-\gamma_0/\gamma)$) |
+| `butler_inverse_AlSiMgFe.py` | Inverse problem: $\gamma$ imposed by the nucleation solution, giving the interface composition $X^{S}_i(\nabla T)$ and the fraction of $\Delta G_C$ taken by the interface → `Fig12_butler_surface_composition.png` |
+| `butler_fit_AlSiMgFe.py` | Least-squares fits of the parameters that make $\gamma_{Butler}=\gamma_{SL}(\nabla T)$ (exploratory) |
+| `butler_mech_AlSiMgFe.py` | Exploratory variant with an element-specific mechanical term; **not part of the formulation** |
+| `build_paper_butler.py` | Manuscript variant v9 with these solutions (its Section 5.9) |
+
+Present state: the scripts solve one equation per component (Al, Si, Mg, Fe), with aluminium in the place of
+the solvent; the substrate equation (the first one above) is not implemented yet.
+
 ## Verification: analytical x numerical
 
 `model/verify_gm_elastoplastic_tensor.py` tests the functions of the model file itself (extracted from
@@ -276,7 +320,7 @@ and `gibbs_thomson_alto_gradiente.py`, and are also in `nucleacao/figuras/`.
 
 ## Running
 
-Python 3.11 with NumPy, SciPy and Matplotlib. From `model/`:
+Python 3.11 with NumPy, SciPy and Matplotlib (on the Mac: `bash ambiente/setup_mac.sh`, then `source .venv/bin/activate`). From `model/`:
 
 ```bash
 # elastic GM (reproduces the original script exactly) and elasto-plastic GM
@@ -320,7 +364,17 @@ python nucleation_elastoplastic_AlSiMgFe.py   # every output of the paper for Al
 `aplicar_elastoplastico.py` regenerates the `*_EP.py` copies from the original elastic models (the source
 paths in its header point to the author's workspace), `rodar_modelos_EP.py` runs every copy and collects
 the tables, and `paper/build_paper.py` (after `paper/make_figures.py`) builds the manuscript (saved as
-`Manuscript_..._v7_total.docx` in the author's Paper folder).
+`paper/out/Manuscript_..._v7_total.docx`).
+
+Butler's equation with the equilibrium shift (after `nucleation_elastoplastic_AlSiMgFe.py`, which writes the sweep):
+
+```bash
+cd paper
+python butler_AlSiMgFe.py          # standard Butler and Butler with equilibrium shift -> outputs_AlSiMgFe/butler_AlSiMgFe.csv
+python make_butler_figure.py       # Fig11_butler.png, Fig12_butler_equilibrium_start.png
+python butler_inverse_AlSiMgFe.py  # interface composition with gamma imposed -> Fig12_butler_surface_composition.png
+python build_paper_butler.py       # manuscript variant v9 -> paper/out/
+```
 
 Recrystallization campaign (E6 family; on the GPU box, LAMMPS 30Sep2026 with the GPU package):
 
@@ -359,6 +413,12 @@ Sections 5.7-5.10: Figures 7-12 and Tables 8-11 - the MD verification of the sto
 hot-temperature CNA baselines of the pristine controls, the unloadings to zero stress and the
 gradual release onto the persistent plateau of 3-6 × 10⁷ J m⁻³, the order of σ_y^s·α/δ with the
 measured deformed-zone thickness).
+
+November 2026: Butler's formulation for the thermodynamic equilibrium shift (Ferreira, Materials 19, 4676,
+2026) is being brought into the paper; the `paper/butler_*.py` scripts give its first solution along the
+gradient for Al-0.8Si-0.6Mg-0.2Fe ([Theory §4](#4-butlers-formulation-for-the-thermodynamic-equilibrium-shift-ferreira-2026)).
+The project now runs on a single macOS machine: `ambiente/` holds the Python setup and the LAMMPS build
+in a Multipass VM (Apple Silicon, no GPU package: the former `-sf gpu` runs use `-sf omp`).
 
 Correction (October 2026): the derivative of the plastic work used in ∂γ/∂r in the `barrier` mode had
 the wrong sign; it affected only the 1st-order quantities in that mode. γ, ΔT, ∇T and Γ²ⁿᵈ do not
