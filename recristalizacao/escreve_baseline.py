@@ -3,7 +3,7 @@
 import os
 import numpy as np
 
-DEST = r"C:\Users\ileao\OneDrive\Documentos\gm-elastoplastic-nucleation\recristalizacao\e65_serie26"
+DEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "e65_serie26")
 AQUI = os.path.dirname(os.path.abspath(__file__))
 CONTROLES = {800: ("ctrl_fcc_T800_hold0.dump", "ctrl_fcc_T800_late.dump"),
              850: ("ctrl_fcc_T850_hold0.dump", "ctrl_fcc_T850_late.dump"),

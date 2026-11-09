@@ -1,0 +1,23 @@
+LAMMPS (10 Sep 2025)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Users\ileao\AppData\Local\LAMMPS 64-bit 10Sep2025\plugins
+package omp 8
+set 8 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+# Benchmark de cronometragem do E6 (não é produção): 1000 passos NVT a 300 K
+# Uso:  lmp -sf omp -pk omp <nt> -in in.bench.lmp -var pot jelinek -var alloy 1 -var nx 8
+units metal
+atom_style atomic
+boundary p p p
+variable pot index jelinek
+variable alloy index 1
+variable nx index 8
+variable nsteps index 1000
+variable a0 equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable a0 equal 4.045
+variable ntypes equal 1
+if "${pot} == jelinek" && "${alloy} == 1" then "variable ntypes equal 4"
+ERROR: Illegal if command: expected "then" but found "&&" (src/input.cpp:936)
+Last input line: mendelev == jelinek

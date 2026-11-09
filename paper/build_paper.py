@@ -13,8 +13,11 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = r'C:\Users\ileao\OneDrive\Documentos\Paper Nucleation\Manuscript_ElastoPlastic_Surface_NonEquilibrium_Nucleation_v7_total.docx'
-XSLT = etree.XSLT(etree.parse(r'C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL'))
+OUT = os.path.join(HERE, 'out', 'Manuscript_ElastoPlastic_Surface_NonEquilibrium_Nucleation_v7_total.docx')
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+_XSL_CANDIDATOS = ['/Applications/Microsoft Word.app/Contents/Resources/mathml2omml.xsl',
+                   r'C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL']
+XSLT = etree.XSLT(etree.parse(next(p for p in _XSL_CANDIDATOS if os.path.exists(p))))
 
 doc = Document()
 sec = doc.sections[0]

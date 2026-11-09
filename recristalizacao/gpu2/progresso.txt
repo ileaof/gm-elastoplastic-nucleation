@@ -1,0 +1,45 @@
+CADEIA inicio Sun Oct 25 13:19:50 -03 2026
+STAGE inicio 13:19 anneal T=750 s=11
+STAGE FALHOU rc=1 anneal T=750 s=11
+STAGE inicio 13:19 anneal T=775 s=11
+STAGE FALHOU rc=1 anneal T=775 s=11
+STAGE inicio 13:19 anneal T=800 s=11
+STAGE FALHOU rc=1 anneal T=800 s=11
+STAGE inicio 13:19 anneal T=750 s=22
+STAGE FALHOU rc=1 anneal T=750 s=22
+STAGE inicio 13:19 anneal T=775 s=22
+STAGE FALHOU rc=1 anneal T=775 s=22
+STAGE inicio 13:19 anneal T=800 s=22
+STAGE FALHOU rc=1 anneal T=800 s=22
+STAGE inicio 13:19 anneal T=750 s=33
+STAGE FALHOU rc=1 anneal T=750 s=33
+STAGE inicio 13:19 anneal T=775 s=33
+STAGE FALHOU rc=1 anneal T=775 s=33
+STAGE inicio 13:19 anneal T=800 s=33
+STAGE FALHOU rc=1 anneal T=800 s=33
+STAGE inicio 13:19 longo 750 K
+STAGE FALHOU rc=1 longo
+STAGE inicio 13:19 deformar nx=16
+STAGE inicio 13:23 anneal T=750 s=11
+STAGE inicio 13:30 mendelev_gpu T=500
+STAGE FALHOU rc=1 mendelev_gpu T=500
+STAGE inicio 13:30 mendelev_gpu T=600
+STAGE FALHOU rc=1 mendelev_gpu T=600
+STAGE inicio 13:30 mendelev_gpu T=700
+STAGE FALHOU rc=1 mendelev_gpu T=700
+STAGE inicio 13:30 mendelev_gpu T=800
+STAGE FALHOU rc=1 mendelev_gpu T=800
+STAGE inicio 13:30 mendelev_gpu T=850
+STAGE FALHOU rc=1 mendelev_gpu T=850
+STAGE inicio 13:30 mendelev_gpu T=900
+STAGE FALHOU rc=1 mendelev_gpu T=900
+STAGE inicio 13:30 descarga mend 0.30 gpu
+STAGE inicio 13:31 mendelev_gpu T=500
+STAGE FALHOU rc=1 anneal T=750 s=11
+STAGE inicio 13:46 anneal T=775 s=11
+STAGE FALHOU rc=1 anneal T=775 s=11
+STAGE inicio 14:15 anneal T=800 s=11
+STAGE ok 15:18 mendelev_gpu T=500
+STAGE inicio 15:18 mendelev_gpu T=600
+STAGE ok 15:29 descarga_gpu
+GPU-MENDELEV fim Sun Oct 25 15:29:14 -03 2026

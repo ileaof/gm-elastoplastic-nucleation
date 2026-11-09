@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-EP = r'C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos'
+EP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # raiz do repositório
 NUC = os.path.join(EP, 'nucleacao')
 OUT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, NUC)

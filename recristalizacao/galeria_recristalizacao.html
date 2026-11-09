@@ -1,0 +1,182 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Figuras de recristalização</title>
+<style>
+  :root{
+    --bg:#f7f8f9; --fg:#1a2530; --accent:#1f6f6f; --card:#ffffff; --line:#d7dee2;
+    --path:#69737c; --ok:#2e6b3f; --warn:#a8501f; --warn-bg:#f5e8dd;
+    --ok-bg:#e3eee5; --plate:#ffffff; --serif:'Spectral',Georgia,serif; --sans:'Source Sans 3','Segoe UI',sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#141a1f; --fg:#dfe5e9; --accent:#4fb3ab; --card:#1c242b; --line:#33404a;
+    --path:#8a97a1; --ok:#7fc791; --warn:#e09160; --warn-bg:#3a2c22;
+    --ok-bg:#22352a; color-scheme: dark;
+  }}
+  :root[data-theme="dark"]{ --bg:#141a1f; --fg:#dfe5e9; --accent:#4fb3ab; --card:#1c242b; --line:#33404a;
+    --path:#8a97a1; --ok:#7fc791; --warn:#e09160; --ok-bg:#22352a; --warn-bg:#3a2c22; color-scheme: dark; }
+  body{ background:var(--bg); color:var(--fg); font-family:var(--sans); font-size:15px; line-height:1.5;
+        padding-block: 22px; }
+  header{ max-width:1060px; margin:0 auto; padding-left:max(16px,env(safe-area-inset-left,0px));
+          padding-right:max(16px,env(safe-area-inset-right,0px)); }
+  h1{ font-family:var(--serif); font-weight:600; font-size:1.75rem; letter-spacing:-.01em;
+      margin:.2em 0 .15em; max-width:22ch; text-wrap:balance; }
+  .sub{ color:var(--path); max-width:70ch; margin-bottom:1.1rem; }
+  .faixa{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:.6rem; }
+  .tile{ flex:1 1 220px; background:var(--card); border:1px solid var(--line); border-radius:8px;
+         padding:10px 14px; min-width:190px; }
+  .tile b{ display:block; font-size:1.15rem; font-variant-numeric:tabular-nums; }
+  .tile span{ color:var(--path); font-size:.85rem; }
+  section{ max-width:1060px; margin:1.6rem auto 0; padding-left:max(16px,env(safe-area-inset-left,0px));
+           padding-right:max(16px,env(safe-area-inset-right,0px)); }
+  .eyebrow{ color:var(--accent); font-size:.78rem; font-weight:600; letter-spacing:.08em;
+            text-transform:uppercase; }
+  h2{ font-family:var(--serif); font-weight:600; font-size:1.3rem; margin:.1em 0 .5em; }
+  .grade{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden;
+         display:flex; flex-direction:column; }
+  .card.wide{ grid-column:1 / -1; }
+  .placa{ margin:10px 10px 0; }
+  .placa img{ width:100%; height:auto; display:block; background:#fff; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .placa img{ border:1px solid #3a444d; } }
+  :root[data-theme="dark"] .placa img{ border:1px solid #3a444d; }
+  .legenda{ padding:9px 12px 11px; font-size:.88rem; }
+  .legenda .arquivo{ font-family:ui-monospace,Consolas,monospace; font-size:.76rem; color:var(--path);
+                     margin-top:4px; word-break:break-all; }
+  .chip{ display:inline-block; font-size:.72rem; font-weight:600; padding:1px 8px; border-radius:99px;
+         margin-right:6px; vertical-align:1px; }
+  .ok{ background:var(--ok-bg); color:var(--ok); }
+  .aviso{ background:var(--warn-bg); color:var(--warn); }
+  .nova{ color:var(--accent); }
+  .nota{ max-width:1060px; margin:1.2rem auto 0; padding:10px 16px; font-size:.9rem; color:var(--path);
+         border-top:1px solid var(--line); }
+  a{ color:var(--accent); }
+  @media (max-width:420px){ h1{ font-size:1.45rem; } }
+</style>
+
+<header>
+  <h1>Figuras de recristalização</h1>
+  <p class="sub">Galeria do experimento E6 (MD, recristalizados com a deformação plástica armazenada
+     como potencial) e da série E6.5 de hoje — com o estado de cada arquivo. O que é manuscrito,
+     o que tem painel vazio ou degenerado e o que mudou com a prova de hoje.</p>
+  <div class="faixa">
+    <div class="tile"><b>4</b><span>no manuscrito v7 (Figs 7–10, seções 5.7/5.8) — prontas</span></div>
+    <div class="tile"><b>2</b><span>com painel vazio ou degenerado — a refazer (motivo identificado)</span></div>
+    <div class="tile"><b>4</b><span>novas hoje (E6.5: série 800/850/900 K, somente GPU)</span></div>
+  </div>
+</header>
+
+<section>
+  <div class="eyebrow">manuscrito v7 · seções 5.7/5.8 · 25/10, 13:15 e 20:43</div>
+  <h2>As quatro figuras do paper</h2>
+  <div class="grade">
+    <div class="card"><div class="placa"><a href="galeria_imagens/Fig7_E6_stored.png" target="_blank"><img src="galeria_imagens/Fig7_E6_stored.png" alt="Fig. 7"></a></div>
+      <div class="legenda"><span class="chip ok">no paper</span>Energia armazenada E<sub>st</sub>(ε) nas
+        duas potenciais (pico do controle exatamente em ε = 0,14) e a tensão σ<sub>xy</sub> mostrando o escoamento.
+        <div class="arquivo">paper/Fig7_E6_stored.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/Fig8_E6_anneal.png" target="_blank"><img src="galeria_imagens/Fig8_E6_anneal.png" alt="Fig. 8"></a></div>
+      <div class="legenda"><span class="chip ok">no paper</span>PE/átomo nos recozimentos da célula pequena:
+        liga à 700 K dispara em 65–120 ps; controle 800–900 K cai para o nível de ~60 ps.
+        <div class="arquivo">paper/Fig8_E6_anneal.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/Fig9_E6_field.png" target="_blank"><img src="galeria_imagens/Fig9_E6_field.png" alt="Fig. 9"></a></div>
+      <div class="legenda"><span class="chip ok">no paper</span>Campo de energia por átomo: deformada →
+        500 K ainda armazenada → 800 K liberada (rede reordenada) → liga deformada. Cor clara = armazenado.
+        <div class="arquivo">paper/Fig9_E6_field.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/Fig10_E6_onset.png" target="_blank"><img src="galeria_imagens/Fig10_E6_onset.png" alt="Fig. 10"></a></div>
+      <div class="legenda"><span class="chip ok">no paper</span> <span class="chip aviso">eixos em português</span>
+        Início do decaimento nas 3 sementes (750–800 K): 6 de 9 decaem em 17–66 ps; os limpos ficam no teto.
+        Num paper em inglês, os rótulos dos eixos desta estão em português — convém traduzir antes de subir.
+        <div class="arquivo">paper/Fig10_E6_onset.png</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">25/10 · fontes fechadas do E6 · notebook e OneDrive</div>
+  <h2>Figuras de fundo do E6</h2>
+  <div class="grade">
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E6_estocada.png" target="_blank"><img src="galeria_imagens/fig_E6_estocada.png" alt="E_st"></a></div>
+      <div class="legenda"><span class="chip ok">saudável</span>Fonte da Fig. 7: E<sub>st</sub>(ε) e σ<sub>xy</sub>(ε)
+        nas duas potenciais; o pico da E<sub>st</sub> do controle cai exatamente no escoamento.
+        <div class="arquivo">recristalizacao/fig_E6_estocada.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E6_maquinas.png" target="_blank"><img src="galeria_imagens/fig_E6_maquinas.png" alt="máquinas"></a></div>
+      <div class="legenda"><span class="chip ok">saudável</span>Notebook × caixa GPU: perfis coincidem
+        (0,190 vs 0,184 J/m²).
+        <div class="arquivo">recristalizacao/fig_E6_maquinas.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E6_retratos.png" target="_blank"><img src="galeria_imagens/fig_E6_retratos.png" alt="retratos"></a></div>
+      <div class="legenda"><span class="chip aviso">rótulo quente</span>Retratos CNA do fim de cada patamar.
+        Nos painéis que ficam a 800–900 K o rótulo carrega o artefato térmico provado hoje
+        (o FCC puro à 900 K classifica 28,6% dos átomos fora de FCC) — as figuras de T ≥ 800 K não leem
+        microestrutura sem o baseline do controle.
+        <div class="arquivo">recristalizacao/fig_E6_retratos.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E6_recozimento.png" target="_blank"><img src="galeria_imagens/fig_E6_recozimento.png" alt="recozimento"></a></div>
+      <div class="legenda"><span class="chip aviso">painel vazio</span>Fonte da Fig. 8. O painel de cima
+        (PE) está bom; o de baixo, "fração FCC (CNA)", saiu <b>zero em todos os recozimentos</b>: o
+        analisador soma <code>cna == 0</code> e no CNA do LAMMPS FCC é 1 (o controle de hoje: 62 494 de
+        62 500 átomos com código 1 a 300 K). A assinatura da recristalização contra o tempo nunca foi desenhada.
+        <div class="arquivo">recristalizacao/fig_E6_recozimento.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E6_perfil_delta.png" target="_blank"><img src="galeria_imagens/fig_E6_perfil_delta.png" alt="perfil δ"></a></div>
+      <div class="legenda"><span class="chip aviso">degenerada</span>Perfil que mediria a espessura δ da
+        zona de energia: saiu com um único bin vertical — a leitura espacial não existe. A δ medida ontem
+        (0,32 nm liga; 0,19 nm controle) veio de outra rota (os perfis .dat), não desta figura.
+        <div class="arquivo">recristalizacao/fig_E6_perfil_delta.png</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">25/10 20:56–20:58 · laptop · célula pequena e célula grande</div>
+  <h2>Retratos de grãos</h2>
+  <div class="grade">
+    <div class="card"><div class="placa"><a href="galeria_imagens/grao_recozido_mendelev_T500.png" target="_blank"><img src="galeria_imagens/grao_recozido_mendelev_T500.png" alt="T500"></a></div>
+      <div class="legenda"><span class="chip aviso">rótulo frio ok neste</span>Recozido da célula pequena
+        a 500 K (regime estável da série de controle).
+        <div class="arquivo">fig_graos/grao_recozido_mendelev_T500.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/grao_recozido_mendelev_T800.png" target="_blank"><img src="galeria_imagens/grao_recozido_mendelev_T800.png" alt="T800"></a></div>
+      <div class="legenda"><span class="chip aviso">rótulo quente</span>Recozido a 800 K — fronteira
+        violenta; a partição CNA precisa do baseline.
+        <div class="arquivo">fig_graos/grao_recozido_mendelev_T800.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/grao_recozido_mendelev_T900.png" target="_blank"><img src="galeria_imagens/grao_recozido_mendelev_T900.png" alt="T900"></a></div>
+      <div class="legenda"><span class="chip aviso">rótulo quente</span>Recozido a 900 K: FCC 74% / "HCP" 26%.
+        O controle FCC puro de hoje à 900 K dá 71,5/28,5 — a fração "HCP" aqui está na escala do artefato
+        térmico, não prova 26% de empilhamento real sem o baseline.
+        <div class="arquivo">fig_graos/grao_recozido_mendelev_T900.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/grao_big_T900_p50000.png" target="_blank"><img src="galeria_imagens/grao_big_T900_p50000.png" alt="big"></a></div>
+      <div class="legenda"><span class="chip ok">histórico</span>Célula grande (16 384), 900 K, passo
+        50 000 do anneal antigo — o estado que decaía em ~2 ps (motivo do redesenho E6.5).
+        <div class="arquivo">fig_graos/grao_big_T900_p50000.png</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">26/10 · 09:36–10:58 · caixa GPU, somente placa · novo</div>
+  <h2>Nova série E6.5 de hoje</h2>
+  <div class="grade">
+    <div class="card wide"><div class="placa"><a href="galeria_imagens/fig_E65_serie.png" target="_blank"><img src="galeria_imagens/fig_E65_serie.png" alt="série"></a></div>
+      <div class="legenda"><span class="chip nova">hoje</span><b>Resumo da série: 800/850/900 K, 62 500 átomos,
+        γ = 0,10, 1 ns cada.</b> Excesso de sítios defeituosos 20/21,5/21,9%; ΔPE +0,025/+0,026/+0,027 eV/átomo
+        (≈ 2,5×10⁸ J/m³); tensão residual −34/−34/−33 kbar. As linhas ficam planas: <b>estado meta-estável —
+        nenhuma liberação, nenhuma recristalização em 1 ns nas três temperaturas</b>.
+        <div class="arquivo">e65_analise/fig_E65_serie.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E65_resumo.png" target="_blank"><img src="galeria_imagens/fig_E65_resumo.png" alt="900 K"></a></div>
+      <div class="legenda"><span class="chip nova">hoje</span>O 900 K sozinho com o baseline do puro —
+        o primeiro quadro desta campanha que separa artefato de microestrutura.
+        <div class="arquivo">e65_analise/fig_E65_resumo.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E65_T850.png" target="_blank"><img src="galeria_imagens/fig_E65_T850.png" alt="850 K"></a></div>
+      <div class="legenda"><span class="chip nova">hoje</span>Rasterização por frame a 850 K (frações CNA
+        brutas + PE por grupo; brutas incluem o artefato).
+        <div class="arquivo">e65_analise_T850/fig_E65_T850.png</div></div></div>
+    <div class="card"><div class="placa"><a href="galeria_imagens/fig_E65_T800.png" target="_blank"><img src="galeria_imagens/fig_E65_T800.png" alt="800 K"></a></div>
+      <div class="legenda"><span class="chip nova">hoje</span>Rasterização por frame a 800 K (idem).
+        <div class="arquivo">e65_analise_T800/fig_E65_T800.png</div></div></div>
+  </div>
+  <p class="sub" style="margin:.7rem 0 0">O que a série E6.5 <b>não</b> tem (e é o resultado): nenhum
+     evento de recristalização. É o contraponto do desenho antigo (ε = 0,30 descarregado, célula 16 384,
+     decaimento em ~2 ps a 800 K). Com o senhor estão as decisões b) descarregar até Pxy = 0 e
+     c) NVT vs NPT — o que separa os dois regimes.</p>
+</section>
+
+<div class="nota" style="border-top:none">
+  Inventários: manuscrito = <span style="font-family:ui-monospace,Consolas,monospace;font-size:.78rem">paperFig7–10</span> ·
+  fundo = <span style="font-family:ui-monospace,Consolas,monospace;font-size:.78rem">recristalização (laptop e OneDrive)</span> ·
+  retratos = <span style="font-family:ui-monospace,Consolas,monospace;font-size:.78rem">recristalizacao/fig_graos/</span> ·
+  hoje = <span style="font-family:ui-monospace,Consolas,monospace;font-size:.78rem">e65_analise*/</span>.
+  Nada commitado no repo; os dumps grandes de hoje (53 MB × 3) ficam na caixa para o OVITO.
+</div>

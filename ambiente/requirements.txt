@@ -1,0 +1,7 @@
+# Python dependencies of the nucleation models, figures and the paper builders.
+numpy
+scipy
+matplotlib
+python-docx
+lxml
+latex2mathml

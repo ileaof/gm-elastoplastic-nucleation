@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-SAIDA = r"C:\Users\ileao\OneDrive\Documentos\gm-elastoplastic-nucleation\paper\Fig12_E66_unload_release.png"
+SAIDA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "paper", "Fig12_E66_unload_release.png")
 N, DT = 62500, 0.002
 
 def thermo(caminho):
@@ -47,8 +47,7 @@ for T in (800, 850, 900):
     h = leg(os.path.join(AQUI, f"ctrl_npt_T{T}.log"), 10002)
     r_npt[T] = h[:, 3].mean() / N
 r_nvt = {}
-for ln in open(r"C:\Users\ileao\OneDrive\Documentos\gm-elastoplastic-nucleation"
-               r"\recristalizacao\e65_serie26\baseline_puro.dat"):
+for ln in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "e65_serie26", "baseline_puro.dat")):
     if not (ln.startswith("#") or not ln.strip()):
         w = ln.split()
         r_nvt[int(w[0])] = float(w[2])
@@ -112,11 +111,11 @@ for k, T in enumerate((800, 850, 900)):
     ax.set_xlabel("time in the anneal [ps]")
     ax.set_ylim(-1.5, 14.5)
     if k == 0:
-        ax.set_ylabel("PE excess over the ruler of the same barostat [meV/atom]")
+        ax.set_ylabel("PE excess over the reference of the same barostat [meV/atom]")
         ax.legend(fontsize=7.5, loc="center right")
-        ax.set_title("(b) 800 K: excess over the ruler", fontsize=10)
+        ax.set_title("(b) 800 K: excess over the reference", fontsize=10)
     else:
-        ax.set_title(f"({'bcd'[k]}) {T} K: excess over the ruler", fontsize=10)
+        ax.set_title(f"({'bcd'[k]}) {T} K: excess over the reference", fontsize=10)
     ax.grid(True, ls="--", color="0.85")
     # caixa dos % liberados (uma linha por família, na cor da família)
     for i, (cor, l) in enumerate(lib_txt):

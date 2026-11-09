@@ -1,0 +1,340 @@
+LAMMPS (10 Sep 2025)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread.
+  using 1 OpenMP thread(s) per MPI task
+Loaded 1 plugins from C:\Users\ileao\AppData\Local\LAMMPS 64-bit 10Sep2025\plugins
+package omp 8
+set 8 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+# E6.2 — recozimento: um patamar de temperatura por chamada; a difusão ativa, a recristalização inicia
+# Uso:  lmp -sf omp -pk omp 16 -in in.recozer.lmp -var pot jelinek -var alloy 1 -var datafile data_jelinek_0.14.data -var T 800
+#   T: temperatura do patamar (abaixo de T_m = 936 ± 3 K do Jelinek);  série sugerida: 500 600 700 800 850 900
+#   nrampe = passos da subida 300 K -> T (padrão 10000 = 20 ps);  nprod = passos no patamar (padrão 50000 = 100 ps)
+# O termômetro da recristalização: queda de pe (além da recuperação) + fração CNA; dumps para o OVITO.
+units        metal
+atom_style   atomic
+boundary     p p p
+
+variable     pot      index jelinek
+variable     alloy    index 1
+variable     datafile index data_jelinek_0.14.data
+variable     T        index 800
+variable     nrampe   index 10000
+variable     nprod    index 50000
+variable     seed     index 4928459
+variable     a0       equal 4.05
+if "${pot} == mendelev" then "variable a0 equal 4.045"
+variable a0 equal 4.045
+variable     rc       equal 0.854*${a0}
+variable     rc       equal 0.854*4.045
+
+variable     ntypes equal 1
+if "${pot} == jelinek && ${alloy} == 1" then "variable ntypes equal 4"
+
+read_data    ${datafile}
+read_data    data_mendelev_0.14.data
+Reading data file ...
+  triclinic box = (0 0 0) to (32.36 32.36 32.36) with tilt (4.5304 0 0)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2048 atoms
+  reading velocities ...
+  2048 velocities
+  read_data CPU = 0.036 seconds
+include      pot_${pot}.lmp
+include      pot_mendelev.lmp
+# Mendelev, Kramer, Becker, Asta, Philos. Mag. 88 (2008) 1723 — EAM/FS Al puro (distribuição do LAMMPS)
+# T_m = 932,3 K no e2 (coexistência). Só Al (ntypes = 1).
+pair_style eam/fs
+pair_coeff * * ./potencias/Al_Mendelev2008/Al_mm.eam.fs Al
+Reading eam/fs potential file ./potencias/Al_Mendelev2008/Al_mm.eam.fs with DATE: 2007-06-11
+
+# protecao contra 'lost atoms': minimiza as sobreposicoes residuais da configuracao
+# deformada e acompanha os vizinhos passo a passo (o evento de 700 K vem daqui)
+min_style    cg
+minimize     1.0e-10 1.0e-10 5000 200000
+Last active /omp style is pair_style eam/fs/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.5
+  ghost atom cutoff = 8.5
+  binsize = 4.25, bins = 9 8 8
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/fs/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/newton/tri/atomonly/omp
+      stencil: half/bin/3d/tri
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 10.86 | 10.86 | 10.86 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   305.94542     -6816.4713      0             -6735.5195      33337.078    
+        37   305.94542     -6899.5054      0             -6818.5536      22798.559    
+Loop time of 0.238001 on 8 procs for 37 steps with 2048 atoms
+
+170.7% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+     -6816.47131788448  -6899.50541132272  -6899.50541189836
+  Force two-norm initial, final = 27.145415 0.0016865753
+  Force max component initial, final = 1.1626764 8.1475322e-05
+  Final line search alpha, max atom move = 1 8.1475322e-05
+  Iterations, force evaluations = 37 71
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.21605    | 0.21605    | 0.21605    |   0.0 | 90.78
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.003615   | 0.003615   | 0.003615   |   0.0 |  1.52
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0.014051   | 0.014051   | 0.014051   |   0.0 |  5.90
+Other   |            | 0.004289   |            |       |  1.80
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           5764 ave        5764 max        5764 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         157895 ave      157895 max      157895 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 157895
+Ave neighs/atom = 77.097168
+Neighbor list builds = 0
+Dangerous builds = 0
+neigh_modify every 1 delay 0 check yes
+
+compute      esp all pe/atom
+compute      cnatmp all cna/atom ${rc}
+compute      cnatmp all cna/atom 3.45443
+
+timestep     0.002
+thermo_style custom step temp press pe pxy vol
+thermo       500
+
+# subida 300 K -> T (20 ps por padrão), depois patamar em T (100 ps por padrão)
+velocity     all create 300.0 ${seed} mom yes rot no dist gaussian
+velocity     all create 300.0 4928459 mom yes rot no dist gaussian
+fix          ramp all nvt temp 300.0 ${T} 0.1
+fix          ramp all nvt temp 300.0 850 0.1
+run          ${nrampe}
+run          10000
+Last active /omp style is pair_style eam/fs/omp
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.5
+  ghost atom cutoff = 8.5
+  binsize = 4.25, bins = 9 8 8
+  2 neighbor lists, perpetual/occasional/extra = 1 1 0
+  (1) pair eam/fs/omp, perpetual
+      attributes: half, newton on, omp
+      pair build: half/bin/newton/tri/atomonly/omp
+      stencil: half/bin/3d/tri
+      bin: standard
+  (2) compute cna/atom, occasional
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 13.16 | 13.16 | 13.16 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+        37   300            22748.973     -6899.5054     -66137.669      33886.408    
+       500   347.26342      34709.43      -6807.827      -58808.773      33886.408    
+      1000   348.5566       34925.52      -6804.8146     -58571.179      33886.408    
+      1500   390.3396       36966.117     -6792.1579     -57198.949      33886.408    
+      2000   410.01725      37669.599     -6788.7349     -57057.158      33886.408    
+      2500   431.46911      39275.45      -6773.6459     -56056.092      33886.408    
+      3000   473.36945      40363.486     -6768.0481     -55340.844      33886.408    
+      3500   502.8098       41564.947     -6758.9188     -54512.243      33886.408    
+      4000   515.33378      42952.147     -6748.2921     -53854.634      33886.408    
+      4500   524.97         44776.754     -6735.7157     -51960.694      33886.408    
+      5000   566.38497      45793.002     -6729.4115     -50913.172      33886.408    
+      5500   593.98065      46848.831     -6721.0256     -51112.14       33886.408    
+      6000   612.62497      47707.789     -6715.758      -49885.331      33886.408    
+      6500   637.61856      47758.991     -6712.037      -49968.598      33886.408    
+      7000   696.80364      49559.883     -6703.4071     -49586.39       33886.408    
+      7500   703.55606      50984.228     -6691.0235     -47939.507      33886.408    
+      8000   734.27466      51302.994     -6688.8237     -48794.151      33886.408    
+      8500   769.71499      53920.122     -6674.4816     -46315.103      33886.408    
+      9000   786.51922      55096.723     -6660.447      -45531.369      33886.408    
+      9500   818.99128      55936.227     -6652.8893     -43992.228      33886.408    
+     10000   862.51299      57070.984     -6641.9834     -44576.644      33886.408    
+     10037   842.07381      57783.014     -6634.9463     -44075.211      33886.408    
+Loop time of 41.1727 on 8 procs for 10000 steps with 2048 atoms
+
+Performance: 41.970 ns/day, 0.572 hours/ns, 242.880 timesteps/s, 497.417 katom-step/s
+20.4% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 30.092     | 30.092     | 30.092     |   0.0 | 73.09
+Neigh   | 0.33931    | 0.33931    | 0.33931    |   0.0 |  0.82
+Comm    | 0.54225    | 0.54225    | 0.54225    |   0.0 |  1.32
+Output  | 0.001264   | 0.001264   | 0.001264   |   0.0 |  0.00
+Modify  | 10.032     | 10.032     | 10.032     |   0.0 | 24.36
+Other   |            | 0.1665     |            |       |  0.40
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           5715 ave        5715 max        5715 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         158431 ave      158431 max      158431 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:            0 ave           0 max           0 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 158431
+Ave neighs/atom = 77.358887
+Neighbor list builds = 90
+Dangerous builds = 0
+unfix        ramp
+fix          hold all nvt temp ${T} ${T} 0.1
+fix          hold all nvt temp 850 ${T} 0.1
+fix          hold all nvt temp 850 850 0.1
+dump         d1 all custom 2000 recozido_${pot}_T${T}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 2000 recozido_mendelev_T${T}.dump id type x y z c_esp c_cnatmp
+dump         d1 all custom 2000 recozido_mendelev_T850.dump id type x y z c_esp c_cnatmp
+run          ${nprod}
+run          50000
+Last active /omp style is pair_style eam/fs/omp
+Per MPI rank memory allocation (min/avg/max) = 13.16 | 13.16 | 13.16 Mbytes
+   Step          Temp          Press          PotEng          Pxy           Volume    
+     10037   842.07381      57783.014     -6634.9463     -44075.211      33886.408    
+     10500   874.77394      58778.754     -6635.2203     -42879.536      33886.408    
+     11000   848.09062      57069.621     -6643.5487     -43276.92       33886.408    
+     11500   851.4712       57828.566     -6633.7552     -43213.072      33886.408    
+     12000   871.53542      57354.655     -6644.8909     -44372.96       33886.408    
+     12500   862.53681      57374.973     -6644.6485     -42536.759      33886.408    
+     13000   853.70883      58560.323     -6637.6313     -42933.048      33886.408    
+     13500   861.5089       56767.814     -6644.5712     -44518.261      33886.408    
+     14000   835.92175      57388.486     -6639.9337     -42961.805      33886.408    
+     14500   845.41056      57253.405     -6643.0849     -44230.358      33886.408    
+     15000   829.97767      58361.468     -6634.7733     -42489.835      33886.408    
+     15500   890.02014      57092.602     -6649.3921     -44474.203      33886.408    
+     16000   846.96893      57522.778     -6643.422      -43778.294      33886.408    
+     16500   858.42201      57112.11      -6645.9599     -44425.807      33886.408    
+     17000   852.61962      57511.02      -6641.0858     -43970.256      33886.408    
+     17500   864.06822      58514.244     -6636.1179     -41485.516      33886.408    
+     18000   823.52761      57531.161     -6638.0925     -44409.798      33886.408    
+     18500   815.53712      57051.559     -6645.5707     -43802.694      33886.408    
+     19000   834.04327      57837.291     -6632.0057     -41603.619      33886.408    
+     19500   848.79579      56178.901     -6651.1618     -35810.672      33886.408    
+     20000   857.77033      55772.883     -6648.9488     -33314.304      33886.408    
+     20500   829.13015      55219.608     -6654.4094     -34823.498      33886.408    
+     21000   868.36071      55415.22      -6655.5064     -33594.776      33886.408    
+     21500   866.84454      55353.41      -6656.301      -33933.524      33886.408    
+     22000   850.98133      55898.663     -6651.9451     -34474.649      33886.408    
+     22500   854.09096      54856.309     -6661.5368     -35295.942      33886.408    
+     23000   852.37383      55047.822     -6658.0441     -34586.642      33886.408    
+     23500   844.96221      55570.65      -6649.8068     -33787.138      33886.408    
+     24000   876.34067      55778.245     -6655.6264     -34597.231      33886.408    
+     24500   853.5779       55607.086     -6649.1753     -34374.059      33886.408    
+     25000   845.59319      55546.84      -6653.7486     -34386.557      33886.408    
+     25500   873.20305      55703.816     -6648.9088     -31971.02       33886.408    
+     26000   861.42469      54211.808     -6656.6521     -28997.49       33886.408    
+     26500   840.39857      52443.615     -6680.0636     -10803.084      33886.408    
+     27000   851.08795      50717.945     -6716.0683     -6208.4875      33886.408    
+     27500   842.4333       51380.909     -6709.8515     -5809.1657      33886.408    
+     28000   849.81215      50126.57      -6720.4233     -5707.7176      33886.408    
+     28500   813.82525      50762.043     -6713.0922     -6124.8934      33886.408    
+     29000   842.76155      51032.512     -6709.9259     -5482.0081      33886.408    
+     29500   848.17605      50794.432     -6719.7692     -5504.0398      33886.408    
+     30000   874.79606      51783.865     -6712.4667     -6081.7832      33886.408    
+     30500   843.66876      50969.535     -6711.9185     -5002.8434      33886.408    
+     31000   846.24395      49989.354     -6722.8442     -5974.9112      33886.408    
+     31500   839.62444      50955.713     -6711.9591     -5460.0108      33886.408    
+     32000   841.25093      50165.428     -6720.4559     -5442.4906      33886.408    
+     32500   842.96174      50424.746     -6717.1804     -4986.646       33886.408    
+     33000   872.10116      51282.908     -6713.097      -5132.4871      33886.408    
+     33500   838.38987      50572.629     -6715.8163     -5922.9947      33886.408    
+     34000   865.42041      50858.76      -6712.337      -5660.0587      33886.408    
+     34500   847.88152      49746.362     -6720.3297     -5109.8745      33886.408    
+     35000   837.7344       49894.307     -6719.7153     -5516.8798      33886.408    
+     35500   848.42264      50420.39      -6714.9923     -5685.4878      33886.408    
+     36000   836.33578      49264.039     -6720.5945     -5111.7683      33886.408    
+     36500   859.23428      51055.185     -6710.786      -5438.7513      33886.408    
+     37000   860.69542      50261.209     -6716.0727     -5806.8221      33886.408    
+     37500   866.841        50449.32      -6718.2671     -4653.7644      33886.408    
+     38000   843.99499      50194.425     -6720.6666     -5226.165       33886.408    
+     38500   851.04404      50647.707     -6710.7142     -5282.7013      33886.408    
+     39000   839.26687      50533.414     -6712.2248     -5700.7843      33886.408    
+     39500   826.9569       50538.395     -6714.7232     -6113.8647      33886.408    
+     40000   859.3906       49597.805     -6722.9598     -6006.3709      33886.408    
+     40500   843.64245      51337.372     -6711.8862     -5707.839       33886.408    
+     41000   832.15865      49124.286     -6725.5669     -5617.3192      33886.408    
+     41500   852.01749      50393.147     -6714.854      -6034.5287      33886.408    
+     42000   827.59128      49559.015     -6720.3378     -5552.6228      33886.408    
+     42500   886.00896      50040.543     -6720.499      -6274.7328      33886.408    
+     43000   857.48886      49271.723     -6720.8524     -4702.8193      33886.408    
+     43500   851.48316      50220.729     -6713.4324     -4499.0743      33886.408    
+     44000   848.75699      49275.989     -6720.6944     -5810.9542      33886.408    
+     44500   858.41412      49546.729     -6720.6063     -5332.7654      33886.408    
+     45000   831.47641      49420.377     -6715.9839     -4973.1969      33886.408    
+     45500   834.69415      50191.68      -6715.54       -5155.9718      33886.408    
+     46000   818.19517      49708.211     -6713.8095     -5176.4188      33886.408    
+     46500   861.37201      49984.152     -6718.0966     -5155.6522      33886.408    
+     47000   835.94285      48880.469     -6723.1364     -4636.0702      33886.408    
+     47500   860.1214       49499.815     -6722.8434     -5833.4928      33886.408    
+     48000   854.59866      49285.052     -6719.3772     -5616.4578      33886.408    
+     48500   857.89897      50273.717     -6717.3725     -5226.8864      33886.408    
+     49000   832.91841      48764.188     -6720.7904     -5094.4191      33886.408    
+     49500   832.43535      48527.88      -6726.1123     -5166.8636      33886.408    
+     50000   850.55234      49654.069     -6717.1147     -5382.3952      33886.408    
+     50500   837.15639      49656.284     -6718.6763     -4710.3255      33886.408    
+     51000   840.47307      49338.249     -6722.5027     -5283.4632      33886.408    
+     51500   853.06249      48670.199     -6724.9774     -5813.3697      33886.408    
+     52000   852.79499      49049.621     -6723.1568     -5336.7317      33886.408    
+     52500   856.66563      49606.117     -6719.9706     -5371.8625      33886.408    
+     53000   840.72776      49171.146     -6722.356      -5619.167       33886.408    
+     53500   835.86123      50633.75      -6704.9521     -5129.2485      33886.408    
+     54000   858.92375      48666.034     -6724.3012     -5540.2508      33886.408    
+     54500   841.62162      49053.789     -6722.1042     -6457.3644      33886.408    
+     55000   860.97788      50317.611     -6713.2165     -4773.1419      33886.408    
+     55500   845.02908      49042.282     -6724.6014     -6213.6734      33886.408    
+     56000   862.54435      49417.553     -6719.7568     -5825.2692      33886.408    
+     56500   837.24877      48959.826     -6719.8457     -5536.6774      33886.408    
+     57000   857.34959      50231.572     -6712.0801     -5542.4078      33886.408    
+     57500   854.6194       48824.329     -6723.8789     -4607.7561      33886.408    
+     58000   825.7519       48665.894     -6724.3784     -5889.9448      33886.408    
+     58500   841.3672       49418.623     -6715.5789     -5180.7855      33886.408    
+     59000   841.79499      48453.684     -6725.4961     -5219.2197      33886.408    
+     59500   847.2389       49627.222     -6719.9083     -4427.399       33886.408    
+     60000   842.881        49561.858     -6716.7136     -6018.3884      33886.408    
+     60037   880.23874      49074.387     -6727.1009     -6310.9052      33886.408    
+Loop time of 214.751 on 8 procs for 50000 steps with 2048 atoms
+
+Performance: 40.233 ns/day, 0.597 hours/ns, 232.827 timesteps/s, 476.830 katom-step/s
+18.3% CPU use with 1 MPI tasks x 8 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 150.97     | 150.97     | 150.97     |   0.0 | 70.30
+Neigh   | 6.8441     | 6.8441     | 6.8441     |   0.0 |  3.19
+Comm    | 3.0828     | 3.0828     | 3.0828     |   0.0 |  1.44
+Output  | 0.38729    | 0.38729    | 0.38729    |   0.0 |  0.18
+Modify  | 51.974     | 51.974     | 51.974     |   0.0 | 24.20
+Other   |            | 1.498      |            |       |  0.70
+
+Nlocal:           2048 ave        2048 max        2048 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           5421 ave        5421 max        5421 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:         157033 ave      157033 max      157033 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+FullNghs:       314169 ave      314169 max      314169 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 314169
+Ave neighs/atom = 153.40283
+Neighbor list builds = 1826
+Dangerous builds = 0
+print        "ANNEAL T=${T} e_at final $(pe/atoms)"
+ANNEAL T=850 e_at final -3.2847172306658052321
+print        "E6.2 concluída para T = ${T}: recozido_${pot}_T${T}.dump + termo no log"
+WARNING: Detected non-ASCII characters in input. Will try to continue by replacing with ASCII equivalents where known. (src/input.cpp:479)
+E6.2 conclu�da para T = 850: recozido_mendelev_T850.dump + termo no log
+Total wall time: 0:04:16

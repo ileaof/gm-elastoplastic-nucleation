@@ -1,0 +1,22 @@
+11
+2024_dev_full_GLH_AlSiMgFe_signal_beta_2nd_Sim_Luane           AlSiMgFe  exit 0  grad T = 7902.38  Gamma_2nd_EP = 1.4253334164672293e-06  | Sweep: 154
+B_MRS_Meeting_2026_dev_full_GLH_AlCuNbFe_signal_beta_2nd_Sim   AlCuNbFe  exit 0  grad T = 3294.0  Gamma_2nd_EP = 1.00326e-06  | Sweep: 149 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim              AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_2026_paper   AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_dev          AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_dev_gam      AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04046e-06  | Sweep: 148 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_dev_old      AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_old          AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+H2O_vapour_solid_Sim_2026_paper                                H2O       exit 0  grad T = 3708.2  Gamma_2nd_EP = 8.54375e-07  | Sweep: 173 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_-_Copia      AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+MR_2025_dev_full_GLH_AlCuMgFe_signal_beta_2nd_Sim_2026_paper   AlCuMgFe  exit 0  grad T = 3708.2  Gamma_2nd_EP = 1.04147e-06  | Sweep: 148 points, gra
+scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026.py  ->  sdas/scriptsdasmodelAl3Cu5Nb01Fe_zoom_horizontal_B_MRS_Meeting_2026_EP.py  (AlCuNbFe: Gamma_2nd_EP = 1.0033e-06 m K, sigma_y = 0.
+scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script.py  ->  sdas/scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_EP.py  (AlSiMgFe: Gamma_2nd_EP = 1.4253e-06 m K, sigma_y = 0.157175 N/m)
+scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_Ferreira_2024.py  ->  sdas/scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_Ferreira_2024_EP.py  (AlSiMgFe: Gamma_2nd_EP = 1.4253e-06 m
+scriptsdasmodelAl3Cu05Mg02Fe_zoom_horizontal_new_script_Ferreira_2025.py  ->  sdas/scriptsdasmodelAl3Cu05Mg02Fe_zoom_horizontal_new_script_Ferreira_2025_EP.py  (AlCuMgFe: Gamma_2nd_EP = 1.0415e-06 m K
+scriptsdasmodelAl3Cu05Mg02Fe_zoom_horizontal_new_script_Ferreira_2025_dev_gam.py  ->  sdas/scriptsdasmodelAl3Cu05Mg02Fe_zoom_horizontal_new_script_Ferreira_2025_dev_gam_EP.py  (AlCuMgFe: Gamma_2nd_EP 
+scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_EP.py:515: UserWarning: Attempt to set non-positive xlim on a log-scaled axis will be ignored.
+scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_Ferreira_2024_EP.py:515: UserWarning: Attempt to set non-positive xlim on a log-scaled axis will be ignored.
+scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_EP.py: Gamma_2nd_EP = 1.4253e-06 m K, SDAS_EP = 6.58 t^0.387 um
+scriptsdasmodelAl08Si06Mg02Fe_zoom_horizontal_new_script_Ferreira_2024_EP.py: Gamma_2nd_EP = 1.4253e-06 m K, SDAS_EP = 6.58 t^0.387 um
+scriptsdasmodelAl3Cu05Mg02Fe_zoom_horizontal_new_script_Ferreira_2025_EP.py: Gamma_2nd_EP = 1.0415e-06 m K, SDAS_EP = 6.87 t^0.384 um

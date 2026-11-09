@@ -8,7 +8,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-SAIDA = r"C:\Users\ileao\OneDrive\Documentos\gm-elastoplastic-nucleation\paper\Fig11_E65_series.png"
+SAIDA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "paper", "Fig11_E65_series.png")
 N, VOL = 62500, 1.034e-24
 TEMPOS = ((800, "e65_analise_T800", ("ctrl_fcc_T800_hold0.dump", "ctrl_fcc_T800_late.dump")),
           (850, "e65_analise_T850", ("ctrl_fcc_T850_hold0.dump", "ctrl_fcc_T850_late.dump")),

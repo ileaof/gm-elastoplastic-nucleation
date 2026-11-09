@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-SAIDA = r"C:\Users\ileao\OneDrive\Documentos\gm-elastoplastic-nucleation\paper\Fig10_E6_onset.png"
+SAIDA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "paper", "Fig10_E6_onset.png")
 EP6 = os.path.join(os.path.dirname(AQUI), "recristalizacao")
 
 def eventos():

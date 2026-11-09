@@ -4,3 +4,5 @@ __pycache__/
 *.data
 !results/**/*.dat
 potentials/*.eam*
+paper/out/
+.venv/

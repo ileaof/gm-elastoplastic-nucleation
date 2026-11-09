@@ -1,0 +1,81 @@
+case;tSL_exp;P_mm;GT;SDAS_model_um;SDAS_exp_um;rel_error
+local GT 2nd, EP updated ref, H=0;20.1971;5.000;3.88649e-07;23.8043;20.74;0.1477
+local GT 2nd, EP updated ref, H=0;37.0688;10.000;3.88650e-07;29.5322;27.542;0.0723
+local GT 2nd, EP updated ref, H=0;52.8781;15.000;3.88651e-07;33.6932;32.589;0.0339
+local GT 2nd, EP updated ref, H=0;68.0345;20.000;3.88652e-07;37.0517;36.011;0.0289
+local GT 2nd, EP updated ref, H=0;82.7234;25.000;3.88652e-07;39.9099;39.579;0.0084
+local GT 2nd, EP updated ref, H=0;97.0501;30.000;3.88653e-07;42.4212;42.509;-0.0021
+local GT 2nd, EP updated ref, H=0;111.082;35.000;3.88654e-07;44.6753;46.543;-0.0401
+local GT 2nd, EP updated ref, H=0;124.868;40.000;3.88654e-07;46.7296;49.284;-0.0518
+local GT 2nd, EP updated ref, H=0;138.44;45.000;3.88655e-07;48.6235;51.264;-0.0515
+local GT 2nd, EP updated ref, H=0;151.827;50.000;3.88656e-07;50.3852;49.523;0.0174
+local GT 2nd, EP updated ref, H=0;178.121;60.000;3.88658e-07;53.5911;56.547;-0.0523
+local GT 2nd, EP updated ref, H=0;203.876;70.000;3.88659e-07;56.4649;59.444;-0.0501
+local GT 2nd, EP updated ref, H=0;229.177;80.000;3.88661e-07;59.0816;61.957;-0.0464
+local GT 2nd, EP updated ref, H=0;254.087;90.000;3.88662e-07;61.4922;64.785;-0.0508
+local GT 2nd, EP updated ref, H=0;278.656;100.000;3.88662e-07;63.7332;66.171;-0.0368
+local GT 2nd, EP updated ref, H=0;302.923;110.000;3.88662e-07;65.8318;68.273;-0.0358
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;20.1971;5.000;5.75537e-07;25.8277;20.74;0.2453
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;37.0688;10.000;5.64607e-07;31.9319;27.542;0.1594
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;52.8781;15.000;5.53432e-07;36.2899;32.589;0.1136
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;68.0345;20.000;5.42026e-07;39.7412;36.011;0.1036
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;82.7234;25.000;5.30380e-07;42.6182;39.579;0.0768
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;97.0501;30.000;5.18505e-07;45.0894;42.509;0.0607
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;111.082;35.000;5.06420e-07;47.2537;46.543;0.0153
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;124.868;40.000;4.94147e-07;49.1743;49.284;-0.0022
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;138.44;45.000;4.81736e-07;50.8951;51.264;-0.0072
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;151.827;50.000;4.69251e-07;52.4484;49.523;0.0591
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;178.121;60.000;4.44507e-07;55.1498;56.547;-0.0247
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;203.876;70.000;4.21352e-07;57.4495;59.444;-0.0336
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;229.177;80.000;4.02377e-07;59.5228;61.957;-0.0393
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;254.087;90.000;3.91139e-07;61.5762;64.785;-0.0495
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;278.656;100.000;3.91139e-07;63.8204;66.171;-0.0355
+local GT 2nd, EP updated ref, H=0.041283, psi_p in gamma;302.923;110.000;3.91139e-07;65.9219;68.273;-0.0344
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;20.1971;5.000;6.82912e-07;26.7586;20.74;0.2902
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;37.0688;10.000;6.67485e-07;33.0648;27.542;0.2005
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;52.8781;15.000;6.51617e-07;37.5505;32.589;0.1522
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;68.0345;20.000;6.35284e-07;41.0865;36.011;0.1409
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;82.7234;25.000;6.18473e-07;44.0173;39.579;0.1121
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;97.0501;30.000;6.01181e-07;46.5169;42.509;0.0943
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;111.082;35.000;5.83379e-07;48.6861;46.543;0.0460
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;124.868;40.000;5.65079e-07;50.5892;49.284;0.0265
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;138.44;45.000;5.46319e-07;52.2700;51.264;0.0196
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;151.827;50.000;5.27140e-07;53.7594;49.523;0.0855
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;178.121;60.000;4.87980e-07;56.2566;56.547;-0.0051
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;203.876;70.000;4.49365e-07;58.2451;59.444;-0.0202
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;229.177;80.000;4.15416e-07;59.9310;61.957;-0.0327
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;254.087;90.000;3.93689e-07;61.6623;64.785;-0.0482
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;278.656;100.000;3.93689e-07;63.9097;66.171;-0.0342
+local GT 2nd, EP updated ref, H=0.041283, w_p in gamma;302.923;110.000;3.93689e-07;66.0142;68.273;-0.0331
+local GT 2nd, EP fixed ref, psi_p in gamma;20.1971;5.000;1.55269e-06;31.6859;20.74;0.5278
+local GT 2nd, EP fixed ref, psi_p in gamma;37.0688;10.000;1.48701e-06;39.0245;27.542;0.4169
+local GT 2nd, EP fixed ref, psi_p in gamma;52.8781;15.000;1.42164e-06;44.1518;32.589;0.3548
+local GT 2nd, EP fixed ref, psi_p in gamma;68.0345;20.000;1.35659e-06;48.1152;36.011;0.3361
+local GT 2nd, EP fixed ref, psi_p in gamma;82.7234;25.000;1.29198e-06;51.3302;39.579;0.2969
+local GT 2nd, EP fixed ref, psi_p in gamma;97.0501;30.000;1.22792e-06;54.0080;42.509;0.2705
+local GT 2nd, EP fixed ref, psi_p in gamma;111.082;35.000;1.16457e-06;56.2724;46.543;0.2090
+local GT 2nd, EP fixed ref, psi_p in gamma;124.868;40.000;1.10212e-06;58.2034;49.284;0.1810
+local GT 2nd, EP fixed ref, psi_p in gamma;138.44;45.000;1.04084e-06;59.8569;51.264;0.1676
+local GT 2nd, EP fixed ref, psi_p in gamma;151.827;50.000;9.81049e-07;61.2749;49.523;0.2373
+local GT 2nd, EP fixed ref, psi_p in gamma;178.121;60.000;8.07920e-07;62.5899;56.547;0.1069
+local GT 2nd, EP fixed ref, psi_p in gamma;203.876;70.000;6.28294e-07;62.5485;59.444;0.0522
+local GT 2nd, EP fixed ref, psi_p in gamma;229.177;80.000;4.87379e-07;62.0135;61.957;0.0009
+local GT 2nd, EP fixed ref, psi_p in gamma;254.087;90.000;4.06358e-07;62.0831;64.785;-0.0417
+local GT 2nd, EP fixed ref, psi_p in gamma;278.656;100.000;4.06358e-07;64.3464;66.171;-0.0276
+local GT 2nd, EP fixed ref, psi_p in gamma;302.923;110.000;4.06358e-07;66.4658;68.273;-0.0265
+local GT 2nd, EP fixed ref, w_p in gamma;20.1971;5.000;1.73096e-06;32.3990;20.74;0.5622
+local GT 2nd, EP fixed ref, w_p in gamma;37.0688;10.000;1.65029e-06;39.8701;27.542;0.4476
+local GT 2nd, EP fixed ref, w_p in gamma;52.8781;15.000;1.56918e-06;45.0608;32.589;0.3827
+local GT 2nd, EP fixed ref, w_p in gamma;68.0345;20.000;1.48767e-06;49.0422;36.011;0.3619
+local GT 2nd, EP fixed ref, w_p in gamma;82.7234;25.000;1.40577e-06;52.2365;39.579;0.3198
+local GT 2nd, EP fixed ref, w_p in gamma;97.0501;30.000;1.32363e-06;54.8567;42.509;0.2905
+local GT 2nd, EP fixed ref, w_p in gamma;111.082;35.000;1.24124e-06;57.0243;46.543;0.2252
+local GT 2nd, EP fixed ref, w_p in gamma;124.868;40.000;1.15886e-06;58.8160;49.284;0.1934
+local GT 2nd, EP fixed ref, w_p in gamma;138.44;45.000;1.07668e-06;60.2819;51.264;0.1759
+local GT 2nd, EP fixed ref, w_p in gamma;151.827;50.000;9.95091e-07;61.4575;49.523;0.2410
+local GT 2nd, EP fixed ref, w_p in gamma;178.121;60.000;8.07920e-07;62.5899;56.547;0.1069
+local GT 2nd, EP fixed ref, w_p in gamma;203.876;70.000;6.28294e-07;62.5485;59.444;0.0522
+local GT 2nd, EP fixed ref, w_p in gamma;229.177;80.000;4.87379e-07;62.0135;61.957;0.0009
+local GT 2nd, EP fixed ref, w_p in gamma;254.087;90.000;4.06358e-07;62.0831;64.785;-0.0417
+local GT 2nd, EP fixed ref, w_p in gamma;278.656;100.000;4.06358e-07;64.3464;66.171;-0.0276
+local GT 2nd, EP fixed ref, w_p in gamma;302.923;110.000;4.06358e-07;66.4658;68.273;-0.0265
