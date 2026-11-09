@@ -1,0 +1,14 @@
+elastic done 170
+elasto-plastic done 171
+written C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\paper\outputs_AlSiMgFe\butler_inverse_AlSiMgFe.csv
+saved C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\paper\Fig12_butler_surface_composition.png
+elastic         gradT=     428.1 DT=0.06745 gamma_nuc=0.1958 c_over_GC=0.09472 XS_AL=0.9838 XS_SI=0.002121 XS_MG=0.01391 XS_FE=0.0001728
+elastic         gradT=       925 DT=0.1362 gamma_nuc=0.3696 c_over_GC=0.1807 XS_AL=0.9479 XS_SI=0.007112 XS_MG=0.04471 XS_FE=0.0002409
+elastic         gradT=      7902 DT=0.7909 gamma_nuc=1.458 c_over_GC=0.5061 XS_AL=0.4852 XS_SI=0.2059 XS_MG=0.3079 XS_FE=0.0009176
+elastic         gradT=     1e+05 DT=4.915 gamma_nuc=4.45 c_over_GC=0.7731 XS_AL=0.3334 XS_SI=0.266 XS_MG=0.2728 XS_FE=0.1277
+elastic         gradT= 1.181e+06 DT=28.04 gamma_nuc=12.27 c_over_GC=0.9162 XS_AL=0.2782 XS_SI=0.2583 XS_MG=0.2552 XS_FE=0.2084
+elasto-plastic  gradT=     428.1 DT=0.06745 gamma_nuc=0.1958 c_over_GC=0.09472 XS_AL=0.9838 XS_SI=0.002121 XS_MG=0.01391 XS_FE=0.0001728
+elasto-plastic  gradT=       925 DT=0.1362 gamma_nuc=0.3696 c_over_GC=0.1807 XS_AL=0.948 XS_SI=0.00711 XS_MG=0.0447 XS_FE=0.0002409
+elasto-plastic  gradT=      7902 DT=0.7741 gamma_nuc=1.397 c_over_GC=0.4959 XS_AL=0.4939 XS_SI=0.1999 XS_MG=0.3055 XS_FE=0.0007188
+elasto-plastic  gradT=     1e+05 DT=4.799 gamma_nuc=4.243 c_over_GC=0.7627 XS_AL=0.3379 XS_SI=0.2662 XS_MG=0.2747 XS_FE=0.1212
+elasto-plastic  gradT=  1.27e+06 DT=29.15 gamma_nuc=12.33 c_over_GC=0.9167 XS_AL=0.278 XS_SI=0.2583 XS_MG=0.2551 XS_FE=0.2086

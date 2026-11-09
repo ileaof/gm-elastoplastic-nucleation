@@ -1,0 +1,23 @@
+Turnbull gamma_i: [0.123  0.3618 0.0778 0.1994]
+
+=== series conf ===
+  as in Figures 11-12: gamma_i = [0.123  0.3618 0.0778 0.1994], w = 1.0000, k = 1.0000
+    elastic         max |gamma_Butler - gamma_SL| = 1.030e+00 J/m2, at start +0.4811, at end +1.0284
+    elasto-plastic  max |gamma_Butler - gamma_SL| = 1.030e+00 J/m2, at start +0.4811, at end +1.0280
+  fit A (gamma_i, w = 1): gamma_i = [ 0.3611 -0.3603 -0.7278 -2.6696], w = 1.0000, k = 1.0000
+    elastic         max |gamma_Butler - gamma_SL| = 5.178e-03 J/m2, at start +0.0004, at end -0.0052
+    elasto-plastic  max |gamma_Butler - gamma_SL| = 5.693e-03 J/m2, at start +0.0004, at end -0.0057
+  fit B (w, k, delta = -0.1239): gamma_i = [-0.001   0.2379 -0.0461  0.0755], w = 0.0000, k = 1.0000
+    elastic         max |gamma_Butler - gamma_SL| = 5.111e-06 J/m2, at start -0.0000, at end -0.0000
+    elasto-plastic  max |gamma_Butler - gamma_SL| = 6.299e-06 J/m2, at start -0.0000, at end -0.0000
+
+=== series rel ===
+  as in Figures 11-12: gamma_i = [0.123  0.3618 0.0778 0.1994], w = 1.0000, k = 1.0000
+    elastic         max |gamma_Butler - gamma_SL| = 8.472e-01 J/m2, at start -0.0222, at end +0.8453
+    elasto-plastic  max |gamma_Butler - gamma_SL| = 8.469e-01 J/m2, at start -0.0222, at end +0.8448
+  fit A (gamma_i, w = 1): gamma_i = [ 0.4879 -0.1981 -0.5526 -2.3864], w = 1.0000, k = 1.0000
+    elastic         max |gamma_Butler - gamma_SL| = 2.368e-02 J/m2, at start -0.0163, at end -0.0016
+    elasto-plastic  max |gamma_Butler - gamma_SL| = 2.368e-02 J/m2, at start -0.0163, at end -0.0021
+  fit B (w, k, delta = +0.0591): gamma_i = [0.182  0.4209 0.1369 0.2585], w = 0.0000, k = 1.0000
+    elastic         max |gamma_Butler - gamma_SL| = 5.060e-06 J/m2, at start -0.0000, at end -0.0000
+    elasto-plastic  max |gamma_Butler - gamma_SL| = 6.200e-06 J/m2, at start -0.0000, at end -0.0000

@@ -1,0 +1,45 @@
+eps_i = {'AL': np.float64(0.0), 'SI': np.float64(-0.1516), 'MG': np.float64(0.2515), 'FE': np.float64(-0.2085)}  delta = 0.05907
+elastic tau done
+elastic tau_rel done
+elastic elastic done
+elasto-plastic tau done
+elasto-plastic tau_rel done
+elasto-plastic elastic done
+written C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\paper\outputs_AlSiMgFe\butler_mech_AlSiMgFe.csv
+saved C:\MacbookPro\ufpa\PPGEM\SDAS Al_Si_Mg_Fe\modelos_elasto-plastos\paper\Fig12_butler_mechanical_composition.png
+elastic  elastic         max |gamma_Butler - gamma_SL| = 3.36e-02
+    gradT=     428.1 S=-0.01093 XS_AL=0.9902 XS_SI=0.001333 XS_MG=0.008286 XS_FE=0.0001377
+    gradT=       925 S=-0.158 XS_AL=0.9919 XS_SI=0.001524 XS_MG=0.006414 XS_FE=0.0001623
+    gradT=      7902 S=-1 XS_AL=0.9948 XS_SI=0.003335 XS_MG=0.001475 XS_FE=0.0003816
+    gradT=     1e+05 S=-2.55 XS_AL=0.984 XS_SI=0.01424 XS_MG=9.707e-05 XS_FE=0.001659
+    gradT= 1.181e+06 S=-4.136 XS_AL=0.9318 XS_SI=0.06027 XS_MG=5.131e-06 XS_FE=0.007935
+elastic  elasto-plastic  max |gamma_Butler - gamma_SL| = 1.10e-04
+    gradT=     428.1 S=-0.01093 XS_AL=0.9902 XS_SI=0.001333 XS_MG=0.008286 XS_FE=0.0001377
+    gradT=       925 S=-0.1571 XS_AL=0.9919 XS_SI=0.001523 XS_MG=0.006424 XS_FE=0.0001622
+    gradT=      7902 S=-0.1572 XS_AL=0.9919 XS_SI=0.001521 XS_MG=0.006423 XS_FE=0.0001619
+    gradT=     1e+05 S=-0.1572 XS_AL=0.9919 XS_SI=0.00151 XS_MG=0.006418 XS_FE=0.0001603
+    gradT=  1.27e+06 S=-0.1572 XS_AL=0.992 XS_SI=0.001445 XS_MG=0.006386 XS_FE=0.0001504
+tau      elastic         max |gamma_Butler - gamma_SL| = 1.01e-01
+    gradT=     428.1 S=-1.101 XS_AL=0.9947 XS_SI=0.003669 XS_MG=0.001239 XS_FE=0.0004209
+    gradT=       925 S=-1.248 XS_AL=0.9943 XS_SI=0.004212 XS_MG=0.0009582 XS_FE=0.0004846
+    gradT=      7902 S=-2.09 XS_AL=0.9894 XS_SI=0.009272 XS_MG=0.0002204 XS_FE=0.001074
+    gradT=     1e+05 S=-3.64 XS_AL=0.9573 XS_SI=0.03798 XS_MG=1.455e-05 XS_FE=0.004712
+    gradT= 1.181e+06 S=-5.226 XS_AL=0.8417 XS_SI=0.136 XS_MG=6.806e-07 XS_FE=0.02227
+tau      elasto-plastic  max |gamma_Butler - gamma_SL| = 9.39e-02
+    gradT=     428.1 S=-1.101 XS_AL=0.9947 XS_SI=0.003669 XS_MG=0.001239 XS_FE=0.0004209
+    gradT=       925 S=-1.092 XS_AL=0.9947 XS_SI=0.003638 XS_MG=0.001258 XS_FE=0.0004173
+    gradT=      7902 S=-1.98 XS_AL=0.9904 XS_SI=0.008365 XS_MG=0.0002671 XS_FE=0.0009679
+    gradT=     1e+05 S=-3.535 XS_AL=0.9611 XS_SI=0.03466 XS_MG=1.748e-05 XS_FE=0.004258
+    gradT=  1.27e+06 S=-5.143 XS_AL=0.8502 XS_SI=0.1291 XS_MG=7.905e-07 XS_FE=0.02075
+tau_rel  elastic         max |gamma_Butler - gamma_SL| = 3.36e-02
+    gradT=     428.1 S=-0.01093 XS_AL=0.9902 XS_SI=0.001333 XS_MG=0.008286 XS_FE=0.0001377
+    gradT=       925 S=-0.158 XS_AL=0.9919 XS_SI=0.001524 XS_MG=0.006414 XS_FE=0.0001623
+    gradT=      7902 S=-1 XS_AL=0.9948 XS_SI=0.003335 XS_MG=0.001475 XS_FE=0.0003816
+    gradT=     1e+05 S=-2.55 XS_AL=0.984 XS_SI=0.01424 XS_MG=9.707e-05 XS_FE=0.001659
+    gradT= 1.181e+06 S=-4.136 XS_AL=0.9318 XS_SI=0.06027 XS_MG=5.131e-06 XS_FE=0.007935
+tau_rel  elasto-plastic  max |gamma_Butler - gamma_SL| = 3.07e-02
+    gradT=     428.1 S=-0.01093 XS_AL=0.9902 XS_SI=0.001333 XS_MG=0.008286 XS_FE=0.0001377
+    gradT=       925 S=-0.001905 XS_AL=0.9901 XS_SI=0.001322 XS_MG=0.008418 XS_FE=0.0001362
+    gradT=      7902 S=-0.8898 XS_AL=0.9949 XS_SI=0.003007 XS_MG=0.001788 XS_FE=0.0003428
+    gradT=     1e+05 S=-2.445 XS_AL=0.9855 XS_SI=0.01292 XS_MG=0.0001167 XS_FE=0.001502
+    gradT=  1.27e+06 S=-4.053 XS_AL=0.9363 XS_SI=0.05634 XS_MG=5.908e-06 XS_FE=0.007324
