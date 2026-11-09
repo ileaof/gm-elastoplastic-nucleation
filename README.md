@@ -15,7 +15,9 @@
 <p align="center"><b>English</b> · <a href="README.pt-BR.md">Português</a> · <a href="docs/FORMULATION.md"><b>Full formulation</b></a></p>
 
 <p align="center">
-  <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Homogeneous surface tension, homogeneous surface energy and 2nd-order Gibbs-Thomson tensor against the thermal gradient for the elastic and elasto-plastic Gurtin-Murdoch surfaces">
+  <img src="paper/Fig1_curves.png" width="100%" alt="Elastic and elasto-plastic Gurtin-Murdoch solutions of the FCC_A1 phase of Al-3Cu-5Nb-0.1Fe against the thermal gradient: surface tension, surface energy and its radial derivative, second-order thermal-field tensor, undercooling, critical radius, critical free energy and nucleation rates">
+  <br>
+  <sub>Al-3Cu-5Nb-0.1Fe (FCC_A1): elastic (solid) and elasto-plastic <code>stored_total</code> (dashed) Gurtin–Murdoch surfaces against the thermal gradient; dash-dot line: yield at 731 K/m (Figure 1 of the paper).</sub>
 </p>
 
 **Below yield the elasto-plastic surface is the Gurtin–Murdoch surface itself.** Above it, the excess
@@ -46,7 +48,7 @@ Author: I.L. Ferreira, Faculty of Mechanical Engineering, Federal University of 
 - [Repository layout](#repository-layout)
 - [Theory](#theory): [Gurtin–Murdoch surface](#1-gurtinmurdoch-surface-gurtin-and-murdoch-1978-ferreira-2022-2024) · [elasto-plastic proposal](#2-elasto-plastic-proposal) · [energy of the plastic surface](#3-energy-of-the-elasto-plastic-surface) · [Butler with equilibrium shift](#4-butlers-formulation-for-the-thermodynamic-equilibrium-shift-ferreira-2026)
 - [Verification: analytical x numerical](#verification-analytical-x-numerical)
-- [Main results](#main-results-al-3cu-5nb-01fe-mean-gradient-3294-km) · [SDAS with the local 2nd-order tensor](#sdas-with-the-local-2nd-order-tensor) · [All alloys in the stored_total mode](#all-alloys-in-the-stored_total-mode)
+- [Main results](#main-results-al-3cu-5nb-01fe-mean-gradient-3294-km) · [SDAS with the local 2nd-order tensor](#sdas-with-the-local-2nd-order-tensor) · [All alloys in the stored_total mode](#all-alloys-in-the-stored_total-mode) · [Recrystallization (MD)](#recrystallization-the-stored-deformation-in-molecular-dynamics)
 - [Running](#running) · [Data sources](#data-sources) · [Status](#status)
 - [Acknowledgements](#acknowledgements)
 
@@ -279,10 +281,9 @@ At each position the 2nd-order tensor is computed at the measured thermal gradie
 $\nabla T_L = T_R/V_L$ and passed to the MRB model (updated reference, $H_A = 0$).
 
 <p align="center">
-  <img src="docs/Figure_SDAS_GT_point_to_point_B_MRS_2026_restoration.png" width="49%" alt="SDAS against local solidification time for the loaded and elastically restored surface, with and without the plastic work, and the experimental data">
-  <img src="docs/Figure_SDAS_GT_point_to_point_B_MRS_2026_total_energy.png" width="49%" alt="SDAS against local solidification time with the elastic part only and with the total energy of the elasto-plastic surface, and the experimental data">
+  <img src="paper/Fig3_restoration.png" width="100%" alt="Elastic restoration along the casting of Al-3Cu-5Nb-0.1Fe: rate of density change and second-order thermal-field tensor of the loaded and restored interface">
   <br>
-  <sub>Left: loaded surface and surface after the elastic restoration, with and without the plastic work. Right: elastic part only and total energy (elastic + plastic). Experiments: Mendes et al. (2023).</sub>
+  <sub>Elastic restoration along the casting of Al-3Cu-5Nb-0.1Fe: rate of density change (left); second-order tensor of the loaded elasto-plastic interface (f = 0), range of the elastic restoration (0 ≤ f ≤ 1) and equilibrium value (right) (Figure 6 of the paper).</sub>
 </p>
 
 | Surface state (updated reference, H = 0) | σ_y [N/m] | Γ²ⁿᵈ at 1119 → 3294 → 10772 K/m [m K] | MAPE | Exponent in t_SL |
@@ -317,6 +318,28 @@ The peak of the nucleation rate (elastic → elasto-plastic): 6.62e49 → 6.37e4
 the yield point marked (shaded band: elastic range, dash-dot line: yield) come from
 `ferramentas/comparar_curvas_EP.py`, `comparar_taxa_nucleacao.py`, `energia_superficie_alto_gradiente.py`
 and `gibbs_thomson_alto_gradiente.py`, and are also in `nucleacao/figuras/`.
+
+<p align="center">
+  <img src="paper/Fig4_gibbs_thomson_range.png" width="100%" alt="Second-order thermal-field tensor against the thermal gradient over the whole range for the three alloys, elastic and elasto-plastic surfaces">
+  <img src="paper/Fig5_surface_energy_range.png" width="100%" alt="Surface energy of the FCC_A1 nucleus against the thermal gradient over the whole range for the three alloys">
+  <img src="paper/Fig6_surface_tension_range.png" width="100%" alt="Surface tension of the FCC_A1 nucleus against the thermal gradient over the whole range for the three alloys, total and its elastic and plastic components">
+  <br>
+  <sub>The three alloys over the whole range of gradients, elastic and elasto-plastic surfaces: second-order thermal-field tensor (top), surface energy (middle) and surface tension with its elastic and plastic components (bottom). Shaded band: elastic range; dash-dot line: yield; red: values at 10⁵ K/m (Figures 3–5 of the paper).</sub>
+</p>
+
+### Recrystallization: the stored deformation in molecular dynamics
+
+The campaign of `recristalizacao/` tests in molecular dynamics (LAMMPS) that the permanent deformation is
+stored: the Jelinek MEAM potential of the Al-0.8Si-0.6Mg-0.2Fe alloy, with the Mendelev EAM of pure Al as
+the control, sheared and then annealed.
+
+<p align="center">
+  <img src="paper/Fig7_E6_stored.png" width="100%" alt="Stored energy per atom and shear stress against the shear strain, alloy and pure-Al control">
+  <img src="paper/Fig8_E6_anneal.png" width="100%" alt="Potential energy along the annealing steps of the deformed cells, alloy and pure-Al control">
+  <img src="paper/Fig9_E6_field.png" width="100%" alt="Energy per atom of the sheared and annealed cells, atom by atom">
+  <br>
+  <sub>Top: stored energy per atom and shear stress against the shear strain, with the yield strain of the model, E<sub>A</sub><sup>p</sup> = σ<sub>y</sub><sup>s</sup>/σ<sub>0</sub> = 0.144. Middle: annealing steps (ramp 300 K → T, 100 ps at the plate); the alloy crosses a violent threshold between 700 and 800 K, the control recovers at 800–900 K, releasing about 0.05 eV/atom. Bottom: the stored deformation as an energy field, atom by atom (Figures 7–9 of the paper).</sub>
+</p>
 
 ## Running
 

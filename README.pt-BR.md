@@ -15,7 +15,9 @@
 <p align="center"><a href="README.md">English</a> · <b>Português</b> · <a href="docs/FORMULACAO.pt-BR.md"><b>Formulação completa</b></a></p>
 
 <p align="center">
-  <img src="docs/Figure_GM_elastic_vs_elastoplastic_curves_B_MRS_2026.png" width="100%" alt="Tensão de superfície homogênea, energia de superfície homogênea e tensor de Gibbs-Thomson de 2ª ordem em função do gradiente térmico para as superfícies de Gurtin-Murdoch elástica e elasto-plástica">
+  <img src="paper/Fig1_curves.png" width="100%" alt="Soluções de Gurtin-Murdoch elástica e elasto-plástica da fase FCC_A1 de Al-3Cu-5Nb-0,1Fe em função do gradiente térmico: tensão de superfície, energia de superfície e sua derivada radial, tensor de campo térmico de 2ª ordem, super-resfriamento, raio crítico, energia livre crítica e taxas de nucleação">
+  <br>
+  <sub>Al-3Cu-5Nb-0,1Fe (FCC_A1): superfícies de Gurtin–Murdoch elástica (contínua) e elasto-plástica <code>stored_total</code> (tracejada) em função do gradiente térmico; traço-ponto: escoamento em 731 K/m (Figura 1 do paper).</sub>
 </p>
 
 **Abaixo do escoamento, a superfície elasto-plástica é a própria superfície de Gurtin–Murdoch.** Acima
@@ -47,7 +49,7 @@ Autor: I.L. Ferreira, Faculdade de Engenharia Mecânica, Universidade Federal do
 - [Organização do repositório](#organização-do-repositório)
 - [Teoria](#teoria): [superfície de Gurtin–Murdoch](#1-superfície-de-gurtinmurdoch-gurtin-e-murdoch-1978-ferreira-2022-2024) · [proposta elasto-plástica](#2-proposta-elasto-plástica) · [energia da superfície plástica](#3-energia-da-superfície-elasto-plástica) · [Butler com deslocamento do equilíbrio](#4-formulação-de-butler-para-o-deslocamento-do-equilíbrio-termodinâmico-ferreira-2026)
 - [Verificação: analítico x numérico](#verificação-analítico-x-numérico)
-- [Resultados principais](#resultados-principais-al-3cu-5nb-01fe-gradiente-médio-de-3294-km) · [SDAS com o tensor de 2ª ordem local](#sdas-com-o-tensor-de-2ª-ordem-local) · [Todas as ligas no modo stored_total](#todas-as-ligas-no-modo-stored_total)
+- [Resultados principais](#resultados-principais-al-3cu-5nb-01fe-gradiente-médio-de-3294-km) · [SDAS com o tensor de 2ª ordem local](#sdas-com-o-tensor-de-2ª-ordem-local) · [Todas as ligas no modo stored_total](#todas-as-ligas-no-modo-stored_total) · [Recristalização (MD)](#recristalização-a-deformação-armazenada-em-dinâmica-molecular)
 - [Como rodar](#como-rodar) · [Origem dos dados](#origem-dos-dados) · [Estado](#estado)
 - [Agradecimentos](#agradecimentos)
 
@@ -278,10 +280,9 @@ Em cada posição, o tensor de 2ª ordem é calculado no gradiente térmico medi
 passado ao modelo MRB (referência atualizada, $H_A = 0$).
 
 <p align="center">
-  <img src="docs/Figure_SDAS_GT_point_to_point_B_MRS_2026_restoration.png" width="49%" alt="SDAS em função do tempo local de solidificação para a superfície carregada e após a restauração elástica, com e sem o trabalho plástico, e os dados experimentais">
-  <img src="docs/Figure_SDAS_GT_point_to_point_B_MRS_2026_total_energy.png" width="49%" alt="SDAS em função do tempo local de solidificação só com a parte elástica e com a energia total da superfície elasto-plástica, e os dados experimentais">
+  <img src="paper/Fig3_restoration.png" width="100%" alt="Restauração elástica ao longo da peça de Al-3Cu-5Nb-0,1Fe: taxa de variação da densidade e tensor de campo térmico de 2ª ordem da interface carregada e restaurada">
   <br>
-  <sub>Esquerda: superfície carregada e após a restauração elástica, com e sem o trabalho plástico. Direita: só a parte elástica e a energia total (elástica + plástica). Experimentos: Mendes et al. (2023).</sub>
+  <sub>Restauração elástica ao longo da peça de Al-3Cu-5Nb-0,1Fe: taxa de variação da densidade (esquerda); tensor de 2ª ordem da interface elasto-plástica carregada (f = 0), faixa da restauração elástica (0 ≤ f ≤ 1) e valor de equilíbrio (direita) (Figura 6 do paper).</sub>
 </p>
 
 | Estado da superfície (referência atualizada, H = 0) | σ_y [N/m] | Γ²ⁿᵈ em 1119 → 3294 → 10772 K/m [m K] | Erro médio | Expoente em t_SL |
@@ -316,6 +317,28 @@ O pico da taxa de nucleação (elástica → elasto-plástica): 6,62e49 → 6,37
 com o escoamento marcado (faixa sombreada: regime elástico, linha traço-ponto: escoamento) vêm de
 `ferramentas/comparar_curvas_EP.py`, `comparar_taxa_nucleacao.py`, `energia_superficie_alto_gradiente.py`
 e `gibbs_thomson_alto_gradiente.py`, e também estão em `nucleacao/figuras/`.
+
+<p align="center">
+  <img src="paper/Fig4_gibbs_thomson_range.png" width="100%" alt="Tensor de campo térmico de 2ª ordem em função do gradiente térmico em toda a faixa para as três ligas, superfícies elástica e elasto-plástica">
+  <img src="paper/Fig5_surface_energy_range.png" width="100%" alt="Energia de superfície do núcleo FCC_A1 em função do gradiente térmico em toda a faixa para as três ligas">
+  <img src="paper/Fig6_surface_tension_range.png" width="100%" alt="Tensão de superfície do núcleo FCC_A1 em função do gradiente térmico em toda a faixa para as três ligas, total e suas componentes elástica e plástica">
+  <br>
+  <sub>As três ligas em toda a faixa de gradientes, superfícies elástica e elasto-plástica: tensor de campo térmico de 2ª ordem (em cima), energia de superfície (no meio) e tensão de superfície com as componentes elástica e plástica (embaixo). Faixa sombreada: regime elástico; traço-ponto: escoamento; vermelho: valores em 10⁵ K/m (Figuras 3–5 do paper).</sub>
+</p>
+
+### Recristalização: a deformação armazenada em dinâmica molecular
+
+A campanha de `recristalizacao/` testa em dinâmica molecular (LAMMPS) que a deformação permanente fica
+armazenada: o potencial MEAM de Jelinek da liga Al-0,8Si-0,6Mg-0,2Fe, com o EAM de Mendelev do Al puro
+como controle, cisalhado e depois recozido.
+
+<p align="center">
+  <img src="paper/Fig7_E6_stored.png" width="100%" alt="Energia armazenada por átomo e tensão de cisalhamento em função da deformação, liga e controle de Al puro">
+  <img src="paper/Fig8_E6_anneal.png" width="100%" alt="Energia potencial ao longo dos degraus de recozimento das células deformadas, liga e controle de Al puro">
+  <img src="paper/Fig9_E6_field.png" width="100%" alt="Energia por átomo das células cisalhadas e recozidas, átomo a átomo">
+  <br>
+  <sub>Em cima: energia armazenada por átomo e tensão de cisalhamento em função da deformação, com a deformação de escoamento do modelo, E<sub>A</sub><sup>p</sup> = σ<sub>y</sub><sup>s</sup>/σ<sub>0</sub> = 0,144. No meio: degraus de recozimento (rampa 300 K → T, 100 ps no patamar); a liga passa por um limiar violento entre 700 e 800 K, o controle se recupera em 800–900 K, liberando cerca de 0,05 eV/átomo. Embaixo: a deformação armazenada como campo de energia, átomo a átomo (Figuras 7–9 do paper).</sub>
+</p>
 
 ## Como rodar
 
