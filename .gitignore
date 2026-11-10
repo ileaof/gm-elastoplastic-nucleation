@@ -7,3 +7,6 @@ potentials/*.eam*
 paper/out/
 .venv/
 privado/
+
+# macOS
+.DS_Store

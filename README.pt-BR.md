@@ -227,6 +227,14 @@ com o termo configuracional dividido entre os componentes na proporção da ocup
 | `butler_fit_AlSiMgFe.py` | Ajustes por mínimos quadrados dos parâmetros que fazem $\gamma_{Butler}=\gamma_{SL}(\nabla T)$ (exploratório) |
 | `butler_mech_AlSiMgFe.py` | Variante exploratória com um termo mecânico por elemento; **não faz parte da formulação** |
 | `build_paper_butler.py` | Variante v9 do manuscrito com essas soluções (a seção 5.9 dela) |
+| `butler_composition_ligas.py` | **Adotado (revisão do paper, Figuras 13–15):** composição da superfície do núcleo ao longo de $\nabla T$ para as três ligas. As energias vêm da solução de nucleação ($\gamma=\gamma_{SL}(\nabla T)$, $T=T_L-\Delta T$, $\Delta G_C$) e as equações de Butler dão $X^{S}_i$; o substrato é o alumínio (o solvente, $1-\sum X_i$), com $G^{E,C}_{SV}=0$, e a Eq. 34a dá a sua energia interfacial efetiva $\gamma_{SV}(\nabla T)$ → `Fig_butler_composition_<liga>.png`, `Fig13`–`Fig15_butler_composition_*.png` (`--paper-figures`), `outputs_AlSiMgFe/butler_composition_<liga>.csv`. Testes mantidos com `--variant`: `all_terms_0` (termo também no Al: $\gamma_{SV}<0$), `term_sign_a` (sinal trocado: sem solução acima de ~10³ K/m), `df_dr_c` ($\Delta G_C$ pela regra da cadeia, desprezível) → `fig_assumption_*` |
+| `butler_configurational_ligas.py` | Teste: excesso configuracional pela diferença de tamanho de esferas rígidas (MCSL); a composição sai plana em $\nabla T$, não adotado → `Fig_butler_configurational_<liga>.png` |
+
+<p align="center">
+  <img src="paper/Fig14_butler_composition_AlSiMgFe.png" width="100%" alt="Composição da superfície do núcleo FCC_A1 de Al-0,8Si-0,6Mg-0,2Fe em função do gradiente térmico e energia interfacial efetiva do alumínio">
+  <br>
+  <sub>Al-0,8Si-0,6Mg-0,2Fe: (a) composição da superfície do núcleo por Butler com deslocamento do equilíbrio, superfícies elástica (contínua) e elasto-plástica (tracejada), pontilhado: Butler clássico em $T_L$; (b) energia interfacial efetiva do Al (Figura 14 do paper; Figuras 13 e 15 para as outras ligas).</sub>
+</p>
 
 Estado atual: os scripts resolvem uma equação por componente (Al, Si, Mg, Fe), com o alumínio no lugar do
 solvente; a equação do substrato (a primeira acima) ainda não está implementada.
@@ -396,6 +404,7 @@ python butler_AlSiMgFe.py          # Butler padrão e Butler com deslocamento do
 python make_butler_figure.py       # Fig11_butler.png, Fig12_butler_equilibrium_start.png
 python butler_inverse_AlSiMgFe.py  # composição da interface com gamma imposto -> Fig12_butler_surface_composition.png
 python build_paper_butler.py       # variante v9 do manuscrito -> paper/out/
+python butler_composition_ligas.py --paper-figures   # composição da superfície, três ligas -> Fig13-15, Fig_butler_composition_*
 ```
 
 Campanha de recristalização (família E6; na caixa GPU, LAMMPS 30Sep2026 com o pacote GPU):
@@ -437,8 +446,8 @@ até tensão nula e a liberação gradual sobre o platô persistente de 3–6 ×
 σ_y^s·α/δ com a espessura δ medida).
 
 Novembro de 2026: a formulação de Butler para o deslocamento do equilíbrio termodinâmico (Ferreira,
-Materials 19, 4676, 2026) está sendo levada ao paper; os scripts `paper/butler_*.py` dão a primeira solução
-dela ao longo do gradiente para Al-0,8Si-0,6Mg-0,2Fe ([Teoria §4](#4-formulação-de-butler-para-o-deslocamento-do-equilíbrio-termodinâmico-ferreira-2026)).
+Materials 19, 4676, 2026) é aplicada na revisão do paper: `paper/butler_composition_ligas.py` dá a composição
+da superfície do núcleo ao longo do gradiente para as três ligas (Figuras 13–15; [Teoria §4](#4-formulação-de-butler-para-o-deslocamento-do-equilíbrio-termodinâmico-ferreira-2026)).
 O projeto agora roda numa única máquina macOS: `ambiente/` tem a instalação do Python e a compilação do
 LAMMPS numa VM Multipass (Apple Silicon, sem o pacote GPU: as rodadas antes com `-sf gpu` usam `-sf omp`).
 

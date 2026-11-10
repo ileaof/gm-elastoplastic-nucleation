@@ -229,6 +229,14 @@ with the configurational term shared among the components in proportion to their
 | `butler_fit_AlSiMgFe.py` | Least-squares fits of the parameters that make $\gamma_{Butler}=\gamma_{SL}(\nabla T)$ (exploratory) |
 | `butler_mech_AlSiMgFe.py` | Exploratory variant with an element-specific mechanical term; **not part of the formulation** |
 | `build_paper_butler.py` | Manuscript variant v9 with these solutions (its Section 5.9) |
+| `butler_composition_ligas.py` | **Adopted (revision of the paper, Figures 13–15):** surface composition of the nucleus along $\nabla T$ for the three alloys. The energies come from the nucleation solution ($\gamma=\gamma_{SL}(\nabla T)$, $T=T_L-\Delta T$, $\Delta G_C$) and Butler's equations give $X^{S}_i$; the substrate is aluminium (the solvent, $1-\sum X_i$), with $G^{E,C}_{SV}=0$, and Eq. 34a gives its effective interfacial energy $\gamma_{SV}(\nabla T)$ → `Fig_butler_composition_<alloy>.png`, `Fig13`–`Fig15_butler_composition_*.png` (`--paper-figures`), `outputs_AlSiMgFe/butler_composition_<alloy>.csv`. Tests kept with `--variant`: `all_terms_0` (term also on Al: $\gamma_{SV}<0$), `term_sign_a` (flipped sign: no solution above ~10³ K/m), `df_dr_c` (chain-rule $\Delta G_C$, negligible) → `fig_assumption_*` |
+| `butler_configurational_ligas.py` | Test: configurational excess from the hard-sphere size mismatch (MCSL); the composition comes out flat against $\nabla T$, not adopted → `Fig_butler_configurational_<alloy>.png` |
+
+<p align="center">
+  <img src="paper/Fig14_butler_composition_AlSiMgFe.png" width="100%" alt="Surface composition of the FCC_A1 nucleus of Al-0.8Si-0.6Mg-0.2Fe against the thermal gradient and effective interfacial energy of aluminium">
+  <br>
+  <sub>Al-0.8Si-0.6Mg-0.2Fe: (a) surface composition of the nucleus from Butler with the equilibrium shift, elastic (solid) and elasto-plastic (dashed) surfaces, dotted: classical Butler at $T_L$; (b) effective interfacial energy of Al (Figure 14 of the paper; Figures 13 and 15 for the other alloys).</sub>
+</p>
 
 Present state: the scripts solve one equation per component (Al, Si, Mg, Fe), with aluminium in the place of
 the solvent; the substrate equation (the first one above) is not implemented yet.
@@ -397,6 +405,7 @@ python butler_AlSiMgFe.py          # standard Butler and Butler with equilibrium
 python make_butler_figure.py       # Fig11_butler.png, Fig12_butler_equilibrium_start.png
 python butler_inverse_AlSiMgFe.py  # interface composition with gamma imposed -> Fig12_butler_surface_composition.png
 python build_paper_butler.py       # manuscript variant v9 -> paper/out/
+python butler_composition_ligas.py --paper-figures   # surface composition, three alloys -> Fig13-15, Fig_butler_composition_*
 ```
 
 Recrystallization campaign (E6 family; on the GPU box, LAMMPS 30Sep2026 with the GPU package):
@@ -438,8 +447,8 @@ gradual release onto the persistent plateau of 3-6 × 10⁷ J m⁻³, the order 
 measured deformed-zone thickness).
 
 November 2026: Butler's formulation for the thermodynamic equilibrium shift (Ferreira, Materials 19, 4676,
-2026) is being brought into the paper; the `paper/butler_*.py` scripts give its first solution along the
-gradient for Al-0.8Si-0.6Mg-0.2Fe ([Theory §4](#4-butlers-formulation-for-the-thermodynamic-equilibrium-shift-ferreira-2026)).
+2026) is applied in the revision of the paper: `paper/butler_composition_ligas.py` gives the surface composition
+of the nucleus along the gradient for the three alloys (Figures 13–15; [Theory §4](#4-butlers-formulation-for-the-thermodynamic-equilibrium-shift-ferreira-2026)).
 The project now runs on a single macOS machine: `ambiente/` holds the Python setup and the LAMMPS build
 in a Multipass VM (Apple Silicon, no GPU package: the former `-sf gpu` runs use `-sf omp`).
 
